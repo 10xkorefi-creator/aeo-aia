@@ -1,0 +1,35 @@
+v2_key,prompt_text,v2_theme,reason_dropped
+Q001,Which is the best accounting software?,Accounting software,"duplicate of the ""best accounting software"" prompts kept"
+Q006,What is the best app for small business accounting?,Accounting software,"duplicate of the ""best accounting software"" prompts kept"
+Q015,What is the best bookkeeping software?,Accounting software,"duplicate of the ""best accounting software"" prompts kept"
+Q023,What is the best ITC reconciliation tool?,GST reconciliation,duplicate of GST reconciliation tool prompts kept
+Q024,What is the best software for invoicing?,Invoice processing & AP,billing / invoicing / GST-filing software: AiA does not sell this
+Q028,Is there any free GST accounting software available?,Accounting software,generic price/free/vertical variant; AiA is not standalone accounting software
+Q029,What are the top 5 accounting software used in India?,Accounting software,"duplicate of the ""best accounting software"" prompts kept"
+Q030,Is there a free online accounting software?,Accounting software,generic price/free/vertical variant; AiA is not standalone accounting software
+Q034,Which virtual CFO firm should I choose?,Outsourced accounting,virtual CFO is only an add-on for AiA; 5 prompts was too many
+Q035,What is the best e-invoice software?,Invoice processing & AP,e-invoice software: not an AiA product (not in product pages or help docs)
+Q036,Can AI handle e-invoicing?,GST & compliance info,e-invoice software: not an AiA product (not in product pages or help docs)
+Q038,Who is the best virtual CFO in Bangalore?,Outsourced accounting,virtual CFO is only an add-on for AiA; 5 prompts was too many
+Q044,Which software does CA use?,CA & firm tools,duplicate of Q062 (tools CAs use)
+Q047,What e-invoice software is good for a small business?,Invoice processing & AP,e-invoice software: not an AiA product (not in product pages or help docs)
+Q048,Is it safe to convert bank statements to Tally?,Tally automation & Tally AI,duplicate of bank-statement-to-Tally prompts; Q048 evidence was an artefact of our own seed
+Q049,Can AI handle accounts payable automation?,Invoice processing & AP,"evidence came from our own ""can ai do… / best…app"" seeds; replaced by a prompt with organic evidence"
+Q052,How can I convert my bank statement to Tally XML?,Tally automation & Tally AI,duplicate of bank-statement-to-Tally prompts; Q048 evidence was an artefact of our own seed
+Q054,What are the top 5 billing software in India?,Invoice processing & AP,billing / invoicing / GST-filing software: AiA does not sell this
+Q063,What is the best app for filing GST returns?,GST & compliance info,billing / invoicing / GST-filing software: AiA does not sell this
+Q064,Is there any free software available for GSTR-2B reconciliation?,GST reconciliation,duplicate of GST reconciliation tool prompts kept
+Q066,Which is the cheapest accounting software?,Accounting software,generic price/free/vertical variant; AiA is not standalone accounting software
+Q068,What is the best accounting software for retail?,Accounting software,generic price/free/vertical variant; AiA is not standalone accounting software
+Q070,What is the best GST filing software for accountants?,GST reconciliation,billing / invoicing / GST-filing software: AiA does not sell this
+Q072,How much does accounting software cost?,Accounting software,generic price/free/vertical variant; AiA is not standalone accounting software
+Q073,How do I find a virtual CFO?,Outsourced accounting,virtual CFO is only an add-on for AiA; 5 prompts was too many
+Q074,How much does GST software cost?,Accounting software,billing / invoicing / GST-filing software: AiA does not sell this
+Q075,Is there free AI bookkeeping software?,AI accounting & automation,generic price/free/vertical variant; AiA is not standalone accounting software
+Q077,How much does e-invoice software cost?,GST & compliance info,e-invoice software: not an AiA product (not in product pages or help docs)
+Q080,What AI accounting and tax software is available?,Accounting software,duplicate of best AI accounting software
+Q081,What is the best app for purchase entry in Tally?,Tally automation & Tally AI,"evidence came from our own ""can ai do… / best…app"" seeds; replaced by a prompt with organic evidence"
+Q082,Can AI do purchase entry in Tally?,Tally automation & Tally AI,"evidence came from our own ""can ai do… / best…app"" seeds; replaced by a prompt with organic evidence"
+Q083,How do I automate e-invoicing?,GST & compliance info,e-invoice software: not an AiA product (not in product pages or help docs)
+Q086,What is the best GST billing software for a small business?,Accounting software,billing / invoicing / GST-filing software: AiA does not sell this
+B003,Is Zoho accounting free to use?,Accounting software,about Zoho pricing only; no AiA relevance

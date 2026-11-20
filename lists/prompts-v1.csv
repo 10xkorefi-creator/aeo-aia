@@ -1,0 +1,101 @@
+prompt_key,prompt_text,topic,stage,persona,segment,source_prompt_id,list_version,is_active
+P001,suvit alternatives for tally automation,Comparison,Decision,Finance Head,SMB,117,v1,True
+P002,Is there an AI tool that reads invoices and posts them into TallyPrime?,Feature,Consideration,Finance Head,SMB,371,v1,True
+P003,How much time does invoice data entry take and how can I reduce it?,Troubleshooting,Awareness,Finance Head,SMB,372,v1,True
+P004,How to catch data entry errors in Tally before my CA audit,Troubleshooting,Consideration,CFO,SMB,373,v1,True
+P005,KPIs and dashboards a CFO should track from Tally data,How-to,Awareness,CFO,SMB,374,v1,True
+P006,Best invoice data entry automation software India,Discovery,Decision,Finance Head,SMB,375,v1,True
+P007,Best alternatives to hiring a full-time accountant for my business in India,Discovery,Consideration,Founder,SMB,376,v1,True
+P008,Best GST accounting software for Indian SMEs,Discovery,Decision,CEO,SMB,377,v1,True
+P009,Best tool for GST reconciliation in India,Compliance,Decision,Finance Head,SMB,378,v1,True
+P010,How to clear a backlog of accounting entries quickly in Tally,Troubleshooting,Consideration,Finance Head,SMB,379,v1,True
+P011,How to automate bank statement entry in Tally,How-to,Consideration,Accountant,SMB,380,v1,True
+P012,How do I get real-time visibility into my company's finances if books are always behind?,How-to,Awareness,CEO,SMB,381,v1,True
+P013,How to automate GSTR-2B reconciliation with purchase register,Compliance,Consideration,CFO,SMB,382,v1,True
+P014,How should CA firms advise SME clients on bookkeeping automation?,How-to,Awareness,Other,Other,383,v1,True
+P015,Best bookkeeping software for a ₹10 crore turnover trading business in India,Discovery,Decision,Founder,SMB,385,v1,True
+P016,How to reduce dependency on one accountant for my company's books,Troubleshooting,Consideration,CEO,SMB,386,v1,True
+P017,Tally automation tools for high voucher volume businesses,Discovery,Decision,CFO,Mid-market,387,v1,True
+P018,"Does TallyPrime have AI features, or do I need a third-party tool?",Feature,Consideration,Founder,SMB,388,v1,True
+P019,Can ChatGPT do my Tally data entry? What tools actually integrate with Tally?,Integration,Consideration,Founder,SMB,390,v1,True
+P020,Top accounting automation tools that work with Tally,Discovery,Decision,Finance Head,SMB,391,v1,True
+P021,Should I outsource my company's bookkeeping or hire in-house in India?,Discovery,Consideration,CEO,SMB,392,v1,True
+P022,My GST filings keep getting delayed because books aren't updated — how do I fix this?,Compliance,Consideration,Founder,SMB,393,v1,True
+P023,How can CA firms automate client data entry work?,How-to,Consideration,Other,Other,394,v1,True
+P024,Which are the best virtual accounting services in India?,Discovery,Decision,Founder,SMB,395,v1,True
+P025,Which software can automate data entry in TallyPrime?,Discovery,Decision,Finance Head,SMB,396,v1,True
+P026,How can I automate purchase entries in Tally?,How-to,Consideration,Finance Head,SMB,397,v1,True
+P027,I keep losing accountants every few months — how do other Indian SMEs handle this?,Troubleshooting,Awareness,CEO,SMB,398,v1,True
+P028,Monthly closing takes us 20 days — how do Indian SMEs close books faster?,Troubleshooting,Consideration,CFO,SMB,399,v1,True
+P029,My accountant is on leave and entries are piling up — is there a tool to handle this?,Troubleshooting,Consideration,Founder,SMB,400,v1,True
+P030,How to avoid missing ITC claims every month,Compliance,Consideration,CFO,SMB,401,v1,True
+P031,How to build a lean finance team for a ₹50 crore company in India,How-to,Awareness,CFO,Mid-market,402,v1,True
+P032,Top AI tools for accountants in India,Discovery,Decision,Finance Head,SMB,403,v1,True
+P033,Cheaper alternative to hiring a second accountant in India,Comparison,Decision,Founder,SMB,404,v1,True
+P034,Best AI accounting software in India 2026,Discovery,Decision,CFO,SMB,405,v1,True
+P035,Virtual CFO vs virtual accountant — what does my business need?,Comparison,Consideration,CEO,SMB,406,v1,True
+P036,How to convert scanned or handwritten bills into Tally entries,How-to,Consideration,Finance Head,SMB,407,v1,True
+P037,How to reduce manual voucher entry work in TallyPrime,How-to,Consideration,Finance Head,SMB,408,v1,True
+P038,Software to catch mismatches between GSTR-2B and Tally purchases,Compliance,Decision,Finance Head,SMB,409,v1,True
+P039,ClearTax vs dedicated bookkeeping automation tools for GST work,Comparison,Decision,CFO,SMB,410,v1,True
+P040,"Is Vyapar or TallyPrime better for a growing distributor business, and can either be automated?",Comparison,Decision,Founder,SMB,411,v1,True
+P041,AI tools for chartered accountants to handle more clients without hiring,Discovery,Decision,Other,Other,412,v1,True
+P042,Best bookkeeping automation software for small businesses in India,Discovery,Decision,Founder,SMB,413,v1,True
+P043,How do Indian SMEs stay GST compliant without a big accounts team?,Compliance,Awareness,CEO,SMB,414,v1,True
+P044,What does outsourced accounting cost in India for a small business?,Pricing,Decision,Founder,SMB,415,v1,True
+P045,My accountant resigned and my books are 3 months behind — what should I do?,Troubleshooting,Consideration,Founder,SMB,416,v1,True
+P046,Should I switch from Tally to Zoho Books or automate Tally instead?,Comparison,Decision,CEO,SMB,417,v1,True
+P047,CA-managed accounting services for startups in India,Discovery,Decision,Founder,Startup,418,v1,True
+P048,Best outsourced accounting service for D2C brands in India,Discovery,Decision,Founder,Ecommerce,419,v1,True
+P049,How to outsource monthly compliance and bookkeeping for a private limited company,How-to,Decision,Founder,SMB,420,v1,True
+P050,Will automation software mess up my existing ledgers in Tally,Feature,Consideration,Accountant,SMB,421,v1,True
+P051,How to reconcile bank statements with Tally automatically every day,How-to,Consideration,Accountant,SMB,422,v1,True
+P052,How to enter 1000 invoices a month in Tally without hiring more staff,How-to,Consideration,Finance Head,SMB,423,v1,True
+P053,How can CA firms review and QC AI-generated accounting entries,How-to,Consideration,Other,Other,424,v1,True
+P054,Best tech stack for a CA firm to manage 100+ clients' books,Discovery,Decision,Other,Other,425,v1,True
+P055,How much does Tally automation software cost in India,Pricing,Decision,Finance Head,SMB,426,v1,True
+P056,Best accounting software for wholesale distributors in India,Discovery,Decision,Founder,SMB,427,v1,True
+P057,Is it safe to give a third-party tool access to my Tally data,Feature,Consideration,Founder,SMB,428,v1,True
+P058,"GSTR-9 annual return reconciliation is a nightmare, is there a tool to simplify it",Compliance,Consideration,Accountant,SMB,429,v1,True
+P059,How to consolidate financials from multiple Tally companies for group reporting,How-to,Consideration,CFO,Mid-market,430,v1,True
+P060,Monthly cost of a CA retainer vs accounting software in India,Pricing,Consideration,Founder,SMB,431,v1,True
+P061,"How to evaluate bookkeeping automation vendors, what questions to ask",How-to,Consideration,CEO,SMB,432,v1,True
+P062,VouchrIt alternatives in India,Comparison,Decision,Finance Head,SMB,433,v1,True
+P063,Best bookkeeping app for e-commerce sellers in India selling on Amazon and Flipkart,Discovery,Decision,Founder,Ecommerce,434,v1,True
+P064,How to automate journal entries for recurring expenses in Tally,How-to,Consideration,Accountant,SMB,435,v1,True
+P065,"Investor due diligence needs clean financials, how to fix messy books quickly",Troubleshooting,Consideration,Founder,Startup,436,v1,True
+P066,"Got a GST notice for ITC mismatch, how do I find the errors in my purchase data",Compliance,Consideration,Founder,SMB,437,v1,True
+P067,How to get automated daily sales and cash reports from Tally,How-to,Consideration,CFO,SMB,438,v1,True
+P068,How to automate e-invoice IRN generation with Tally,Compliance,Consideration,Finance Head,SMB,439,v1,True
+P069,How to reconcile Amazon and Flipkart settlement reports with my books,How-to,Consideration,Founder,Ecommerce,440,v1,True
+P070,How are Indian SMEs using AI for accounting in 2026,Discovery,Awareness,CEO,SMB,441,v1,True
+P071,Software to extract data from purchase bill PDFs into Tally,Feature,Consideration,Finance Head,SMB,442,v1,True
+P072,How to close year-end books in Tally faster,How-to,Consideration,Accountant,SMB,443,v1,True
+P073,How can a CA firm scale bookkeeping services without adding article assistants,How-to,Awareness,Other,Other,444,v1,True
+P074,Is bookkeeping automation worth it for a ₹5 crore turnover business,Pricing,Consideration,Founder,SMB,445,v1,True
+P075,How to see live cash flow position without waiting for month-end,How-to,Awareness,CFO,SMB,446,v1,True
+P076,How to track receivables and automate payment reminders for customers,How-to,Consideration,Finance Head,SMB,447,v1,True
+P077,How to automate sales invoice entry in Tally from my billing software,How-to,Consideration,Finance Head,SMB,448,v1,True
+P078,How to automate TDS entries from vendor invoices in Tally,Compliance,Consideration,Accountant,SMB,449,v1,True
+P079,How to record UPI and credit card transactions in Tally without manual entry,How-to,Consideration,Accountant,SMB,451,v1,True
+P080,Best accounting automation software for manufacturing SMEs in India,Discovery,Decision,CFO,SMB,452,v1,True
+P081,Can AI replace my accountant in India,Discovery,Awareness,CEO,SMB,453,v1,True
+P082,"I maintain my books in Excel, should I move to accounting software or automation",Comparison,Consideration,Founder,SMB,454,v1,True
+P083,Tool to collect vendor invoices from WhatsApp and email and push them to Tally,Feature,Consideration,Finance Head,SMB,455,v1,True
+P084,How long does it take to implement accounting automation for an SME,How-to,Consideration,Finance Head,SMB,457,v1,True
+P085,Accounts payable automation for small business India,Discovery,Decision,Finance Head,SMB,458,v1,True
+P086,"Statutory audit is next month and books are 6 months behind, fastest way to catch up",Troubleshooting,Consideration,CFO,SMB,459,v1,True
+P087,Tool to auto-create ledgers and match vendor names in Tally,Feature,Consideration,Accountant,SMB,460,v1,True
+P088,"My accountant makes too many data entry mistakes, how do I fix this without firing him",Troubleshooting,Consideration,Founder,SMB,461,v1,True
+P089,Should I buy Tally add-ons or a cloud automation tool for data entry,Comparison,Decision,Finance Head,SMB,462,v1,True
+P090,How should CA firms price bookkeeping services if data entry is automated,Pricing,Consideration,Other,Other,463,v1,True
+P091,"ROI of automating invoice data entry, how much time and money does it save",Pricing,Consideration,CFO,SMB,464,v1,True
+P092,"Tool to track GST, TDS and ROC due dates so I never miss a deadline",Compliance,Consideration,Finance Head,SMB,465,v1,True
+P093,Can I upload invoices to ChatGPT and get Tally entries,Integration,Consideration,Accountant,SMB,466,v1,True
+P094,Accounting software for businesses with multiple branches in India,Discovery,Decision,CFO,Mid-market,467,v1,True
+P095,How accurate is OCR for Indian GST invoices,Feature,Awareness,Accountant,SMB,468,v1,True
+P096,How to match GSTR-1 with sales register automatically,Compliance,Consideration,Accountant,SMB,469,v1,True
+P097,How much does outsourced accounting cost for a small business in India?,,,,,470,v1,True
+P098,Do I need a virtual CFO or an accountant for my startup in India?,,,,,471,v1,True
+P099,Best accounting and GST compliance service for ecommerce sellers in India,,,,,472,v1,True
+P100,Monthly bookkeeping and compliance packages for a private limited company in India,,,,,473,v1,True

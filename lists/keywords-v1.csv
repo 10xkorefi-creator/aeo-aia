@@ -1,0 +1,101 @@
+keyword_id,keyword,topic,segment,source,ahrefs_volume_in,gsc_impressions_90d_in,gsc_avg_position,list_version,is_active
+K001,accounting software,Accounting software,buyer,AiA-GSC+TaxOne,33000,454444,10.8,v1,True
+K002,best small business accounting software,Accounting software,buyer,AiA+TaxOne,17000,,,v1,True
+K003,best accounting software,Accounting software,buyer,AiA+TaxOne,1300,3131,5.8,v1,True
+K004,accounting software for small business,Accounting software,buyer,AiA,1200,3943,4.7,v1,True
+K005,best accounting software in india,Accounting software,buyer,AiA+TaxOne,800,2260,6.3,v1,True
+K006,accounting software list,Accounting software,buyer,AiA+TaxOne,800,2437,6.5,v1,True
+K007,business accounting software,Accounting software,buyer,AiA,600,1240,6.5,v1,True
+K008,small business accounting software,Accounting software,buyer,AiA,500,553,6.2,v1,True
+K009,accounting software india,Accounting software,buyer,AiA+TaxOne,400,994,6.2,v1,True
+K010,online accounting software,Accounting software,buyer,AiA+TaxOne,400,1347,7.7,v1,True
+K011,top 10 accounting software in india,Accounting software,buyer,AiA+TaxOne+Hisabkitab,300,903,5.7,v1,True
+K012,bookkeeping software,Accounting software,buyer,TaxOne,500,,,v1,True
+K013,accounting software price,Accounting software,buyer,AiA+TaxOne,150,,,v1,True
+K014,free accounting software for small business in india,Accounting software,buyer,AiA+TaxOne,150,218,8.4,v1,True
+K015,accounting software for startups,Accounting software,buyer,TaxOne,70,,,v1,True
+K016,ecommerce accounting software,Accounting software,buyer,TaxOne+Hisabkitab,150,,,v1,True
+K017,manufacturing accounting software,Accounting software,buyer,AiA,90,211,3.8,v1,True
+K018,retail accounting software,Accounting software,buyer,Hisabkitab,100,,,v1,True
+K019,accounting and invoicing software,Accounting software,buyer,AiA,150,,,v1,True
+K020,small business accounting app,Accounting software,buyer,AiA,150,,,v1,True
+K021,ai accounting software,AI accounting & automation,buyer,AiA+TaxOne,400,1398,3.5,v1,True
+K022,best ai accounting software,AI accounting & automation,buyer,AiA,70,,,v1,True
+K023,ai accounting,AI accounting & automation,buyer,AiA,150,690,1.6,v1,True
+K024,accounting ai tools,AI accounting & automation,buyer,AiA,150,364,6.3,v1,True
+K025,ai for accounting,AI accounting & automation,buyer,AiA,100,497,2.5,v1,True
+K026,artificial intelligence in accounting,AI accounting & automation,buyer,AiA,80,,,v1,True
+K027,accounting automation,AI accounting & automation,buyer,AiA,250,,,v1,True
+K028,accounting automation software,AI accounting & automation,buyer,TaxOne+seed,100,86,20.8,v1,True
+K029,automated accounting software,AI accounting & automation,buyer,TaxOne,150,,,v1,True
+K030,accounting automation tools,AI accounting & automation,buyer,TaxOne,60,,,v1,True
+K031,ai bookkeeping,AI accounting & automation,buyer,seed,100,,,v1,True
+K032,bookkeeping automation,AI accounting & automation,buyer,seed,150,,,v1,True
+K033,data entry automation,AI accounting & automation,buyer,seed,100,,,v1,True
+K034,data entry ai,AI accounting & automation,buyer,TaxOne,50,,,v1,True
+K035,billing automation,AI accounting & automation,buyer,Tally AI,90,,,v1,True
+K036,ai tool for accounting,AI accounting & automation,buyer,AiA,50,,,v1,True
+K037,tally ai,Tally automation & Tally AI,buyer,seed,500,527,8.7,v1,True
+K038,ai for tally,Tally automation & Tally AI,buyer,seed,80,108,9.3,v1,True
+K039,tally automation,Tally automation & Tally AI,buyer,seed,100,467,12.9,v1,True
+K040,tally automation software,Tally automation & Tally AI,buyer,seed,150,227,8.5,v1,True
+K041,tally data entry automation,Tally automation & Tally AI,buyer,seed,60,,,v1,True
+K042,excel to tally,Tally automation & Tally AI,buyer,seed,1100,,,v1,True
+K043,bank statement to tally,Tally automation & Tally AI,buyer,seed,90,,,v1,True
+K044,tally integration software,Tally automation & Tally AI,buyer,seed,30,,,v1,True
+K045,tally auto entry,Tally automation & Tally AI,buyer,Tally AI,30,,,v1,True
+K046,purchase entry in tally,Tally automation & Tally AI,buyer,AiA-GSC,900,1779,9.8,v1,True
+K047,tally tools,Tally automation & Tally AI,buyer,AiA-GSC,2200,4016,8.2,v1,True
+K048,gst report in tally prime,Tally automation & Tally AI,buyer,Tally AI,20,,,v1,True
+K049,gst reconciliation software,GST reconciliation,buyer,seed,400,569,19.6,v1,True
+K050,gstr 2b reconciliation,GST reconciliation,buyer,AiA-GSC+seed,200,107,15.0,v1,True
+K051,gstr 2b reconciliation software,GST reconciliation,buyer,seed,50,99,6.7,v1,True
+K052,gstr 2a reconciliation,GST reconciliation,buyer,seed,150,,,v1,True
+K053,itc reconciliation,GST reconciliation,buyer,GSTHero,150,,,v1,True
+K054,how to do gst reconciliation,GST reconciliation,buyer,GSTHero,100,,,v1,True
+K055,vendor reconciliation,GST reconciliation,buyer,seed,800,,,v1,True
+K056,vendor reconciliation format,GST reconciliation,buyer,GSTHero,100,,,v1,True
+K057,bank reconciliation software,GST reconciliation,buyer,seed,100,,,v1,True
+K058,accounts payable automation,Invoice processing & AP,buyer,seed,450,,,v1,True
+K059,accounts payable software,Invoice processing & AP,buyer,seed,300,,,v1,True
+K060,invoice processing automation,Invoice processing & AP,buyer,seed,100,,,v1,True
+K061,invoice ocr,Invoice processing & AP,buyer,seed,100,,,v1,True
+K062,invoice data extraction,Invoice processing & AP,buyer,seed,90,,,v1,True
+K063,best ocr software for invoice processing,Invoice processing & AP,buyer,AiA,60,,,v1,True
+K064,ocr bank statement,Invoice processing & AP,buyer,AiA,50,,,v1,True
+K065,accounts payable and receivable software,Invoice processing & AP,buyer,Hisabkitab,80,,,v1,True
+K066,expense management software india,Invoice processing & AP,buyer,seed,100,,,v1,True
+K067,e invoice software,Invoice processing & AP,buyer,seed,350,,,v1,True
+K068,cash flow management software,Invoice processing & AP,buyer,Hisabkitab,50,,,v1,True
+K069,best gst software for ca,CA & firm tools,buyer,TaxOne+seed,200,,,v1,True
+K070,software for ca,CA & firm tools,buyer,TaxOne+seed,70,,,v1,True
+K071,gst return filing software,CA & firm tools,buyer,GSTHero+seed,200,,,v1,True
+K072,ai for chartered accountants,CA & firm tools,buyer,seed,150,331,4.9,v1,True
+K073,ai ca,CA & firm tools,buyer,AiA,150,99,5.6,v1,True
+K074,ca tools,CA & firm tools,buyer,AiA,40,92,7.2,v1,True
+K075,free gst software for ca,CA & firm tools,buyer,TaxOne,80,,,v1,True
+K076,software for chartered accountants,CA & firm tools,buyer,TaxOne,50,,,v1,True
+K077,gst software free,CA & firm tools,buyer,TaxOne,250,,,v1,True
+K078,gst tools,CA & firm tools,buyer,TaxOne,250,,,v1,True
+K079,virtual cfo services,Outsourced accounting,buyer,seed,1100,,,v1,True
+K080,outsourced accounting services india,Outsourced accounting,buyer,seed,90,,,v1,True
+K081,online accounting services,Outsourced accounting,buyer,AiA,150,251,7.5,v1,True
+K082,outsourced bookkeeping service,Outsourced accounting,buyer,AiA,40,,,v1,True
+K083,virtual accounting services,Outsourced accounting,buyer,AiA,30,,,v1,True
+K084,bookkeeping services india,Outsourced accounting,buyer,seed,40,,,v1,True
+K085,gst certificate download,GST & compliance info,informational,AiA-GSC,25000,44925,5.1,v1,True
+K086,gst late fee calculator,GST & compliance info,informational,AiA-GSC,500,1954,2.1,v1,True
+K087,e invoice limit,GST & compliance info,informational,AiA-GSC,8000,8259,5.8,v1,True
+K088,e invoice applicability,GST & compliance info,informational,AiA-GSC,4200,4831,3.9,v1,True
+K089,tds return due date,GST & compliance info,informational,AiA-GSC,9500,,,v1,True
+K090,gst registration fees,GST & compliance info,informational,AiA-GSC+AiA,8600,5734,9.9,v1,True
+K091,tcs on sale of goods,GST & compliance info,informational,AiA,6500,,,v1,True
+K092,gst return status,GST & compliance info,informational,AiA,1900,678,8.9,v1,True
+K093,gst filing status,GST & compliance info,informational,AiA,2100,1196,7.5,v1,True
+K094,rcm in gst,GST & compliance info,informational,GSTHero,4100,,,v1,True
+K095,hsn code list,GST & compliance info,informational,TaxOne,6700,6149,5.4,v1,True
+K096,reference invoice,GST & compliance info,informational,AiA,1200,,,v1,True
+K097,e invoice format,GST & compliance info,informational,GSTHero,200,,,v1,True
+K098,gstin number,GST & compliance info,informational,TaxOne,35000,,,v1,True
+K099,tally shortcut keys,Tally how-to,informational,AiA-GSC,7000,9701,4.0,v1,True
+K100,sales voucher shortcut key,Tally how-to,informational,AiA,400,,,v1,True

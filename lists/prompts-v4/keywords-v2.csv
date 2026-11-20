@@ -1,0 +1,94 @@
+keyword_id,keyword,topic,segment,status,volume_in,gsc_impressions_90d,aia_google_position,check_ai_overview_shown,check_aia_cited
+K017,manufacturing accounting software,Accounting software,buyer,kept,90,211,3.8,True,True
+K021,ai accounting software,AI accounting & automation,buyer,kept,400,1398,3.5,True,True
+K022,best ai accounting software,AI accounting & automation,buyer,kept,70,,,True,True
+K023,ai accounting,AI accounting & automation,buyer,kept,150,690,1.6,True,True
+K024,accounting ai tools,AI accounting & automation,buyer,kept,150,364,6.3,True,False
+K025,ai for accounting,AI accounting & automation,buyer,kept,100,497,2.5,True,True
+K026,artificial intelligence in accounting,AI accounting & automation,buyer,kept,80,,,True,False
+K027,accounting automation,AI accounting & automation,buyer,kept,250,,,True,False
+K028,accounting automation software,AI accounting & automation,buyer,kept,100,86,20.8,True,False
+K029,automated accounting software,AI accounting & automation,buyer,kept,150,,,True,False
+K030,accounting automation tools,AI accounting & automation,buyer,kept,60,,,True,False
+K031,ai bookkeeping,AI accounting & automation,buyer,kept,100,,,True,False
+K032,bookkeeping automation,AI accounting & automation,buyer,kept,150,,,True,False
+K033,data entry automation,AI accounting & automation,buyer,kept,100,,,True,False
+K034,data entry ai,AI accounting & automation,buyer,kept,50,,,True,False
+K036,ai tool for accounting,AI accounting & automation,buyer,kept,50,,,True,False
+K037,tally ai,Tally automation & Tally AI,buyer,kept,500,527,8.7,True,False
+K038,ai for tally,Tally automation & Tally AI,buyer,kept,80,108,9.3,True,True
+K039,tally automation,Tally automation & Tally AI,buyer,kept,100,467,12.9,True,True
+K040,tally automation software,Tally automation & Tally AI,buyer,kept,150,227,8.5,True,True
+K041,tally data entry automation,Tally automation & Tally AI,buyer,kept,60,,,True,True
+K042,excel to tally,Tally automation & Tally AI,buyer,kept,1100,,,True,False
+K043,bank statement to tally,Tally automation & Tally AI,buyer,kept,90,,,True,False
+K044,tally integration software,Tally automation & Tally AI,buyer,kept,30,,,True,False
+K045,tally auto entry,Tally automation & Tally AI,buyer,kept,30,,,True,True
+K046,purchase entry in tally,Tally automation & Tally AI,buyer,kept,900,1779,9.8,True,False
+K047,tally tools,Tally automation & Tally AI,buyer,kept,2200,4016,8.2,True,False
+K049,gst reconciliation software,GST reconciliation,buyer,kept,400,569,19.6,True,False
+K050,gstr 2b reconciliation,GST reconciliation,buyer,kept,200,107,15.0,True,False
+K051,gstr 2b reconciliation software,GST reconciliation,buyer,kept,50,99,6.7,True,False
+K052,gstr 2a reconciliation,GST reconciliation,buyer,kept,150,,,True,False
+K053,itc reconciliation,GST reconciliation,buyer,kept,150,,,True,False
+K054,how to do gst reconciliation,GST reconciliation,buyer,kept,100,,,True,False
+K055,vendor reconciliation,GST reconciliation,buyer,kept,800,,,True,False
+K056,vendor reconciliation format,GST reconciliation,buyer,kept,100,,,True,False
+K057,bank reconciliation software,GST reconciliation,buyer,kept,100,,,True,False
+K058,accounts payable automation,Invoice processing & AP,buyer,kept,450,,,True,False
+K059,accounts payable software,Invoice processing & AP,buyer,kept,300,,,True,False
+K060,invoice processing automation,Invoice processing & AP,buyer,kept,100,,,True,False
+K061,invoice ocr,Invoice processing & AP,buyer,kept,100,,,True,False
+K062,invoice data extraction,Invoice processing & AP,buyer,kept,90,,,True,False
+K063,best ocr software for invoice processing,Invoice processing & AP,buyer,kept,60,,,True,False
+K064,ocr bank statement,Invoice processing & AP,buyer,kept,50,,,True,True
+K065,accounts payable and receivable software,Invoice processing & AP,buyer,kept,80,,,True,False
+K068,cash flow management software,Invoice processing & AP,buyer,kept,50,,,True,False
+K070,software for ca,CA & firm tools,buyer,kept,70,,,True,False
+K072,ai for chartered accountants,CA & firm tools,buyer,kept,150,331,4.9,True,True
+K073,ai ca,CA & firm tools,buyer,kept,150,99,5.6,True,False
+K074,ca tools,CA & firm tools,buyer,kept,40,92,7.2,True,False
+K076,software for chartered accountants,CA & firm tools,buyer,kept,50,,,True,False
+K078,gst tools,CA & firm tools,buyer,kept,250,,,True,False
+K085,gst certificate download,GST & compliance info,informational,kept,25000,44925,5.1,True,True
+K086,gst late fee calculator,GST & compliance info,informational,kept,500,1954,2.1,True,True
+K087,e invoice limit,GST & compliance info,informational,kept,8000,8259,5.8,True,True
+K088,e invoice applicability,GST & compliance info,informational,kept,4200,4831,3.9,True,True
+K089,tds return due date,GST & compliance info,informational,kept,9500,,,True,False
+K090,gst registration fees,GST & compliance info,informational,kept,8600,5734,9.9,True,True
+K091,tcs on sale of goods,GST & compliance info,informational,kept,6500,,,True,True
+K092,gst return status,GST & compliance info,informational,kept,1900,678,8.9,True,False
+K093,gst filing status,GST & compliance info,informational,kept,2100,1196,7.5,True,False
+K094,rcm in gst,GST & compliance info,informational,kept,4100,,,True,False
+K095,hsn code list,GST & compliance info,informational,kept,6700,6149,5.4,True,False
+K096,reference invoice,GST & compliance info,informational,kept,1200,,,True,False
+K097,e invoice format,GST & compliance info,informational,kept,200,,,True,False
+K098,gstin number,GST & compliance info,informational,kept,35000,,,True,False
+K101,ai tools for tally prime,Tally automation & Tally AI,buyer,new,90,112,6.3,True,True
+K102,tally ai tool,Tally automation & Tally AI,buyer,new,200,205,7.5,True,True
+K103,free ai tools for tally prime,Tally automation & Tally AI,buyer,new,20,125,5.7,True,True
+K104,tally ai agent,Tally automation & Tally AI,buyer,new,30,51,6.8,True,True
+K105,how to import purchase invoice in tally prime,Tally automation & Tally AI,buyer,new,0,4,1.0,True,False
+K106,bulk purchase entry in tally prime,Tally automation & Tally AI,buyer,new,10,36,5.4,True,False
+K107,pdf invoice to tally,Tally automation & Tally AI,buyer,new,,,,True,False
+K108,invoice to tally software,Tally automation & Tally AI,buyer,new,10,38,4.2,True,False
+K109,tally bulk entry software,Tally automation & Tally AI,buyer,new,,,,True,False
+K110,pdf bank statement to tally,Tally automation & Tally AI,buyer,new,90,,,True,False
+K111,bank statement to tally software,Tally automation & Tally AI,buyer,new,,,,True,False
+K112,credit card statement entry in tally prime,Tally automation & Tally AI,buyer,new,0,,,True,False
+K113,docs by ira,Tally automation & Tally AI,buyer,new,70,,,True,False
+K114,tally ira,Tally automation & Tally AI,buyer,new,1000,1,3.0,True,False
+K115,tally ira pricing,Tally automation & Tally AI,buyer,new,10,,,True,False
+K116,tally on mobile,Tally automation & Tally AI,buyer,new,800,268,7.8,True,False
+K117,gst reconciliation ai tool,GST reconciliation,buyer,new,40,100,3.5,True,True
+K118,ai tools for gst reconciliation,GST reconciliation,buyer,new,70,110,3.6,True,True
+K119,gst reconciliation automation,GST reconciliation,buyer,new,20,104,9.2,True,True
+K120,ai accounting software india,AI accounting & automation,buyer,new,90,147,9.7,True,True
+K121,ai accounting software price,AI accounting & automation,buyer,new,30,78,7.3,True,True
+K122,ai tools for chartered accountants,CA & firm tools,buyer,new,100,114,5.4,True,False
+K123,free ai tools for chartered accountants,CA & firm tools,buyer,new,20,111,6.2,True,False
+K124,ai for ca,CA & firm tools,buyer,new,150,435,7.3,True,False
+K125,automation tools for chartered accountants,CA & firm tools,buyer,new,10,68,5.1,True,False
+K126,handwritten invoice ocr,Invoice processing & AP,buyer,new,,1,11.0,True,False
+K127,invoice ocr software india,Invoice processing & AP,buyer,new,0,56,4.0,True,True
+K128,bank statement converter,Free tools,informational,new,16000,1131,15.3,True,False

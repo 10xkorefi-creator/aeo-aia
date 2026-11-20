@@ -1,0 +1,25 @@
+key,prompt_text,prompt_group,theme,reason_removed
+C005,Is Zoho Books better than Tally?,competitor,Accounting software (broad category),About replacing Tally; AiA is built on Tally
+C006,Which software is better than Tally?,competitor,Accounting software (broad category),About replacing Tally; AiA is built on Tally
+P014,How do I migrate from Zoho Books to Tally?,unbranded,Tally automation & Tally AI,Migration is not something AiA sells
+P015,How do I manage multi-branch accounting in Tally?,unbranded,Tally automation & Tally AI,Tally does this itself and is known for it (built-in multi-branch setup)
+P016,How do I get an MIS report from Tally?,unbranded,Reporting & MIS,Tally does this itself and is known for it (built-in MIS reports)
+P018,How do I track outstanding receivables in Tally?,unbranded,Reporting & MIS,Tally does this itself and is known for it (built-in outstandings report)
+P019,How can I speed up the month-end close?,unbranded,Reporting & MIS,Generic process advice; global-only evidence
+P051,What is the best GST software for CAs?,unbranded,CA & firm tools,GST filing software for CAs: not an AiA product
+P055,What are outsourced bookkeeping services?,unbranded,Outsourced accounting,Services (virtual accounting / virtual CFO): team decision to track the product only
+P056,How does outsourced accounting work for a small business?,unbranded,Outsourced accounting,Services (virtual accounting / virtual CFO): team decision to track the product only
+P057,What services does a virtual CFO offer?,unbranded,Outsourced accounting,Services (virtual accounting / virtual CFO): team decision to track the product only
+P058,What is the best outsourced accounting service in India?,unbranded,Outsourced accounting,Services (virtual accounting / virtual CFO): team decision to track the product only
+P059,Where can I find outsourced bookkeeping services in India?,unbranded,Outsourced accounting,Services (virtual accounting / virtual CFO): team decision to track the product only
+P060,What are the top 10 accounting outsourcing companies in India?,unbranded,Outsourced accounting,Services (virtual accounting / virtual CFO): team decision to track the product only
+P061,Which are the best virtual accounting services in India?,unbranded,Outsourced accounting,Services (virtual accounting / virtual CFO): team decision to track the product only
+P062,Should a startup in India outsource its accounting?,unbranded,Outsourced accounting,Services (virtual accounting / virtual CFO): team decision to track the product only
+P063,What is the average cost of outsourcing accounting services?,unbranded,Outsourced accounting,Services (virtual accounting / virtual CFO): team decision to track the product only
+P064,How much does a virtual CFO cost?,unbranded,Outsourced accounting,Services (virtual accounting / virtual CFO): team decision to track the product only
+P065,What is the best accounting software in India?,unbranded,Accounting software (broad category),Accounting software category: Tally is the leader and AiA is not accounting software
+P066,What is the best accounting software for a small business in India?,unbranded,Accounting software (broad category),Accounting software category: Tally is the leader and AiA is not accounting software
+P068,Which GST software is best?,unbranded,Accounting software (broad category),GST filing / billing software: not an AiA product
+P069,Is Tally good for a small business?,unbranded,Accounting software (broad category),About Tally itself; AiA cannot be the answer
+P070,Is accounting software better than Excel?,unbranded,Accounting software (broad category),"Accounting software category: generic, no vendor wins it"
+P071,Is there free accounting software for a small business in India?,unbranded,Accounting software (broad category),Accounting software category: AiA is not free accounting software
