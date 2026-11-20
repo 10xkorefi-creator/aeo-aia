@@ -31,10 +31,10 @@ export default async function Traffic({ searchParams }) {
   const contacts = await q`select hubspot_contact_id, created_date, ai_channel, attribution_tier, lifecycle_stage, reached_opportunity
     from public.aeo_hubspot_ai_contacts_v order by created_date desc`;
   const gsc = await q`select source, period_label, count(*) rows, sum(impressions) impressions, sum(clicks) clicks, max(pulled_at) loaded
-    from public.aeo_gsc_ai_daily group by 1,2 order by loaded desc`;
-  // Top pages come from the most recently uploaded Pages export only, so two uploads covering different periods are never added together
+    from public.aeo_gsc_ai_daily where page = '' or date = (select max(date) from public.aeo_gsc_ai_daily where page <> '') group by 1,2 order by loaded desc`;
+  // A Pages export is stored under its upload day. Only the most recent upload is read, so two uploads are never added together
   const gscTop = await q`select page, max(period_label) period_label, sum(impressions) impressions from public.aeo_gsc_ai_daily
-    where page <> '' and period_label is not distinct from (select period_label from public.aeo_gsc_ai_daily where page <> '' order by pulled_at desc limit 1)
+    where page <> '' and date = (select max(date) from public.aeo_gsc_ai_daily where page <> '')
     group by 1 order by 3 desc limit 15`;
   const rec = await q`select engine, run_id, recommended, answers, recommended_rate from public.aeo_asst_recommended_v
     where run_id = (select run_id from public.aeo_runs where run_type <> 'test' and status in ('complete', 'partial') order by created_at desc limit 1)`;
