@@ -64,13 +64,11 @@ export default async function Overview({ searchParams }) {
     q`select min(date) d0 from public.aeo_gsc_ai_daily where source = 'gsc_genai_export_dates'`,
     q`select engine, answers_ok, aia_mention_rate, aia_citation_rate from public.aeo_asst_run_metrics_mv where run_id = ${runId} and answers_ok > 0`,
     q`select engine, answers, recommended, recommended_rate, recommended_rate_ci_low lo, recommended_rate_ci_high hi from public.aeo_asst_recommended_v where run_id = ${runId}`,
-    // per month, in the same order as the funnel: searches for our name (Search Console) and ChatGPT's recommendation rate (all runs of the month pooled)
-    q`select (select sum(impressions) from public.aeo_gsc_brand_daily_v b where b.kind = 'brand' and date_trunc('month', b.date)::date = f.month) brand_searches,
-        (select round(sum(recommended)::numeric / nullif(sum(answers), 0), 4) from public.aeo_asst_recommended_v r
-          where r.engine = 'chatgpt' and r.run_type <> 'test' and r.run_status = 'complete' and date_trunc('month', r.run_date)::date = f.month) chatgpt_rec_rate
+    // per month, in the same order as the funnel: searches for our name (Search Console)
+    q`select (select sum(impressions) from public.aeo_gsc_brand_daily_v b where b.kind = 'brand' and date_trunc('month', b.date)::date = f.month) brand_searches
       from public.aeo_funnel_monthly_v f order by f.month desc`,
   ]);
-  months.forEach((m, i) => { m.brand_searches = extra[i]?.brand_searches ?? null; m.chatgpt_rec_rate = extra[i]?.chatgpt_rec_rate ?? null; });
+  months.forEach((m, i) => { m.brand_searches = extra[i]?.brand_searches ?? null; });
   // The chain per assistant: recommended with a link (latest run) -> visits -> leads (months shown in the funnel)
   const recBy = Object.fromEntries(recRows.map((r) => [r.engine, r]));
   const chain = ['chatgpt', 'gemini', 'perplexity'].map((e) => ({ engine: e, rec: recBy[e],
@@ -185,9 +183,9 @@ export default async function Overview({ searchParams }) {
       </Band>
 
       <Band n="3" title="Trends" info={O.trend}
-        lead="One bar per month, oldest on the left. Read left to right as a chain: ChatGPT recommends us, visits follow, people search for our name, some become leads and deals. Point at a month to see it in every chart. A lighter bar is a month with incomplete data, such as the month still in progress.">
+        lead="One bar per month, oldest on the left. Read left to right as a chain: visits from AI assistants, people searching for our name, then leads and deals. Point at a month to see it in every chart. A lighter bar is a month with incomplete data, such as the month still in progress.">
         <div className="card">
-          <Minis charts={[{ title: 'ChatGPT recommends us with a link', kind: 'pct', points: series('chatgpt_rec_rate') }, { title: 'Visits from AI assistants', points: series('visits') },
+          <Minis charts={[{ title: 'Visits from AI assistants', points: series('visits') },
             { title: 'Searches for our name on Google', points: series('brand_searches') }, { title: 'Leads', points: series('leads') },
             { title: 'Deals', points: series('deals') }, { title: 'Google AI impressions', points: series('google_ai_impressions') }]} />
           <details className="tableview">
@@ -196,7 +194,6 @@ export default async function Overview({ searchParams }) {
               { key: 'month', label: 'Month', render: (m) => <span className="nowrap">{monthLabel(m.month)}{m.is_current_month ? <span className="muted"> (so far)</span> : null}</span> },
               { key: 'google_ai_impressions', label: 'Google AI impressions', num: true, info: F.seen(tot), render: (m) => (m.google_ai_impressions === null ? '–' : <>{num(m.google_ai_impressions)}{m.impressions_partial ? <span className="muted"> part</span> : null}</>) },
               { key: 'google_cited_rate', label: 'Google cited', num: true, info: F.cited, render: (m) => (m.google_cited_rate === null ? '–' : pct(m.google_cited_rate)) },
-              { key: 'chatgpt_rec_rate', label: 'ChatGPT recommends us', num: true, info: O.chainRec, render: (m) => (m.chatgpt_rec_rate === null ? '–' : pct(m.chatgpt_rec_rate)) },
               { key: 'visits', label: 'Visits', num: true, info: F.visits(tot), render: (m) => (m.visits === null ? '–' : num(m.visits)) },
               { key: 'brand_searches', label: 'Searches for our name', num: true, info: O.chainBrand, render: (m) => (m.brand_searches === null ? '–' : num(m.brand_searches)) },
               { key: 'leads', label: 'Leads', num: true, info: F.leads(tot), render: (m) => num(m.leads) },
