@@ -343,6 +343,7 @@ h4 { font-size: 13.5px; font-weight: 600; margin: 0 0 2px; letter-spacing: -0.01
 .assist h4 { margin-bottom: 8px; }
 /* small monthly charts */
 .minis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px; }
+.minis.six { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 32px; }
 .mini { margin: 0; min-width: 0; }
 .mini-title { font-size: 13px; font-weight: 600; }
 .mini-now { color: var(--muted-foreground); font-size: 12.5px; margin-top: 1px; }
@@ -366,9 +367,9 @@ h4 { font-size: 13.5px; font-weight: 600; margin: 0 0 2px; letter-spacing: -0.01
 @media (max-width: 1000px) {
   .funnel-wrap { grid-template-columns: minmax(0, 1fr); gap: 12px; } .fbreak { padding-top: 0; }
   .funnel.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .minis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .minis, .minis.six { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (max-width: 560px) { .stat { flex-direction: column; align-items: flex-start; gap: 6px; } .minis { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 560px) { .stat { flex-direction: column; align-items: flex-start; gap: 6px; } .minis, .minis.six { grid-template-columns: minmax(0, 1fr); } }
 @media (prefers-reduced-motion: no-preference) { .mini-bar { transition: opacity 120ms ease; } }
 /* in the assistants list every bar is ours, so the 'own row is bold' rule does not apply */
 .assist .bar-row:has(.bar-fill.own) .bar-label, .assist .bar-row:has(.bar-fill.own) .bar-value { font-weight: 400; }

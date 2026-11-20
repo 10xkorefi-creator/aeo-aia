@@ -4,7 +4,6 @@ import { listRuns, pickRun } from '@/lib/data';
 import { pct, num, date, monthLabel } from '@/lib/format';
 import { Bars, Table, TestBanner, Ask } from '@/components/ui';
 import { Minis } from '@/components/minis';
-import { ChainTrend } from '@/components/chain-trend';
 import { AssistantIcon, assistantName } from '@/components/assistant';
 import { askHref } from '@/lib/ask';
 import { gpt as G, aio as A, funnel as F, overview as O } from '@/lib/glossary';
@@ -52,12 +51,12 @@ export default async function Overview({ searchParams }) {
   const runs = await listRuns();
   const run = await pickRun(runs, sp?.run);
   const runId = run?.run_id ?? '';
-  const [gptRows, aio, gptSov, aioSov, months, visitsBy, leadsBy, gscFrom, asstRows, recRows, weeks, weekRec] = await Promise.all([
+  const [gptRows, aio, gptSov, aioSov, months, visitsBy, leadsBy, gscFrom, asstRows, recRows, extra] = await Promise.all([
     q`select * from public.aeo_gpt_run_metrics_mv where run_id = ${runId}`,
     q`select * from public.aeo_aio_run_metrics_mv where run_id = ${runId}`,
     q`select display_name, brand_key, role, mention_sov from public.aeo_gpt_sov_mv where run_id = ${runId} and role in ('own','sov') order by mention_sov desc nulls last`,
     q`select display_name, brand_key, role, citation_sov from public.aeo_aio_sov_mv where run_id = ${runId} and role in ('own','sov') order by citation_sov desc nulls last`,
-    q`select * from public.aeo_funnel_monthly_v`,
+    q`select * from public.aeo_funnel_monthly_v order by month desc`,
     q`select case when session_source ~* 'chatgpt|chat\\.openai' then 'ChatGPT' when session_source ~* 'gemini' then 'Gemini' when session_source ~* 'perplexity' then 'Perplexity'
         when session_source ~* 'claude' then 'Claude' when session_source ~* 'copilot' then 'Copilot' else 'Other' end assistant, sum(sessions) visits
       from public.aeo_ga4_ai_monthly where session_source !~* '^openai$' and month >= (select min(month) from public.aeo_funnel_monthly_v) group by 1`,
@@ -65,32 +64,13 @@ export default async function Overview({ searchParams }) {
     q`select min(date) d0 from public.aeo_gsc_ai_daily where source = 'gsc_genai_export_dates'`,
     q`select engine, answers_ok, aia_mention_rate, aia_citation_rate from public.aeo_asst_run_metrics_mv where run_id = ${runId} and answers_ok > 0`,
     q`select engine, answers, recommended, recommended_rate, recommended_rate_ci_low lo, recommended_rate_ci_high hi from public.aeo_asst_recommended_v where run_id = ${runId}`,
-    // the last 16 weeks (Monday start, India time): AI visits and branded searches per week; a week still in progress has no count yet
-    q`with w as (select generate_series(date_trunc('week', now() at time zone 'Asia/Kolkata')::date - 105, date_trunc('week', now() at time zone 'Asia/Kolkata')::date, interval '7 days')::date wk),
-        g as (select date_trunc('week', date)::date wk, sum(sessions) visits from public.aeo_ga4_ai_traffic_v where counts_as_human_aeo_traffic group by 1),
-        gx as (select min(date) d0, max(date) d1 from public.aeo_ga4_ai_traffic_v)
-      select to_char(w.wk, 'YYYY-MM-DD') wk, to_char(w.wk, 'DD/MM') label, to_char(w.wk, 'DD/MM/YYYY') as day,
-        case when b.full_week then b.searches end searches, case when b.full_week then b.clicks end clicks,
-        case when w.wk >= gx.d0 and w.wk + 6 <= gx.d1 then coalesce(g.visits, 0) end visits,
-        to_char(gx.d1, 'DD/MM/YYYY') ga4_through, (select to_char(max(date), 'DD/MM/YYYY') from public.aeo_gsc_brand_daily) brand_through
-      from w cross join gx left join g on g.wk = w.wk left join public.aeo_gsc_brand_weekly_v b on b.week_start = w.wk order by 1`,
-    q`select to_char(date_trunc('week', run_date), 'YYYY-MM-DD') wk, engine, sum(recommended) rec, sum(answers) n, count(distinct run_id) runs
-      from public.aeo_asst_recommended_v where run_type <> 'test' and run_status = 'complete' group by 1, 2`,
+    // per month, in the same order as the funnel: searches for our name (Search Console) and ChatGPT's recommendation rate (all runs of the month pooled)
+    q`select (select sum(impressions) from public.aeo_gsc_brand_daily_v b where b.kind = 'brand' and date_trunc('month', b.date)::date = f.month) brand_searches,
+        (select round(sum(recommended)::numeric / nullif(sum(answers), 0), 4) from public.aeo_asst_recommended_v r
+          where r.engine = 'chatgpt' and r.run_type <> 'test' and r.run_status = 'complete' and date_trunc('month', r.run_date)::date = f.month) chatgpt_rec_rate
+      from public.aeo_funnel_monthly_v f order by f.month desc`,
   ]);
-  // One weekly timeline for the chain: recommended with a link -> visits from AI assistants -> searches for our name
-  const ASST = { chatgpt: 'var(--asst-chatgpt)', gemini: 'var(--asst-gemini)', perplexity: 'var(--asst-perplexity)' };
-  const weekXs = weeks.map((w) => ({ key: w.wk, label: w.label, tip: `Week of ${w.day}` }));
-  const weekPts = (k, detail) => Object.fromEntries(weeks.filter((w) => w[k] !== null && w[k] !== undefined).map((w) => [w.wk, { y: Number(w[k]), detail: detail ? detail(w) : undefined }]));
-  const chainRows = [
-    { id: 'rec', label: 'Recommends us with a link', kind: 'pct', title: <>AI assistants recommend us with a link<Info tip={O.chainRec} /></>,
-      series: ['chatgpt', 'gemini', 'perplexity'].map((e) => ({ id: e, name: assistantName(e), color: ASST[e],
-        points: Object.fromEntries(weekRec.filter((r) => r.engine === e && Number(r.n) > 0).map((r) => [r.wk, { y: Number(r.rec) / Number(r.n), detail: `${num(r.rec)} of ${num(r.n)} answers` }])) })) },
-    { id: 'visits', label: 'Visits from AI assistants', kind: 'num', unit: 'visits a week', title: <>Visits from AI assistants<Info tip={O.chainVisits} /></>,
-      series: [{ id: 'visits', name: 'Visits', color: 'var(--accent)', points: weekPts('visits') }] },
-    { id: 'brand', label: 'Searches for our name on Google', kind: 'num', unit: 'searches a week', title: <>Searches for our name on Google<Info tip={O.chainBrand} /></>,
-      series: [{ id: 'brand', name: 'Searches', color: 'var(--accent)', points: weekPts('searches', (w) => `${num(w.clicks)} clicked through`) }] },
-  ];
-  const recFor = (w, e) => { const r = weekRec.find((x) => x.wk === w.wk && x.engine === e); return r && Number(r.n) > 0 ? pct(Number(r.rec) / Number(r.n)) : '–'; };
+  months.forEach((m, i) => { m.brand_searches = extra[i]?.brand_searches ?? null; m.chatgpt_rec_rate = extra[i]?.chatgpt_rec_rate ?? null; });
   // The chain per assistant: recommended with a link (latest run) -> visits -> leads (months shown in the funnel)
   const recBy = Object.fromEntries(recRows.map((r) => [r.engine, r]));
   const chain = ['chatgpt', 'gemini', 'perplexity'].map((e) => ({ engine: e, rec: recBy[e],
@@ -171,26 +151,7 @@ export default async function Overview({ searchParams }) {
         </div>
       </Band>
 
-      <Band n="2" title="Is AI visibility moving the outcomes?" info={O.chain}
-        lead="One timeline, week by week. When assistants recommend us more often (1), visits from them should follow (2). Many people who see us in an AI answer do not click: they search for AI Accountant by name later, which shows up in (3). Point at a week to read all three.">
-        <div className="card">
-          <ChainTrend xs={weekXs} rows={chainRows} />
-          <details className="tableview">
-            <summary>Show every week as a table</summary>
-            <Table columns={[
-              { key: 'day', label: 'Week of', render: (w) => <span className="nowrap">{w.day}</span> },
-              { key: 'chatgpt', label: 'ChatGPT recommends us', num: true, render: (w) => recFor(w, 'chatgpt') },
-              { key: 'gemini', label: 'Gemini recommends us', num: true, render: (w) => recFor(w, 'gemini') },
-              { key: 'perplexity', label: 'Perplexity recommends us', num: true, render: (w) => recFor(w, 'perplexity') },
-              { key: 'visits', label: 'Visits from AI assistants', num: true, render: (w) => (w.visits === null ? '–' : num(w.visits)) },
-              { key: 'searches', label: 'Searches for our name', num: true, render: (w) => (w.searches === null ? '–' : num(w.searches)) },
-              { key: 'clicks', label: 'Clicked through', num: true, render: (w) => (w.clicks === null ? '–' : num(w.clicks)) }]} rows={weeks.slice().reverse()} />
-          </details>
-          <p className="hint ct-foot">We started asking the assistants on 17/11/2026, so chart 1 has few points for now; the pattern becomes readable after three to four weeks of runs. A week still in progress has no count yet. Loaded to: Google Analytics {weeks[0]?.ga4_through ?? '–'} · Search Console {weeks[0]?.brand_through ?? '–'}.</p>
-        </div>
-      </Band>
-
-      <Band n="3" title="Traffic & Conversions" info={F.section(tot)}
+      <Band n="2" title="Traffic & Conversions" info={F.section(tot)}
         lead={<>{period}: AI assistants sent <b>{num(tot.visits)}</b> visits, which became <b>{num(tot.leads)}</b> leads, <b>{num(tot.deals)}</b> deals and <b>{num(tot.won)}</b> customers. <a href="/api/src?k=funnel" target="_blank" rel="noopener noreferrer">See the data behind it</a>.</>}>
         <div className="card">
           <div className="funnel-wrap">
@@ -223,10 +184,11 @@ export default async function Overview({ searchParams }) {
         </div>
       </Band>
 
-      <Band n="4" title="Trends" info={O.trend}
-        lead="One bar per month, oldest on the left. Point at a month to see it in all four charts. A lighter bar is a month with incomplete data, such as the month still in progress.">
+      <Band n="3" title="Trends" info={O.trend}
+        lead="One bar per month, oldest on the left. Read left to right as a chain: ChatGPT recommends us, visits follow, people search for our name, some become leads and deals. Point at a month to see it in every chart. A lighter bar is a month with incomplete data, such as the month still in progress.">
         <div className="card">
-          <Minis charts={[{ title: 'Visits from AI assistants', points: series('visits') }, { title: 'Leads', points: series('leads') },
+          <Minis charts={[{ title: 'ChatGPT recommends us with a link', kind: 'pct', points: series('chatgpt_rec_rate') }, { title: 'Visits from AI assistants', points: series('visits') },
+            { title: 'Searches for our name on Google', points: series('brand_searches') }, { title: 'Leads', points: series('leads') },
             { title: 'Deals', points: series('deals') }, { title: 'Google AI impressions', points: series('google_ai_impressions') }]} />
           <details className="tableview">
             <summary>Show every month as a table</summary>
@@ -234,7 +196,9 @@ export default async function Overview({ searchParams }) {
               { key: 'month', label: 'Month', render: (m) => <span className="nowrap">{monthLabel(m.month)}{m.is_current_month ? <span className="muted"> (so far)</span> : null}</span> },
               { key: 'google_ai_impressions', label: 'Google AI impressions', num: true, info: F.seen(tot), render: (m) => (m.google_ai_impressions === null ? '–' : <>{num(m.google_ai_impressions)}{m.impressions_partial ? <span className="muted"> part</span> : null}</>) },
               { key: 'google_cited_rate', label: 'Google cited', num: true, info: F.cited, render: (m) => (m.google_cited_rate === null ? '–' : pct(m.google_cited_rate)) },
+              { key: 'chatgpt_rec_rate', label: 'ChatGPT recommends us', num: true, info: O.chainRec, render: (m) => (m.chatgpt_rec_rate === null ? '–' : pct(m.chatgpt_rec_rate)) },
               { key: 'visits', label: 'Visits', num: true, info: F.visits(tot), render: (m) => (m.visits === null ? '–' : num(m.visits)) },
+              { key: 'brand_searches', label: 'Searches for our name', num: true, info: O.chainBrand, render: (m) => (m.brand_searches === null ? '–' : num(m.brand_searches)) },
               { key: 'leads', label: 'Leads', num: true, info: F.leads(tot), render: (m) => num(m.leads) },
               { key: 'deals', label: 'Deals', num: true, info: F.deals(tot), render: (m) => num(m.deals) },
               { key: 'won', label: 'Won', num: true, info: F.won(tot), render: (m) => num(m.won) }]} rows={months} />

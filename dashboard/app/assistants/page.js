@@ -3,10 +3,10 @@ import { q } from '@/lib/db';
 import { listRuns, pickRun } from '@/lib/data';
 import { pct, num, date, monthLabel } from '@/lib/format';
 import { Section, Table, RunPicker, TestBanner } from '@/components/ui';
-import { MultiTrend } from '@/components/multi-trend';
+import { ChainTrend } from '@/components/chain-trend';
 import { PromptPanel } from '@/components/prompt-panel';
 import { AssistantIcon, assistantName } from '@/components/assistant';
-import { assistants as A } from '@/lib/glossary';
+import { assistants as A, overview as O } from '@/lib/glossary';
 import { Info } from '@/components/info';
 
 export const dynamic = 'force-dynamic';
@@ -28,15 +28,15 @@ export default async function Assistants({ searchParams }) {
   const run = await pickRun(runs, sp?.run);
   const runId = run?.run_id ?? '';
 
-  const [recAll, visitsBy, leadsBy, span, weekly, prompts, brands, pages, domains] = await Promise.all([
+  const [recAll, visitsBy, leadsBy, span, weekly, prompts, brands, pages, domains, weeks, weekRec] = await Promise.all([
     q`select engine, run_id, run_date, answers, recommended, recommended_rate, recommended_rate_ci_low lo, recommended_rate_ci_high hi, prompts_recommended, prompts
       from public.aeo_asst_recommended_v where run_type <> 'test' or run_id = ${runId} order by run_date, run_id`,
     q`select case when session_source ~* 'chatgpt|chat\\.openai' then 'chatgpt' when session_source ~* 'gemini' then 'gemini' when session_source ~* 'perplexity' then 'perplexity' else 'other' end engine, sum(sessions) visits
       from public.aeo_ga4_ai_monthly where session_source !~* '^openai$' and month >= (select min(month) from public.aeo_funnel_monthly_v) group by 1`,
     q`select lower(assistant) engine, sum(contacts) leads from public.aeo_hubspot_ai_leads_monthly group by 1`,
     q`select min(month) m0, max(month) m1 from public.aeo_funnel_monthly_v`,
-    q`select date_trunc('week', date)::date wk, ai_source engine, sum(sessions) visits, (select max(date) from public.aeo_ga4_ai_traffic_v) through, (select min(date) from public.aeo_ga4_ai_traffic_v) since
-      from public.aeo_ga4_ai_traffic_v where ai_source in ('chatgpt', 'gemini', 'perplexity') group by 1, 2 order by 1`,
+    q`select to_char(date_trunc('week', date), 'YYYY-MM-DD') wk, ai_source engine, sum(sessions) visits
+      from public.aeo_ga4_ai_traffic_v where ai_source in ('chatgpt', 'gemini', 'perplexity') group by 1, 2`,
     q`select m.engine, m.prompt_key, p.prompt_text, coalesce(p.theme, p.topic, '') topic, count(*) n, count(*) filter (where m.mentioned and m.cited) rec
       from public.aeo_asst_mentions_mv m join public.aeo_runs r on r.run_id = m.run_id
       join public.aeo_prompts p on p.list_version = r.prompt_list_version and p.prompt_key = m.prompt_key
@@ -49,6 +49,16 @@ export default async function Assistants({ searchParams }) {
       from public.aeo_asst_our_pages_v c left join public.aeo_ga4_ai_landing_path_v l using (path)
       where c.run_id = ${runId} group by 1, 2 order by 3 desc limit 12`,
     q`select engine, domain, share_of_answers from public.aeo_asst_cited_domains_mv where run_id = ${runId} and share_of_answers >= 0.03`,
+    // the last 16 weeks (Monday start, India time), with branded searches; a week still in progress has no count yet
+    q`with w as (select generate_series(date_trunc('week', now() at time zone 'Asia/Kolkata')::date - 105, date_trunc('week', now() at time zone 'Asia/Kolkata')::date, interval '7 days')::date wk),
+        gx as (select min(date) d0, max(date) d1 from public.aeo_ga4_ai_traffic_v)
+      select to_char(w.wk, 'YYYY-MM-DD') wk, to_char(w.wk, 'DD/MM') label, to_char(w.wk, 'DD/MM/YYYY') as day,
+        b.searches, b.clicks, coalesce(b.full_week, false) brand_full,
+        (w.wk >= gx.d0 and w.wk + 6 <= gx.d1) ga4_full, (w.wk <= gx.d1 and w.wk + 6 >= gx.d0) ga4_any, (w.wk + 6 > gx.d1) ga4_open, to_char(gx.d1, 'DD/MM/YYYY') ga4_through,
+        (select to_char(max(date), 'DD/MM/YYYY') from public.aeo_gsc_brand_daily) brand_through
+      from w cross join gx left join public.aeo_gsc_brand_weekly_v b on b.week_start = w.wk order by 1`,
+    q`select to_char(date_trunc('week', run_date), 'YYYY-MM-DD') wk, engine, sum(recommended) rec, sum(answers) n, count(distinct run_id) runs
+      from public.aeo_asst_recommended_v where run_type <> 'test' and run_status = 'complete' group by 1, 2`,
   ]);
 
   // ---- the chain for the selected run
@@ -58,18 +68,25 @@ export default async function Assistants({ searchParams }) {
   const lBy = Object.fromEntries(leadsBy.map((r) => [r.engine, Number(r.leads)]));
   const period = span[0]?.m0 ? `${monthLabel(span[0].m0)} to ${monthLabel(span[0].m1)}` : '';
 
-  // ---- chart 1: rate per run, one line per assistant
-  const runKeys = [...new Map(recAll.map((r) => [r.run_id, { key: r.run_id, label: date(r.run_date).slice(0, 5), tip: `Run ${r.run_id}, ${date(r.run_date)}` }])).values()];
-  const rateSeries = shown.map((e) => ({ id: e, name: assistantName(e), color: COLOR[e],
-    points: Object.fromEntries(recAll.filter((r) => r.engine === e).map((r) => [r.run_id, { y: Number(r.recommended_rate), detail: `${num(r.recommended)} of ${num(r.answers)} answers` }])) }));
-
-  // ---- chart 2: visits per week, same colours. The week still in progress is left out.
-  const through = weekly[0]?.through ? new Date(weekly[0].through) : null;
-  const since = weekly[0]?.since ? new Date(weekly[0].since) : null;
-  const fullWeeks = weekly.filter((w) => through && since && new Date(w.wk) >= since && new Date(new Date(w.wk).getTime() + 6 * 864e5) <= through);
-  const weekKeys = [...new Map(fullWeeks.map((w) => [date(w.wk), { key: date(w.wk), label: date(w.wk).slice(0, 5), tip: `Week of ${date(w.wk)}` }])).values()];
-  const visitSeries = shown.map((e) => ({ id: e, name: assistantName(e), color: COLOR[e],
-    points: Object.fromEntries(weekKeys.map((k) => [k.key, { y: Number(fullWeeks.find((w) => w.engine === e && date(w.wk) === k.key)?.visits || 0) }])) }));
+  // ---- one weekly timeline: recommended with a link -> visits sent -> searches for our name
+  const one = tab === 'all' ? null : assistantName(tab);
+  const weekXs = weeks.map((w) => ({ key: w.wk, label: w.label, tip: `Week of ${w.day}` }));
+  const recAt = (w, e) => { const r = weekRec.find((x) => x.wk === w.wk && x.engine === e); return r && Number(r.n) > 0 ? r : null; };
+  // the charts draw complete weeks only; the table also shows a week in progress, marked "so far"
+  const visitsAt = (w, e) => (w.ga4_full ? Number(weekly.find((x) => x.wk === w.wk && x.engine === e)?.visits || 0) : null);
+  const soFar = (v, full, open = true) => (full ? num(v) : <>{num(v)}<span className="muted">{open ? ' so far' : ' part week'}</span></>);
+  const visitsCell = (w, e) => (w.ga4_any ? soFar(Number(weekly.find((x) => x.wk === w.wk && x.engine === e)?.visits || 0), w.ga4_full, w.ga4_open) : '–');
+  const chainRows = [
+    { id: 'rec', label: 'Recommends us with a link', kind: 'pct', title: <>{one ? `${one} recommends us with a link` : 'Recommends us with a link'}<Info tip={O.chainRec} /></>,
+      series: shown.map((e) => ({ id: e, name: assistantName(e), color: COLOR[e],
+        points: Object.fromEntries(weeks.filter((w) => recAt(w, e)).map((w) => { const r = recAt(w, e); return [w.wk, { y: Number(r.rec) / Number(r.n), detail: `${num(r.rec)} of ${num(r.n)} answers` }]; })) })) },
+    { id: 'visits', label: 'Visits sent', kind: 'num', unit: 'visits a week', title: <>{one ? `Visits ${one} sent` : 'Visits each assistant sent'}<Info tip={A.visitsTrend} /></>,
+      series: shown.map((e) => ({ id: e, name: assistantName(e), color: COLOR[e],
+        points: Object.fromEntries(weeks.filter((w) => visitsAt(w, e) !== null).map((w) => [w.wk, { y: visitsAt(w, e) }])) })) },
+    { id: 'brand', label: 'Searches for our name on Google', kind: 'num', unit: 'searches a week', title: <>Searches for our name on Google<Info tip={O.chainBrand} /></>,
+      series: [{ id: 'brand', name: 'Searches', color: 'var(--accent)',
+        points: Object.fromEntries(weeks.filter((w) => w.brand_full && w.searches !== null).map((w) => [w.wk, { y: Number(w.searches), detail: `${num(w.clicks)} clicked through` }])) }] },
+  ];
 
   // ---- by prompt, across assistants
   const pm = new Map();
@@ -91,7 +108,6 @@ export default async function Assistants({ searchParams }) {
   // our pages: on one assistant's tab, only the pages that assistant linked to
   const linked = (r) => shown.reduce((t, e) => t + Number(r[e] || 0), 0);
   const pageRows = pages.filter((r) => linked(r) > 0).sort((a, b) => linked(b) - linked(a));
-  const one = tab === 'all' ? null : assistantName(tab);
 
   const head = (e) => <Name id={e} />;
   const cols = (render) => withData.map((e) => ({ key: e, label: head(e), num: true, render: (r) => render(r, e) }));
@@ -138,24 +154,19 @@ export default async function Assistants({ searchParams }) {
         <p className="chain-note">Recommendation rate: run {runId} on {run ? date(run.run_date) : '–'}. Visits (Google Analytics) and leads (HubSpot): {period}. The rate cannot be compared across assistants as a predictor of leads, because far more buyers use ChatGPT; read each assistant against its own earlier runs.</p>
       </Section>
 
-      <div className="grid2">
-        <Section title="Recommendation rate, run by run" info={A.rateTrend} hint={one ? `One point per run for ${one}.` : 'One line per assistant. Gemini and Perplexity joined on 19/11/2026.'}>
-          <MultiTrend xs={runKeys} series={rateSeries} kind="pct" />
-          <details className="tableview">
-            <summary>Show as a table</summary>
-            <Table columns={[{ key: 'label', label: 'Run', render: (x) => x.tip }, ...shown.map((e) => ({ key: e, label: head(e), num: true,
-              render: (x) => { const p = rateSeries.find((s) => s.id === e).points[x.key]; return p ? `${pct(p.y)} (${p.detail})` : '–'; } }))]} rows={runKeys.slice().reverse()} />
-          </details>
-        </Section>
-        <Section title={one ? `Visits ${one} sent, week by week` : 'Visits each assistant sent, week by week'} info={A.visitsTrend} hint={`${one ? '' : 'Same colours as the chart on the left. '}Google Analytics, full weeks only, loaded to ${through ? date(through) : '–'}.`}>
-          <MultiTrend xs={weekKeys} series={visitSeries} kind="num" />
-          <details className="tableview">
-            <summary>Show as a table</summary>
-            <Table columns={[{ key: 'label', label: 'Week of', render: (x) => x.key }, ...shown.map((e) => ({ key: e, label: head(e), num: true,
-              render: (x) => num(visitSeries.find((s) => s.id === e).points[x.key]?.y ?? 0) }))]} rows={weekKeys.slice().reverse()} />
-          </details>
-        </Section>
-      </div>
+      <Section title="Week by week: recommended, then visited, then searched for" info={O.chain}
+        hint={`One timeline. When ${one || 'an assistant'} recommends us more often (1), the visits it sends should follow (2). People who see us in an answer but do not click often search for AI Accountant by name later (3); that count covers all assistants together. Point at a week to read all three.`}>
+        <ChainTrend xs={weekXs} rows={chainRows} />
+        <details className="tableview">
+          <summary>Show every week as a table</summary>
+          <Table columns={[{ key: 'day', label: 'Week of', render: (w) => <span className="nowrap">{w.day}</span> },
+            ...shown.map((e) => ({ key: `r_${e}`, label: `${assistantName(e)} recommends us`, num: true, render: (w) => { const r = recAt(w, e); return r ? pct(Number(r.rec) / Number(r.n)) : '–'; } })),
+            ...shown.map((e) => ({ key: `v_${e}`, label: `${assistantName(e)} visits`, num: true, render: (w) => visitsCell(w, e) })),
+            { key: 'searches', label: 'Searches for our name', num: true, render: (w) => (w.searches === null ? '–' : soFar(w.searches, w.brand_full)) },
+            { key: 'clicks', label: 'Clicked through', num: true, render: (w) => (w.clicks === null ? '–' : soFar(w.clicks, w.brand_full)) }]} rows={weeks.slice().reverse()} />
+        </details>
+        <p className="hint ct-foot">We started asking the assistants on 17/11/2026 (Gemini and Perplexity on 19/11/2026), so chart 1 has few points for now; the pattern becomes readable after three to four weeks of runs. Each point pools every run of that week. A week still in progress is left off the charts and marked "so far" in the table. Loaded to: Google Analytics {weeks[0]?.ga4_through ?? '–'} · Search Console {weeks[0]?.brand_through ?? '–'}.</p>
+      </Section>
 
       <Section title="Which questions get us recommended" info={A.byPrompt}
         hint={`Answers that recommend us with a link, out of answers collected. At least one assistant does so on ${num(promptsHit)} of ${num(promptRows.length)} questions; the rest are the gap. Click a question to see every page the answers cited.`}>

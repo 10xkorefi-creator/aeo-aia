@@ -1,16 +1,17 @@
 'use client';
 import { useState } from 'react';
 
-const fmt = (v) => Number(v).toLocaleString('en-IN');
-const compact = (v) => (v >= 100000 ? `${(v / 100000).toFixed(1)}L` : v >= 1000 ? `${(v / 1000).toFixed(1)}K` : String(v));
+const fmtNum = (v) => Number(v).toLocaleString('en-IN');
+const compactNum = (v) => (v >= 100000 ? `${(v / 100000).toFixed(1)}L` : v >= 1000 ? `${(v / 1000).toFixed(1)}K` : String(v));
+const fmtPct = (v) => `${(Number(v) * 100).toFixed(1)}%`;
 
 // Small monthly column charts that share one hover: pointing at a month in any chart highlights that month in all of
-// them and shows each chart's figure for it. charts: [{ title, points: [{ label, value (null = no data), partial }] }], oldest first.
+// them and shows each chart's figure for it. charts: [{ title, kind ('pct' for a share between 0 and 1), points: [{ label, value (null = no data), partial }] }], oldest first.
 // Bars use the AiA accent (this is our own data); a month with incomplete data is a lighter tint. The table below has every figure.
 export function Minis({ charts }) {
   const [active, setActive] = useState(null);
   return (
-    <div className="minis" onMouseLeave={() => setActive(null)}>
+    <div className={`minis${charts.length > 4 ? ' six' : ''}`} onMouseLeave={() => setActive(null)}>
       {charts.map((c) => <Mini key={c.title} chart={c} active={active} setActive={setActive} />)}
     </div>
   );
@@ -18,11 +19,13 @@ export function Minis({ charts }) {
 
 function Mini({ chart, active, setActive }) {
   const { title, points } = chart;
+  const share = chart.kind === 'pct', fmt = share ? fmtPct : fmtNum, compact = share ? fmtPct : compactNum;
   const vals = points.filter((p) => p.value !== null);
   if (!vals.length) return null;
-  const max = Math.max(1, ...vals.map((p) => p.value));
+  const max = share ? Math.max(0.0001, ...vals.map((p) => p.value)) : Math.max(1, ...vals.map((p) => p.value));
   const full = points.filter((p) => p.value !== null && !p.partial);
-  const latest = full[full.length - 1];
+  // no complete month yet (a figure that only started this month): show the month so far
+  const latest = full[full.length - 1] ?? vals[vals.length - 1];
   const peak = vals.reduce((m, p) => (p.value > m.value ? p : m), vals[0]);
   const shown = active !== null ? points[active] : latest;
   return (

@@ -430,3 +430,10 @@ Build
 Open
 - GA4 daily visits are still loaded by hand (to 13/11/2026), so chart 2 lags until that is automated.
 - Branded search also moves with ads, events, outreach and word of mouth; it is a sign, not proof.
+
+## 20 Nov 2026: Branded search folded into Trends; weekly timeline moved
+
+- Overview: the separate section "Is AI visibility moving the outcomes?" is removed. Trends (now section 3) has six monthly charts read as a chain: ChatGPT recommends us with a link, visits from AI assistants, searches for our name on Google, leads, deals, Google AI impressions. The monthly table has the two new columns.
+- AI assistants page: the two side-by-side charts (rate per run, weekly visits) are replaced by one weekly timeline of three stacked charts on a shared axis: recommends us with a link, visits sent (same colour per assistant), searches for our name. Each weekly rate pools every run of that week.
+- Charts draw complete weeks only. The table also shows incomplete weeks, marked "so far" (week in progress) or "part week" (data started mid-week).
+- Code now lives in GitHub (10xkorefi-creator/aeo-aia, public); dashboard edits are made in the repository copy and deployed from there.
