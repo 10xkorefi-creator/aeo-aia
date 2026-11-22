@@ -483,3 +483,31 @@ Automation
 - Run of 21/11: ChatGPT 5.3%, likely 2.4% to 11.3% (was 3.0 to 9.0); Gemini 5.7%, 3.2% to 10.0% (was 3.4 to 9.5); Perplexity 19.3%, 12.1% to 29.4% (was 14.7 to 24.9). Perplexity's 228 answers are worth about 78 independent ones.
 - AI assistants page: each card shows the likely range; the Perplexity card says it is collected through the API, not the app. Three answers per question kept (user decision).
 - Not yet done: the same correction for Google AI Overviews (its 4 searches per keyword also move together).
+
+## 22 Nov 2026: Goal 2 delivered as a Recommendations tab
+
+Where: https://aia-aeo-dashboard.vercel.app/recommendations (a recommendation opens with ?rec=REC-1 and so on).
+
+How it is built
+- Written analysis: docs/recommendations.py, loaded into table aeo_recommendations (title, summary, body: opportunity, evidence, winners, why, actions, change, measure, risks; plus the question keys and keyword ids behind each).
+- Live evidence: the page reads the run tables for those questions and keywords, so the tables under each recommendation show the latest run, with earlier runs beside it.
+- List grouped as Start here, Next, Later, Not now, Tracking fix; clicking a row opens a side panel.
+
+Ranking rule: buyer value, then assistant (ChatGPT first: 75 of 94 AI leads), then how close we are, then effort, then stability across runs. The unit is a topic, not a single question. Changed after re-reading The Prompting Company: rank topics, let the citation mix decide own-site against outside pages, rank named-need questions above generic ones, add comparison pages.
+
+The nine recommendations (run of 21/11/2026 unless stated)
+1. REC-1 Start: "which tool for Tally" questions on ChatGPT. 0 of 30 answers recommend us on ten questions; ChatGPT cited no aiaccountant.com page on them; Docs by Ira named in 46 of 78 Tally answers; cited pages are Tally help pages, a 435-word Tally iRA tutorial (29 ChatGPT answers) and small add-on homepages. Action: one page per question.
+2. REC-2 Start: ChatGPT cites our comparison pages and names other tools. Linked in 40 of 48 answers over four runs on four questions, named in 0. Its shortlist includes four tools from our own table. Action: factual verdicts on both pages, price on the GST product page, three directory listings.
+3. REC-3 Next: "alternatives" questions for Docs by Ira and Vyapar TaxOne. Named in 10 of 27 answers, linked in 1; cited pages are rivals' compare pages and G2, Capterra, Slashdot alternatives pages.
+4. REC-4 Next: lists quoted for "best AI accounting software in India". On 1 of the 4 most-cited lists (flickai.in yes; zoffer.in, skillopediagroup.com, appadvisor.in no). 0 of 81 answers on nine questions.
+5. REC-5 Next: Google, AI tools for chartered accountants. Page one on six keywords (470 searches a month), AI Overview links to us in 0 of 24 searches.
+6. REC-6 Later: six Tally searches on Google, 6,500 a month, we are not on page one.
+7. REC-7 Later: Tally how-to questions, 0 of 30 ChatGPT answers name us; lower buying intent; control group for REC-1.
+8. REC-8 Not now: generic invoice OCR and accounts payable questions, 0 of 72 answers; global vendors win.
+9. REC-9 Tracking fix: about ten brands ChatGPT recommends (ClearTax, Masters India, KDK Spectrum, IRIS Sapphire, Winman, TallyConnects, InvoiceAI, udiMagic, Excel2Tally, Quick2Tally) are not on the competitor list.
+
+Limits to state in the review
+- Four runs over five days (two for Gemini and Perplexity).
+- "Why they win" is our reading of the cited pages; the data shows who is cited and named, not why.
+- Cited pages were read on 22/11/2026 by fetching them; SaaSworthy blocked the request.
+- Product claims on new pages (what Docs by Ira cannot do, prices) need the product team's check.

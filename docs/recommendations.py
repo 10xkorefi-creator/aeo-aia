@@ -1,0 +1,413 @@
+#!/usr/bin/env python3
+"""Goal 2: the ranked AEO recommendations, as data.
+
+Each recommendation is written from the baseline runs (17, 18, 19 and 21 Nov 2026). The numbers quoted in `evidence`
+were read from the run tables on 22 Nov 2026; the questions and keywords listed in prompt_keys / keyword_ids are shown
+live on the dashboard, so the table under each recommendation always reflects the latest run.
+
+Usage:  python3 recommendations.py > recommendations.json
+Then load into Supabase table aeo_recommendations (upsert on rec_key):
+  curl -X POST "https://<project>.supabase.co/rest/v1/aeo_recommendations?on_conflict=rec_key" \
+    -H "Content-Type: application/json" -H "Prefer: resolution=merge-duplicates" --data-binary @recommendations.json
+"""
+import json
+
+RUN = "R20261121-S1"
+RECS = [
+    {
+        "rec_key": "REC-1", "rank": 1, "grp": "start",
+        "title": "Win the “which tool for Tally” questions on ChatGPT",
+        "summary": "Buyers ask ChatGPT for a tool that puts bank statements and invoices into Tally. It answers with Tally's own Docs by Ira and a few small add-ons, and never with us.",
+        "headline": "0 of 30 ChatGPT answers recommend us",
+        "topic": "Tally automation", "play": "New answer pages", "assistants": ["chatgpt"],
+        "effort": "5 to 10 new pages", "value": "High", "closeness": "Reachable",
+        "prompt_keys": ["P002", "P010", "P007", "P011", "S002", "S003", "S004", "P001", "P072", "P076"], "keyword_ids": [],
+        "body": {
+            "opportunity": "Nine in ten of our customers run Tally, and manual data entry is the problem they most often arrive with. When a buyer asks ChatGPT which tool can put bank statements or invoices into Tally, the answer is Tally's own built-in AI (Docs by Ira) plus a few small add-ons. AI Accountant is not in it. Perplexity, which does find our Tally pages, recommends us on four of the same ten questions, so our content can win these once an assistant finds it.",
+            "evidence": [
+                "On these ten questions ChatGPT recommended us with a link in 0 of 30 answers in the run of 21/11/2026. It named us without a link in 3.",
+                "ChatGPT did not cite a single aiaccountant.com page on any of the ten questions.",
+                "Across the whole Tally topic (26 questions, 78 ChatGPT answers), Docs by Ira was named in 46 answers and Vyapar TaxOne in 8. AI Accountant was named in 10.",
+                "“Any AI tool for bank statement to Tally entries?” has not named us in any of 14 ChatGPT answers over four runs.",
+                "Perplexity recommended us in all three answers on four of the same ten questions, citing our homepage, the bookkeeping product page and a Tally tools blog post.",
+                "From HubSpot: 92% of customers use Tally, and 47% name manual data entry as their main problem.",
+            ],
+            "winners": [
+                {"url": "https://help.tallysolutions.com/bank-statement/", "who": "Tally's own help pages", "note": "Five Tally help pages are each cited in 10 to 12 of the 30 answers. The two we read are short how-to pages (685 and 1,109 words) that end with a questions-and-answers block."},
+                {"url": "https://tallykipathshala.com/blog/tally-ira-pdf-scan-feature-pdf-se-direct-tally-entry-kaise-kare", "who": "A Tally training blog", "note": "A 435-word post about Tally's new PDF scan feature in TallyPrime 7.1. Cited in 13 of the 30 answers, and in 29 ChatGPT answers across the Tally topic."},
+                {"url": "https://tallyconnects.com/", "who": "Small Tally add-ons", "note": "The homepages of TallyConnects, LedgerXpert and Maxxit are cited in 6 to 7 answers each. ChatGPT names add-ons like these as options next to Docs by Ira."},
+            ],
+            "why": [
+                "Tally now has the feature built in. Since TallyPrime 7.1, Docs by Ira reads PDF invoices and bank statements, so ChatGPT treats the official feature as the default answer and names it first.",
+                "The cited pages match the task in their title. A 435-word post is cited 29 times because it is about exactly the feature being asked for, not because it is thorough.",
+                "The add-ons that get named each have a page that states one job plainly. Our pages on these jobs are long guides, and ChatGPT cited none of them on these ten questions.",
+            ],
+            "actions": [
+                "Publish one page per question on aiaccountant.com, with the buyer's question as the title. Start with five: bank statement to Tally, PDF invoice to Tally, Excel to Tally, best Tally automation software, and bank reconciliation in Tally for a small business.",
+                "Build each page like the pages that win today: the direct answer in the first lines, the steps in Tally itself, then a short section on where the built-in feature stops and what AI Accountant adds, with the price.",
+                "Have the product team confirm every statement about what Docs by Ira does and does not do before publishing.",
+                "Link each new page from the Tally product page and list it in the sitemap.",
+            ],
+            "change": [
+                "ChatGPT picks sources whose title matches the task. One page per task gives it a page of ours to pick.",
+                "This is the method The Prompting Company reports for Magic Patterns: one page per buyer question on the customer's own site, modelled on the pages already cited. They report that nine in ten of those pages were cited (their figure, with no control group).",
+                "Our own runs show the pattern already works for us. Where the question states a need beyond the built-in feature (“I don't want to move away from Tally…”, “is there an AI extension for Tally Prime?”), ChatGPT recommends us today.",
+            ],
+            "measure": [
+                "Main figure: ChatGPT recommends us with a link on these ten questions. Today: 0 of 30 answers. Target: at least 2 of 3 answers on four or more questions, held for two runs in a row.",
+                "Early sign: each new page shows up as a cited page when you click its question on the AI assistants page.",
+                "Control: the Tally how-to questions in REC-7, which we leave alone, should not move.",
+            ],
+            "risks": [
+                "Tally's own pages are the strongest source on Tally questions and will stay cited. The aim is to be named next to Docs by Ira, not instead of it.",
+                "Why ChatGPT skips our existing pages is our reading of the cited pages, not something the data proves.",
+            ],
+        },
+    },
+    {
+        "rec_key": "REC-2", "rank": 2, "grp": "start",
+        "title": "Get AI Accountant named where ChatGPT already uses our comparison pages",
+        "summary": "ChatGPT cites our own “best GSTR-2B software” and “best manufacturing software” pages as a source, then recommends the other tools listed on them.",
+        "headline": "Linked in 40 of 48 answers, named in 0",
+        "topic": "GST reconciliation", "play": "Edit pages, add listings", "assistants": ["chatgpt"],
+        "effort": "Edit 2 pages, 3 listings", "value": "High", "closeness": "Closest",
+        "prompt_keys": ["P039", "P040", "S008", "P067", "P083", "S006"], "keyword_ids": [],
+        "body": {
+            "opportunity": "On four buyer questions ChatGPT already reads our page almost every time it answers. It then recommends ClearTax, TallyPrime, Zoho Books and others, and leaves us out. This is the cheapest gap to test: ChatGPT does not need to discover us, it only needs a reason to name us.",
+            "evidence": [
+                "“Best GSTR 2B reconciliation software?”: our comparison page was a cited source in 13 of 14 ChatGPT answers over four runs. AI Accountant was named in none.",
+                "“Best GST reconciliation software in India?”: cited in 12 of 14 answers, named in none.",
+                "“We have a 6 member finance team on Tally and spend days every month on GSTR-2B…”: cited in 5 of 6 answers, named in none.",
+                "“Best accounting software for manufacturing business in India”: our manufacturing page was cited in 10 of 14 answers, named in none.",
+                "In the answers we read, ChatGPT's shortlist was ClearTax, Masters India, TallyPrime, KDK Spectrum, IRIS Sapphire, Winman and Zoho Books. Four of those (ClearTax, Winman, KDK Spectrum and IRIS Sapphire) are rows in our own comparison table, where AI Accountant is the first row.",
+                "When the question says what we are, we are named more often. In the latest run: 1 of 3 answers on “best AI tool for GSTR 2B reconciliation?”, and 3 of 3 on the manufacturing question that mentions AI and Tally (2 of 3 in the run before).",
+            ],
+            "winners": [
+                {"url": "https://cleartax.in/gst", "who": "ClearTax's own product page", "note": "Cited in 9 ChatGPT answers on GST questions. ClearTax is ChatGPT's first pick."},
+                {"url": "https://www.saasworthy.com/product/cleartax-gst-software", "who": "A software directory listing for ClearTax", "note": "Cited in 5 answers. An independent page that confirms the product. We could not open it to read it (the site blocked the request)."},
+                {"url": "https://themunim.com/blog/best-gstr-2b-reconciliation-software-in-depth-comparison/", "who": "A competitor's comparison post", "note": "1,524 words with one comparison table. Cited in 6 ChatGPT answers. It does not list AI Accountant."},
+                {"url": "https://www.aiaccountant.com/blog/gstr-2b-reconciliation-tools-guide", "who": "Our own comparison page", "note": "2,456 words, last updated 21/07/2026. Cited in 12 ChatGPT answers in the latest run. AI Accountant is the first row of its table, from ₹500 a month."},
+            ],
+            "why": [
+                "The tools ChatGPT names are confirmed by more than one source: their own product page, a directory listing, and comparison posts written by other companies. AI Accountant appears only on our own site, so it reads as the publisher's claim.",
+                "Our page describes the other tools with facts and us with praise. Its key takeaways say AI Accountant “sets a new standard with advanced matching algorithms”, while the rows for other tools give the data method, the matching and the price.",
+                "Broad “best software” questions go to the well-known names. Our runs show we are named when the question states the need we serve.",
+            ],
+            "actions": [
+                "Rewrite the top of both pages: a one-line verdict for each tool, ours included, stated as fact (who it suits, how it gets the data, starting price).",
+                "Add the facts ChatGPT quotes to the GST reconciliation product page: the price, what it matches, and the Tally integration. The page shows no price today.",
+                "Get AI Accountant listed on three independent pages of the kind ChatGPT already cites: the software directories it uses (SaaSworthy, SoftwareSuggest, Techjockey) in the GST software category.",
+                "Show the new update date on both pages.",
+            ],
+            "change": [
+                "ChatGPT already retrieves these pages, so the result shows within one or two runs, with no wait to be discovered.",
+                "Independent listings give ChatGPT the second and third source it already has for every tool it names today.",
+            ],
+            "measure": [
+                "Main figure: AI Accountant named and linked on the four questions. Today: 0 of 12 ChatGPT answers in the latest run, and 0 of 48 over four runs. Target: 2 of 3 answers on at least two of the questions, held for two runs in a row.",
+                "Do the page edits first and the listings second, two runs apart, so we can tell which of the two moved the figure.",
+                "Control: the two questions where we are already named should stay where they are.",
+            ],
+            "risks": [
+                "The explanation (ChatGPT discounts a brand that only its own site vouches for) fits the evidence but is not proven. The page edit alone may not be enough.",
+                "Directory listings take time to be approved and to be picked up.",
+            ],
+        },
+    },
+    {
+        "rec_key": "REC-3", "rank": 3, "grp": "next",
+        "title": "Be the linked answer on “alternatives” questions about Docs by Ira and Vyapar TaxOne",
+        "summary": "Buyers comparing us with two rivals get answers built from other companies' “alternatives” pages. We are sometimes named and almost never linked.",
+        "headline": "Named in 10 of 27 answers, linked in 1",
+        "topic": "Competitor comparisons", "play": "Comparison pages", "assistants": ["chatgpt", "gemini", "perplexity"],
+        "effort": "2 pages, 2 profiles", "value": "High", "closeness": "Reachable",
+        "prompt_keys": ["C007", "C002", "C001"], "keyword_ids": [],
+        "body": {
+            "opportunity": "Someone asking for an alternative to a rival is close to buying. Docs by Ira is the rival ChatGPT names most on Tally questions, and Vyapar TaxOne (formerly Suvit) is the add-on it names next. We are sometimes named as an alternative, but the answer almost never links to us, so the buyer has nowhere to go.",
+            "evidence": [
+                "“Docs by Ira alternatives for Tally Prime?”: named in 7 of 9 answers across the three assistants, linked in 1.",
+                "“Vyapar TaxOne alternatives?”: ChatGPT named us in 2 of 3 answers with no link. Gemini and Perplexity did not name us.",
+                "“Best Suvit alternatives?”: named in 1 of 9 answers, linked in none.",
+                "Across the three questions the assistants cited one aiaccountant.com page once: our homepage. Our Vyapar TaxOne comparison page and our Docs by Ira page were not cited.",
+                "Docs by Ira was named in 46 of 78 ChatGPT answers on Tally questions.",
+            ],
+            "winners": [
+                {"url": "https://potionlabs.ai/blog/docs-by-ira-ai-accountant-alternatives/", "who": "A rival's “alternatives” post", "note": "Cited in 7 of 9 answers on the Docs by Ira question, by all three assistants. Its address names both Docs by Ira and AI Accountant."},
+                {"url": "https://www.g2.com/products/vyapar-taxone/competitors/alternatives", "who": "G2's alternatives page for Vyapar TaxOne", "note": "Cited in 5 of 9 answers on the Vyapar TaxOne question. Capterra and Slashdot alternatives pages are cited too."},
+                {"url": "https://hellobooks.ai/compare/suvit", "who": "Rivals' own compare pages", "note": "hellobooks.ai/compare/suvit and greenote.app/compare/suvit-alternative are each cited in 4 of 9 answers on the Suvit question. orderdak.com/vs/docs-by-ira and ashna.ai's compare page are cited on the Docs by Ira question."},
+            ],
+            "why": [
+                "Every cited page is built for this exact question: its address or title says “alternatives” or “vs” followed by the rival's name.",
+                "Review sites (G2, Capterra, Slashdot) publish an alternatives page for each product. A product with a profile there appears on its rivals' pages.",
+                "Our comparison page is filed as a blog post titled “Vyapar TaxOne (Suvit) vs AI Accountant: Feature Comparison and Use Cases” and was last updated on 14/07/2026. It was not cited on any of these questions.",
+            ],
+            "actions": [
+                "Rework the two pages as alternatives pages: “Docs by Ira alternatives” and “Vyapar TaxOne (Suvit) alternatives”, each listing several real options fairly, with AI Accountant among them, a comparison table and prices.",
+                "Create or complete AI Accountant's profiles on G2 and Capterra in the same category as Vyapar TaxOne, so we appear on its alternatives pages.",
+                "Read the Potion Labs post that names us and check how it describes AI Accountant. Ask for corrections where it is wrong.",
+            ],
+            "change": [
+                "The assistants are already willing to name us on these questions. A page that matches the question gives them something of ours to link to.",
+                "The Prompting Company did the same for Magic Patterns: head-to-head pages against the two tools its buyers weighed it against.",
+            ],
+            "measure": [
+                "Main figure: answers that name us and link to us on the three questions. Today: 1 of 27. Target: linked in at least 3 of 9 answers on two of the questions, held for two runs in a row.",
+                "Early sign: the reworked pages appear as cited pages for these questions.",
+            ],
+            "risks": [
+                "These are three questions, so a single answer moves the figure a lot. Judge it over two runs.",
+                "G2 and Capterra profiles need customer reviews to rank on alternatives pages, which takes time.",
+            ],
+        },
+    },
+    {
+        "rec_key": "REC-4", "rank": 4, "grp": "next",
+        "title": "Get onto the lists the assistants quote for “best AI accounting software in India”",
+        "summary": "On broad category questions the assistants build their shortlist from a handful of list posts. We are on one of the four most cited.",
+        "headline": "On 1 of the 4 most-cited lists",
+        "topic": "AI accounting (broad)", "play": "Other people's pages", "assistants": ["chatgpt", "gemini", "perplexity"],
+        "effort": "Outreach to 3 sites", "value": "Medium", "closeness": "Far",
+        "prompt_keys": ["P030", "P029", "P079", "P080", "P081", "P031", "P032", "P027", "P033"], "keyword_ids": [],
+        "body": {
+            "opportunity": "Broad questions such as “best AI accounting software in India?” are answered from list posts on other companies' sites. The brands that appear on several of those lists get named. We appear on one. Getting onto the others is the only way into these answers, because our own pages are 2% of what is cited on this topic.",
+            "evidence": [
+                "On these nine category questions we were recommended with a link in 0 of 81 answers across the three assistants in the run of 21/11/2026.",
+                "87% of the pages cited on this topic are neither ours nor a tracked competitor's. Ours are 2%.",
+                "flickai.in's list is cited in 30 answers (ChatGPT 15, Gemini 6, Perplexity 9) across 8 questions. It lists us.",
+                "zoffer.in's list is cited in 19 answers across 8 questions. It does not list us.",
+                "skillopediagroup.com's list is cited in 13 ChatGPT answers across 8 questions. It does not list us.",
+                "appadvisor.in's price comparison is cited in 10 ChatGPT answers across 6 questions. It does not list us.",
+            ],
+            "winners": [
+                {"url": "https://flickai.in/resources/best-ai-accounting-software-india-startups/", "who": "A vendor's list of 10 tools", "note": "5,634 words with a comparison table and Indian prices. It says: “AI Accountant and Vyapar TaxOne add automation on top of Tally or Zoho.”"},
+                {"url": "https://zoffer.in/guides/best-ai-accounting-software-india/", "who": "A vendor's list of 8 tools", "note": "2,964 words with a comparison table and a price for each tool. Lists Suvit (Vyapar TaxOne). Does not mention AI Accountant."},
+                {"url": "https://skillopediagroup.com/best-ai-tools-for-accountants/", "who": "A training company's top 10", "note": "4,467 words with two tables and prices. Lists Vyapar TaxOne and ClearTax. Does not mention AI Accountant."},
+                {"url": "https://appadvisor.in/blogs/best-accounting-software-india-prices-compared", "who": "A software marketplace's price comparison", "note": "2,235 words with two tables. Covers TallyPrime, Zoho Books, BUSY, Vyapar, Marg. Does not mention AI Accountant."},
+            ],
+            "why": [
+                "The assistants name the brands that appear on several lists. Vyapar TaxOne is on three of these four; we are on one.",
+                "Every one of these lists shows a price for each tool, and the assistants repeat those prices in their answers.",
+                "The one list that includes us describes us as we would want, which shows the entry itself works once it exists.",
+            ],
+            "actions": [
+                "Contact Zoffer, Skillopedia and AppAdvisor with a ready entry: what AI Accountant does, who it is for, that it works on top of Tally, and the starting price.",
+                "Publish a clear starting price on our own pricing and product pages, so list authors and assistants can quote it.",
+                "Check the Flick AI entry twice a year and send corrections when the product changes.",
+            ],
+            "change": [
+                "These four pages are the sources behind the answers. Appearing on three of four puts us level with Vyapar TaxOne on this topic.",
+                "The Prompting Company found the same in its Magic Patterns work: 79% of citations in that category came from other companies' blog posts, not from the vendors.",
+            ],
+            "measure": [
+                "Main figure: answers that recommend us with a link on these nine questions. Today: 0 of 81. Target: recommended on at least two questions, held for two runs.",
+                "Early sign: AI Accountant appears on the list page itself. This has to be checked by hand.",
+            ],
+            "risks": [
+                "It depends on other site owners. Zoffer and Flick AI sell their own accounting products and may decline or rank themselves first.",
+                "These are the hardest questions to win: the default answers are Zoho Books and TallyPrime.",
+            ],
+        },
+    },
+    {
+        "rec_key": "REC-5", "rank": 5, "grp": "next",
+        "title": "Update our “AI tools for chartered accountants” page so Google's AI Overview links to it",
+        "summary": "We are on page one of Google for six CA searches, and the AI Overview above the results links to other pages every time.",
+        "headline": "Page one on 6 keywords, linked on 0",
+        "topic": "CA firms (Google)", "play": "Edit a page", "assistants": ["google"],
+        "effort": "Edit 1 page", "value": "Medium", "closeness": "Close",
+        "prompt_keys": ["P054"], "keyword_ids": ["K024", "K072", "K122", "K074", "K123", "K125"],
+        "body": {
+            "opportunity": "For six searches about AI tools for chartered accountants, we already rank between first and eighth in Google's normal results. Google shows an AI Overview on every one of them and never links to us in it. CA firms are 16% of our customers. One page edit is the whole job.",
+            "evidence": [
+                "The six keywords total 470 searches a month in India: “accounting ai tools” (150, we rank 1), “ai for chartered accountants” (150, rank 7), “ai tools for chartered accountants” (100, rank 5), “ca tools” (40, rank 6), “free ai tools for chartered accountants” (20, rank 2) and “automation tools for chartered accountants” (10, rank 4).",
+                "Google showed an AI Overview in all 24 searches (4 per keyword) and linked to us in none.",
+                "On ChatGPT the topic already works for us: “free AI tools for chartered accountants?” recommends us in 3 of 3 answers.",
+            ],
+            "winners": [
+                {"url": "https://ai.icai.org/usecases.php", "who": "The CA institute's own AI page", "note": "Cited in 9 of the 24 searches, across 3 keywords."},
+                {"url": "https://coraa.ai/blog/best-free-tools-for-ca-firms-2026", "who": "A vendor's list of 25+ free tools", "note": "3,129 words, titled with 2026, headings written as the searcher's questions, one master table. Cited in 8 searches. Does not mention AI Accountant."},
+                {"url": "https://prokhata.com/50-ai-tools-every-chartered-accountant-should-know-2026-guide/", "who": "A list of 50 AI tools", "note": "789 words, titled “2026 Guide”. Cited in 4 searches. Does not mention AI Accountant."},
+                {"url": "https://www.aiaccountant.com/blog/best-ai-tools-for-ca-in-india", "who": "Our own page", "note": "3,557 words, last updated 18/08/2026. The title has no year, and one section is still headed “Best AI Tools for CA in India (2025)”."},
+            ],
+            "why": [
+                "The list posts Google cites carry 2026 in the title and cover many tools, including free ones. Ours has no year in the title and a section dated 2025.",
+                "The most cited vendor post uses the searcher's question as each heading, followed by a direct answer.",
+                "Google also leans on the professional body (ICAI) and on LinkedIn, Instagram and YouTube posts for this topic. We cannot replace those, but we can sit beside them.",
+            ],
+            "actions": [
+                "Update the page: put 2026 in the title and headings, and add an at-a-glance table at the top.",
+                "Add a section on free tools, since one of the six keywords asks for them.",
+                "Rewrite the main headings as the questions people search, each followed by a two-line answer.",
+                "Confirm in Search Console which of our pages ranks for these keywords before editing.",
+            ],
+            "change": [
+                "We already rank, so Google already trusts the page for these searches. The edit makes it look like the pages its AI Overview picks.",
+            ],
+            "measure": [
+                "Main figure: searches where the AI Overview links to us on these six keywords. Today: 0 of 24. Target: linked on at least three keywords, held for two runs.",
+                "Watch that our normal Google rank on these keywords does not fall after the edit.",
+            ],
+            "risks": [
+                "We assume the page that ranks is the CA tools blog post. The run records our rank, not which page holds it.",
+                "Google does not report clicks from AI Overviews, so a win here cannot be tied to visits or leads.",
+            ],
+        },
+    },
+    {
+        "rec_key": "REC-6", "rank": 6, "grp": "later",
+        "title": "High-volume Tally searches on Google where we are not on page one",
+        "summary": "Six Tally searches with 6,500 searches a month show an AI Overview. We are not on page one for any, so there is no page of ours for Google to pick.",
+        "headline": "6,500 searches a month, not on page one",
+        "topic": "Tally automation (Google)", "play": "Search ranking first", "assistants": ["google"],
+        "effort": "Slow: ranking work", "value": "High", "closeness": "Far",
+        "prompt_keys": [], "keyword_ids": ["K047", "K042", "K114", "K046", "K116", "K037"],
+        "body": {
+            "opportunity": "The largest Tally searches we track are “tally tools”, “excel to tally”, “tally ira”, “purchase entry in tally”, “tally on mobile” and “tally ai”. Google shows an AI Overview on all of them. We are not in the first page of normal results for any, so this is search-ranking work before it is AI work, and it is slower than the items above.",
+            "evidence": [
+                "The six keywords total 6,500 searches a month in India: “tally tools” 2,200, “excel to tally” 1,100, “tally ira” 1,000, “purchase entry in tally” 900, “tally on mobile” 800 and “tally ai” 500.",
+                "Google showed an AI Overview on every search and linked to us in none. We were not found on page one for any of the six.",
+                "The pages cited are Tally's own (the Excel import page, the Tally Ira page, help pages) and small add-on sites such as talligence.in and excel4tally.com.",
+                "“Tally tools” is partly a different search: Google also cites tally.so, a form builder with the same name.",
+            ],
+            "winners": [
+                {"url": "https://tallysolutions.com/tally/import-data-from-excel-to-tallyprime/", "who": "Tally's own page", "note": "Cited in 8 of the 24 searches, on 2 keywords."},
+                {"url": "https://tallysolutions.com/tally-ira/", "who": "Tally's page for its own AI", "note": "1,637 words with prices and a long questions-and-answers section. Cited in 7 searches."},
+                {"url": "https://talligence.in/", "who": "A small Tally add-on", "note": "Its homepage is cited in 8 searches, on 2 keywords."},
+            ],
+            "why": [
+                "These are searches for Tally itself or for one narrow job in Tally. Tally's own pages and single-purpose add-ons match them most closely.",
+                "We have no page ranking for them, so Google has nothing of ours to cite.",
+            ],
+            "actions": [
+                "Do not start separate work. Build the REC-1 pages (Excel to Tally, purchase entry, Tally AI tools) so that each also targets the matching search here.",
+                "Review these six keywords one month after the REC-1 pages go live.",
+            ],
+            "change": [
+                "One page per job can serve both the assistant question and the Google search, so REC-1 pays for this as well.",
+            ],
+            "measure": [
+                "First: our normal Google rank on these six keywords (today: not on page one). Then: AI Overview links to us (today: 0 of 24 searches).",
+            ],
+            "risks": [
+                "Ranking for a 2,200-search keyword against Tally's own site may not be realistic. “Excel to tally” and “purchase entry in tally” are the likelier wins.",
+            ],
+        },
+    },
+    {
+        "rec_key": "REC-7", "rank": 7, "grp": "later",
+        "title": "Tally how-to questions: answered from Tally's help pages",
+        "summary": "When someone asks how to do a task in Tally, ChatGPT gives Tally's own steps. These askers are doing it themselves, so buying intent is lower.",
+        "headline": "0 of 30 ChatGPT answers name us",
+        "topic": "Tally automation", "play": "Wait for REC-1", "assistants": ["chatgpt"],
+        "effort": "None now", "value": "Low", "closeness": "Far",
+        "prompt_keys": ["P008", "P009", "P012", "P073", "P074", "P075", "P005", "P006", "P003", "P004"], "keyword_ids": [],
+        "body": {
+            "opportunity": "Ten tracked questions ask how to do something in Tally (“how to convert bank statement to Tally”, “how to import PDF bank statement in Tally Prime”). ChatGPT answers them with Tally's own steps and does not name any add-on, including us. The person asking wants to do the task themselves, so these are worth less than the tool questions in REC-1.",
+            "evidence": [
+                "ChatGPT named AI Accountant in 0 of 30 answers on these ten questions in the run of 21/11/2026.",
+                "Tally was named in every ChatGPT answer on the Tally topic (78 of 78).",
+                "Perplexity cites our pages on three of these questions without naming us.",
+            ],
+            "winners": [
+                {"url": "https://help.tallysolutions.com/pdf-bank-statement-import/", "who": "Tally's help page", "note": "1,109 words: the steps to upload and import a PDF bank statement, then questions and answers. Cited in 16 ChatGPT answers across 8 Tally questions."},
+            ],
+            "why": [
+                "The question is “how do I”, and Tally's help pages are the instructions. No other source is needed to answer it.",
+            ],
+            "actions": [
+                "No separate work now. The REC-1 pages include the steps in Tally, so they are candidates for these questions too.",
+                "Keep tracking these as the control group for REC-1.",
+            ],
+            "change": [
+                "If the REC-1 pages are cited for tool questions, some will be picked up here as well. We will see it without extra effort.",
+            ],
+            "measure": [
+                "These ten questions should stay near 0 while REC-1 is under way. If they rise too, the REC-1 pages are doing more than expected.",
+            ],
+            "risks": [
+                "Low value: a rise here may bring readers who want instructions, not a product.",
+            ],
+        },
+    },
+    {
+        "rec_key": "REC-8", "rank": 8, "grp": "skip",
+        "title": "Do not chase generic invoice OCR and accounts payable questions",
+        "summary": "These are answered with global OCR vendors and never mention India or Tally. The one version that does mention Tally already recommends us.",
+        "headline": "0 of 72 answers; global vendors win",
+        "topic": "Invoice processing", "play": "Leave alone", "assistants": ["chatgpt", "gemini", "perplexity"],
+        "effort": "None", "value": "Low", "closeness": "Far",
+        "prompt_keys": ["P043", "P048", "P084", "P045", "P046", "P047", "P044", "P042", "S007"], "keyword_ids": [],
+        "body": {
+            "opportunity": "Eight tracked questions ask about invoice OCR and accounts payable automation in general terms (“best OCR software for invoice processing?”). The answers name global document-AI vendors. Competing there would mean beating Microsoft, Google and Nanonets on questions that do not describe our buyer. The effort is better spent on the Tally versions of the same need.",
+            "evidence": [
+                "On the eight generic questions we were recommended with a link in 0 of 72 answers across the three assistants.",
+                "The pages ChatGPT cites are Docsumo's list of invoice OCR software (9 answers), Nanonets (7), Azure AI Document Intelligence (7), ABBYY (5) and Google Document AI (5).",
+                "None of the eight questions mentions India or Tally.",
+                "The one question in this topic that does (“our finance team of 5 uses Tally Prime and enters a lot of vendor bills…”) recommends us in 5 of 9 answers: Gemini 2 of 3 and Perplexity 3 of 3.",
+            ],
+            "winners": [
+                {"url": "https://www.docsumo.com/blog/best-invoice-ocr-software", "who": "A global vendor's list post", "note": "Cited in 9 ChatGPT answers across 4 questions."},
+                {"url": "https://nanonets.com/", "who": "A global OCR vendor", "note": "Cited in 7 ChatGPT answers. Nanonets is named on 6 of the 8 questions."},
+            ],
+            "why": [
+                "The questions are global and generic, so the assistants answer with global, well-known document-AI products.",
+                "Our advantage (works on top of Tally, built for Indian bills and GST) is not something these questions ask about.",
+            ],
+            "actions": [
+                "Do no work on these questions.",
+                "At the next monthly review of the question list, replace three or four of them with Tally and India versions, which is where we can win.",
+            ],
+            "change": [
+                "Nothing to change here. The Prompting Company's research found the same thing: the default brand wins the generic question, and the stated need decides the pick.",
+            ],
+            "measure": [
+                "No target. Keep the figure on the dashboard so we notice if the default answers change.",
+            ],
+            "risks": [
+                "If AI Accountant later sells outside Tally users, this decision should be revisited.",
+            ],
+        },
+    },
+    {
+        "rec_key": "REC-9", "rank": 9, "grp": "tracking",
+        "title": "Track the brands that actually win, so “who beats us” is measured",
+        "summary": "The tools ChatGPT recommends on GST and Tally questions are mostly not on our competitor list, so the dashboard undercounts who is winning.",
+        "headline": "About 10 winning brands untracked",
+        "topic": "Measurement", "play": "Tracking fix", "assistants": ["chatgpt"],
+        "effort": "Half a day", "value": "Medium", "closeness": "Close",
+        "prompt_keys": ["P039", "P040", "P007", "P011", "P002"], "keyword_ids": [],
+        "body": {
+            "opportunity": "Reading the answers for this list showed that ChatGPT's actual picks are often brands we do not track. Our competitor list has 12 names, chosen before the first run. Until the real winners are on it, the “who else gets recommended” tables understate the competition and we cannot see a rival rising.",
+            "evidence": [
+                "ChatGPT's GST shortlist in the answers we read was ClearTax, Masters India, KDK Spectrum, IRIS Sapphire and Winman. None is on our competitor list.",
+                "On Tally tool questions it named TallyConnects, InvoiceAI, udiMagic, Excel2Tally and Quick2Tally. None is tracked.",
+                "The tracked list is 12 brands: GSTHero, hisabkitab, Tally AI, Vyapar TaxOne and VouchrIt as direct competitors, plus a watchlist.",
+                "GSTHero, which we track for GST, was named on 2 of the 10 GST questions.",
+            ],
+            "winners": [],
+            "why": [
+                "The list was built from who we believed our competitors were. The runs now show who the assistants believe they are.",
+            ],
+            "actions": [
+                "Add the ten brands above to the competitor list as a watchlist, so past share figures for the five direct competitors do not change.",
+                "Do it at the monthly list review, and note the date on the dashboard.",
+            ],
+            "change": [
+                "This does not change any answer. It makes the next version of this list more accurate.",
+            ],
+            "measure": [
+                "After the change, the “who else gets recommended” table shows the new brands with their share of answers.",
+            ],
+            "risks": [
+                "We read one answer per question to find these names, so the list of missing brands is not complete.",
+            ],
+        },
+    },
+]
+
+for r in RECS:
+    r["based_on_run"] = RUN
+    r["status"] = "Proposed"
+    r["is_active"] = True
+
+print(json.dumps(RECS, ensure_ascii=False, indent=1))

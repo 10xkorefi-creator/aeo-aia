@@ -8,6 +8,7 @@ export const metadata = { title: 'AEO Baseline', description: 'AI Accountant vis
 
 const tabs = [
   ['/', 'Overview'],
+  ['/recommendations', 'Recommendations'],
   ['/assistants', 'AI assistants'],
   ['/ai-overviews', 'Google AI Overviews'],
   ['/traffic', 'Visits & leads'],

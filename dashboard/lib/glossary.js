@@ -360,6 +360,7 @@ export const overview = {
 // ---------- Navigation tabs (no figures) ----------
 export const tabs = {
   '/': 'Where we stand in AI answers, what moved since the last run, and what it brought.',
+  '/recommendations': 'The biggest AEO opportunities, ranked, with where to start and the evidence behind each.',
   '/assistants': 'How often ChatGPT, Gemini and Perplexity recommend AI Accountant with a link, and the visits and leads that follow.',
   '/ai-overviews': 'How often Google\'s AI Overview links to aiaccountant.com for the keywords buyers search.',
   '/traffic': 'Who visited from an AI assistant and who became a lead.',
