@@ -511,3 +511,14 @@ Limits to state in the review
 - "Why they win" is our reading of the cited pages; the data shows who is cited and named, not why.
 - Cited pages were read on 22/11/2026 by fetching them; SaaSworthy blocked the request.
 - Product claims on new pages (what Docs by Ira cannot do, prices) need the product team's check.
+
+## 22 Nov 2026: Recommendations broken into individual tasks with channel labels (user request)
+
+- New table aeo_rec_tasks (source docs/rec_tasks.py): 38 tasks under the nine opportunities. Each task is one thing to make (a page, a video, a post, a listing), with a channel label, the tracked questions and keywords it targets, the evidence for it, the cited example to model it on, what to include, and "done when".
+- Channels: Website 13, YouTube 8, Outreach 4, LinkedIn 3, Facebook 2, Directory 2, Review site 2, X 1, Reddit 1, Instagram 1, Tracking 1.
+- Rule kept: a channel task exists only where the baseline shows that channel cited for those questions or keywords. Evidence found on 22/11 (run of 21/11):
+  - Google AI Overviews cited a YouTube video in 238 of 369 AI Overviews (64 keywords, 123 different videos); LinkedIn in 35 (9 keywords), Reddit in 38 (10), Instagram in 25 (9), Facebook in 25 (9). None mentions AI Accountant in its title.
+  - Assistants cite social far less: Perplexity cited YouTube in 27 of 270 answers (9 questions); ChatGPT cited LinkedIn in 9 answers, X profiles of vendors in 14 (9 questions), YouTube in 6.
+  - So most video and social tasks are justified by Google AI Overviews, not by ChatGPT. Not every question gets every channel.
+- Page: rows are tasks under each opportunity, filter chips by channel, task panel (why, what to make, model, what it should move live, done when) and opportunity panel (the reasoning, now listing its tasks). Links: ?task=T-02, ?rec=REC-1.
+- Questions in REC-7 (the control group for REC-1) were kept out of REC-1 task targets.

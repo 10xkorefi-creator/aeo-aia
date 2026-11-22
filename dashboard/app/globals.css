@@ -615,7 +615,7 @@ a.score:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .rb-count { font-size: 12px; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
 .rb-pri { flex: none; color: var(--foreground); }
 .rb-list { list-style: none; margin: 0; padding: 0; background: var(--card); border: 1px solid var(--border); border-top: 0; border-radius: 0 0 var(--radius) var(--radius); overflow: hidden; }
-.rb-list li + li { border-top: 1px solid var(--border); }
+
 .rb-row { display: grid; grid-template-columns: 16px 46px minmax(0, 1fr) 236px 172px 172px 58px; align-items: center; gap: 12px; width: 100%; height: auto; min-height: 56px; padding: 10px 14px;
   background: transparent; color: inherit; border: 0; border-radius: 0; box-shadow: none; text-align: left; font: inherit; cursor: pointer; }
 .rb-row:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
@@ -678,3 +678,41 @@ a.score:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .rb-counts { display: inline-flex; align-items: center; gap: 10px; font-size: 12.5px; font-variant-numeric: tabular-nums; color: var(--muted-foreground); }
 .rb-counts span { display: inline-flex; align-items: center; gap: 4px; }
 @media (max-width: 1180px) { .rb-row { grid-template-columns: 16px 46px minmax(0, 1fr); } .rb-head { grid-column: 3; text-align: left; } .rb-tags { display: flex; flex-wrap: wrap; gap: 6px; grid-column: 3; align-items: center; } .rb-main span { white-space: normal; } }
+
+.rb-filter { display: flex; flex-wrap: wrap; gap: 6px; }
+.rb-filter button { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 11px; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--foreground); box-shadow: none; font-size: 13px; font-weight: 500; }
+.rb-filter button span { color: var(--muted-foreground); font-weight: 400; font-variant-numeric: tabular-nums; }
+.rb-filter button.on { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
+.rb-filter button.on span { color: inherit; opacity: 0.75; }
+.rb-filter button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.rb-chan-ico { flex: none; border-radius: 3px; display: block; }
+.rb-chan-ico.glyph { color: var(--muted-foreground); border-radius: 0; }
+.rb-filter button.on .rb-chan-ico.glyph { color: inherit; }
+.rb-chan { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 9px 0 7px; border: 1px solid var(--border); border-radius: 999px; background: var(--card); font-size: 12px; font-weight: 500; white-space: nowrap; }
+.rb-todo { flex: none; color: var(--muted-foreground); }
+.rb-opp + .rb-opp { border-top: 1px solid var(--border); }
+.rb-opp-head { display: grid; grid-template-columns: 46px minmax(0, 1fr) 250px 52px; align-items: center; gap: 12px; width: 100%; height: auto; padding: 12px 14px 10px; background: transparent; color: inherit; border: 0; border-radius: 0; box-shadow: none; text-align: left; font: inherit; cursor: pointer; }
+.rb-opp-head:focus-visible, .rb-task:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.rb-why { display: inline-flex; align-items: center; gap: 4px; justify-content: flex-end; font-size: 12.5px; font-weight: 500; color: var(--accent); white-space: nowrap; }
+.rb-tasks { list-style: none; margin: 0; padding: 0 0 6px; }
+.rb-task { display: grid; grid-template-columns: 15px 40px minmax(0, 1fr) auto auto 118px; align-items: center; gap: 10px; width: 100%; height: auto; min-height: 36px; padding: 5px 14px 5px 72px; background: transparent; color: inherit; border: 0; border-radius: 0; box-shadow: none; text-align: left; font: inherit; cursor: pointer; }
+.rb-task-title { font-size: 13.5px; font-weight: 500; line-height: 1.35; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rb-task-meta { font-size: 12px; color: var(--muted-foreground); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.rb-task .rb-chan { justify-self: start; }
+@media (hover: hover) and (pointer: fine) { .rb-opp-head:hover, .rb-task:hover { background: var(--row-hover); opacity: 1; } .rb-opp-head:hover .rb-why { text-decoration: underline; } }
+.rb-notask { margin: 0; padding: 0 14px 12px 72px; font-size: 12.5px; color: var(--muted-foreground); }
+.rb-link { background: var(--card); color: var(--foreground); box-shadow: none; height: auto; cursor: pointer; font: inherit; font-size: 12.5px; font-weight: 500; }
+.rb-link span { color: var(--accent); }
+@media (hover: hover) and (pointer: fine) { .rb-link:hover { border-color: var(--ring); opacity: 1; } }
+.rb-open-rec { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; height: 34px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--foreground); box-shadow: none; font-size: 13px; font-weight: 500; }
+.rb-open-rec span { color: var(--accent); }
+.rb-do-lead { margin: 0 0 8px !important; font-size: 13px !important; color: var(--muted-foreground); }
+.rb-tasklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.rb-tasklist button { display: grid; grid-template-columns: 15px 40px minmax(0, 1fr) auto; align-items: center; gap: 10px; width: 100%; height: auto; min-height: 36px; padding: 6px 10px; background: var(--card); color: inherit; border: 1px solid var(--border); border-radius: 8px; box-shadow: none; text-align: left; font: inherit; cursor: pointer; }
+.rb-tl-title { font-size: 13.5px; font-weight: 500; line-height: 1.35; }
+@media (hover: hover) and (pointer: fine) { .rb-tasklist button:hover { border-color: var(--ring); opacity: 1; } }
+@media (max-width: 1180px) {
+  .rb-opp-head { grid-template-columns: 46px minmax(0, 1fr) 52px; } .rb-opp-head .rb-head { grid-column: 2; grid-row: 2; text-align: left; } .rb-opp-head .rb-why { grid-row: 1; grid-column: 3; }
+  .rb-task { grid-template-columns: 15px 40px minmax(0, 1fr); padding-left: 14px; } .rb-task-title { white-space: normal; } .rb-task-meta, .rb-task .rb-tag, .rb-task .rb-chan { grid-column: 3; justify-self: start; }
+  .rb-notask { padding-left: 14px; }
+}

@@ -17,8 +17,9 @@ export default async function Recommendations({ searchParams }) {
   const run = await pickRun(runs, null);
   const runId = run?.run_id ?? '';
   const recs = await q`select * from public.aeo_recommendations where is_active order by rank`;
-  const pk = [...new Set(recs.flatMap((r) => r.prompt_keys || []))].join(',');
-  const kk = [...new Set(recs.flatMap((r) => r.keyword_ids || []))].join(',');
+  const tasks = await q`select * from public.aeo_rec_tasks where is_active order by sort`;
+  const pk = [...new Set([...recs, ...tasks].flatMap((r) => r.prompt_keys || []))].join(',');
+  const kk = [...new Set([...recs, ...tasks].flatMap((r) => r.keyword_ids || []))].join(',');
 
   const [hist, texts, cites, khist, kcites, sizes] = await Promise.all([
     q`select m.engine, m.run_id, to_char(r.run_date, 'DD/MM') as day, m.prompt_key, count(*) n, count(*) filter (where m.mentioned) named,
@@ -45,8 +46,8 @@ export default async function Recommendations({ searchParams }) {
   const runsBy = (e) => new Set(hist.filter((h) => h.engine === e).map((h) => h.run_id)).size;
   const firstRun = baselineRuns[baselineRuns.length - 1], lastRun = baselineRuns[0];
 
-  const items = recs.map((r) => {
-    const keys = r.prompt_keys || [], kids = r.keyword_ids || [];
+  // the live evidence for a set of questions and keywords: latest run, earlier runs beside it, and the pages cited
+  const evidence = (keys, kids) => {
     const questions = keys.filter((k) => textOf[k]).map((k) => {
       const cells = {};
       for (const e of ENGINES) {
@@ -69,8 +70,18 @@ export default async function Recommendations({ searchParams }) {
     for (const c of cites) if (keys.includes(c.prompt_key)) add(c.url, c.domain, c.engine, c.n);
     for (const c of kcites) if (kids.includes(c.keyword_id)) add(c.url, c.domain, 'google', c.n);
     const pages = [...pm.values()].sort((a, b) => b.total - a.total).slice(0, 14);
+    return { questions, keywords, pages };
+  };
+
+  const items = recs.map((r) => {
+    const { questions, keywords, pages } = evidence(r.prompt_keys || [], r.keyword_ids || []);
     return { key: r.rec_key, rank: r.rank, grp: r.grp, title: r.title, summary: r.summary, headline: r.headline, topic: r.topic, play: r.play, assistants: r.assistants || [],
       effort: r.effort, value: r.value, closeness: r.closeness, status: r.status, body: r.body || {}, basedOn: r.based_on_run, questions, keywords, pages };
+  });
+
+  const taskItems = tasks.map((t) => {
+    const { questions, keywords } = evidence(t.prompt_keys || [], t.keyword_ids || []);
+    return { key: t.task_key, rec: t.rec_key, title: t.title, channel: t.channel, kind: t.kind, effort: t.effort, status: t.status, body: t.body || {}, questions, keywords };
   });
 
   const baseline = { runId, runDate: run ? date(run.run_date) : '–', from: firstRun ? date(firstRun.run_date) : '–', to: lastRun ? date(lastRun.run_date) : '–',
@@ -81,9 +92,9 @@ export default async function Recommendations({ searchParams }) {
     <>
       <div className="pagehead">
         <div><h1>Recommendations</h1>
-          <p className="hint">The biggest AEO opportunities for AI Accountant, ranked, with where to start. Every item is built from our own baseline runs, not from general advice.</p></div>
+          <p className="hint">The biggest AEO opportunities for AI Accountant, ranked, and the individual tasks under each. Every opportunity and every task is built from our own baseline runs, not from general advice.</p></div>
       </div>
-      <RecBoard items={items} baseline={baseline} initial={typeof sp?.rec === 'string' ? sp.rec : null} />
+      <RecBoard items={items} tasks={taskItems} baseline={baseline} initial={typeof sp?.task === 'string' ? sp.task : typeof sp?.rec === 'string' ? sp.rec : null} />
     </>
   );
 }
