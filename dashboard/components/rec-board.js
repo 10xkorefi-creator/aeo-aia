@@ -1,55 +1,36 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { AssistantIcon, assistantName } from '@/components/assistant';
 
-// The recommendations list: one row per task, in priority order. Clicking a row opens a short brief
-// (why, what to make, an example, how we will know). The numbers behind it are one click further in.
+// The recommendations: one row per task, in priority order, and the same work seen per question.
+// Tasks are generated from the latest run (scripts/recs/build.py). A row's detail is loaded when it is opened.
 const PEOPLE = ['Wasif Kareem', 'Devansh Saini'];
-const ENGINES = ['chatgpt', 'gemini', 'perplexity'];
-const SITES = { YouTube: 'youtube.com', LinkedIn: 'linkedin.com', Instagram: 'instagram.com', Facebook: 'facebook.com', Reddit: 'reddit.com', X: 'x.com' };
-const CHANNEL_ORDER = ['Website', 'YouTube', 'LinkedIn', 'Instagram', 'Facebook', 'Reddit', 'X', 'Directory', 'Review site', 'Outreach', 'Tracking'];
-const PRIORITY = { start: 'High', next: 'Medium', later: 'Low', skip: 'Low', tracking: 'Low' };
-const RANK = { High: 0, Medium: 1, Low: 2 };
-const short = (u) => { try { const x = new URL(u); return x.hostname.replace(/^www\./, '') + (x.pathname === '/' ? '' : x.pathname.replace(/\/$/, '')) + (x.search && x.hostname.includes('youtube') ? x.search : ''); } catch { return u; } };
+const ENGINES = ['chatgpt', 'gemini', 'perplexity', 'google'];
+const SITES = { YouTube: 'youtube.com', LinkedIn: 'linkedin.com', Instagram: 'instagram.com', Facebook: 'facebook.com', Reddit: 'reddit.com', Quora: 'quora.com', X: 'x.com' };
+const CHANNEL_ORDER = ['Website', 'Outreach', 'Review site', 'YouTube', 'LinkedIn', 'Reddit', 'Quora', 'X', 'Facebook', 'Instagram'];
+const TYPE = { 'New page': ['New content', 'new'], 'Update page': ['Update a page', 'upd'], Video: ['Social and video', 'soc'], Post: ['Social and video', 'soc'], 'Thread answer': ['Social and video', 'soc'],
+  Listing: ['Listing', 'lst'], Outreach: ['Outreach', 'out'] };
+const STAGE = { decision: 'Ready to buy', consideration: 'Comparing tools', 'problem (how-to)': 'How-to', awareness: 'Learning', 'Google search': 'Google search' };
+const engineName = (e) => (e === 'google' ? 'Google AI Overviews' : assistantName(e));
 const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return ''; } };
-
-// What kind of work a task is, in two plain columns
-function typeOf(kind = '') {
-  if (/^new page/i.test(kind)) return 'New content';
-  if (/^edit/i.test(kind)) return 'Update a page';
-  if (/video|short|reel|post|article|comment/i.test(kind)) return 'Social and video';
-  if (/listing|profile/i.test(kind)) return 'Listing';
-  if (/email/i.test(kind)) return 'Outreach';
-  return 'Tracking';
-}
-function contentOf(kind = '') {
-  if (/page/i.test(kind)) return 'Page';
-  if (/short/i.test(kind)) return 'Short video';
-  if (/video post/i.test(kind)) return 'Video post';
-  if (/video/i.test(kind)) return 'Video';
-  if (/reel/i.test(kind)) return 'Reel';
-  if (/article/i.test(kind)) return 'Article';
-  if (/post/i.test(kind)) return 'Post';
-  if (/comment/i.test(kind)) return 'Comment';
-  if (/listing/i.test(kind)) return 'Listing';
-  if (/profile/i.test(kind)) return 'Profile';
-  if (/email/i.test(kind)) return 'Email';
-  return 'Data change';
-}
-const TYPE_CLASS = { 'New content': 'new', 'Update a page': 'upd', 'Social and video': 'soc', Listing: 'lst', Outreach: 'out', Tracking: 'trk' };
 
 function ChannelIcon({ channel, size = 15 }) {
   if (SITES[channel]) return <img className="rb-chan-ico" src={`https://www.google.com/s2/favicons?domain=${SITES[channel]}&sz=64`} alt="" width={size} height={size} />;
   const s = { width: size, height: size, viewBox: '0 0 16 16', fill: 'none', stroke: 'currentColor', strokeWidth: 1.4, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true, className: 'rb-chan-ico glyph' };
   if (channel === 'Website') return <svg {...s}><circle cx="8" cy="8" r="6" /><path d="M2 8h12M8 2c2 2 2 10 0 12M8 2c-2 2-2 10 0 12" /></svg>;
   if (channel === 'Outreach') return <svg {...s}><rect x="2" y="3.5" width="12" height="9" rx="1.5" /><path d="M2.5 4.5 8 9l5.5-4.5" /></svg>;
-  if (channel === 'Tracking') return <svg {...s}><circle cx="8" cy="8" r="5.5" /><circle cx="8" cy="8" r="1.6" /></svg>;
+  if (channel === 'Review site') return <svg {...s}><path d="m8 2.2 1.8 3.7 4 .6-2.9 2.8.7 4L8 11.4l-3.6 1.9.7-4L2.2 6.5l4-.6z" /></svg>;
   return <svg {...s}><path d="M3 4h10M3 8h10M3 12h6" /></svg>;
 }
 const Channel = ({ channel }) => <span className="rt-chan"><ChannelIcon channel={channel} />{channel}</span>;
-const Pill = ({ kind }) => <span className={`rt-pill ${TYPE_CLASS[typeOf(kind)]}`}>{typeOf(kind)}</span>;
-const Prio = ({ p }) => <span className={`rt-prio ${p.toLowerCase()}`}>{p}</span>;
+const Pill = ({ kind }) => { const [label, cls] = TYPE[kind] || ['Other', 'trk']; return <span className={`rt-pill ${cls}`}>{label}</span>; };
+const Prio = ({ p }) => <span className={`rt-prio ${String(p).toLowerCase()}`}>{p === 'Done' ? 'No gap' : p}</span>;
+const For = ({ list, names }) => (
+  <span className="rt-for" title={list.map(engineName).join(', ')}>
+    {list.map((e) => <span key={e} className="rt-for-i"><AssistantIcon id={e} size={15} />{names ? engineName(e) : null}</span>)}
+  </span>
+);
 
 function Favicon({ domain }) {
   const [bad, setBad] = useState(false);
@@ -71,134 +52,132 @@ function Assignee({ value, onChange, saving }) {
 }
 
 const Bullets = ({ items }) => <ul className="rb-bullets">{(items || []).map((t, i) => <li key={i}>{t}</li>)}</ul>;
-
-// The numbers behind a task or an opportunity, read live from the runs. Kept out of the way until asked for.
-function Cell({ c }) {
-  if (!c) return <span className="rb-na">not asked</span>;
-  return <b className={c.rec > 0 ? 'hit' : 'miss'}>{c.rec}/{c.n}</b>;
-}
-function Data({ r, baseline }) {
-  const engines = ENGINES.filter((e) => r.questions.some((qn) => qn.cells[e]));
-  if (!r.questions.length && !r.keywords.length) return null;
-  return (
-    <details className="rb-more">
-      <summary>See the data behind this</summary>
-      {r.questions.length ? (
-        <>
-          <div className="table-wrap">
-            <table className="rb-table">
-              <thead><tr><th>Question we ask the assistants</th>{engines.map((e) => <th key={e} className="num"><span className="asst"><AssistantIcon id={e} size={14} />{assistantName(e)}</span></th>)}</tr></thead>
-              <tbody>{r.questions.map((qn) => <tr key={qn.key}><td>{qn.text}</td>{engines.map((e) => <td key={e} className="num"><Cell c={qn.cells[e]} /></td>)}</tr>)}</tbody>
-            </table>
-          </div>
-          <p className="rb-foot">Answers that recommend us with a link, out of answers collected, in the run of {baseline.runDate}.</p>
-        </>
-      ) : null}
-      {r.keywords.length ? (
-        <>
-          <div className="table-wrap">
-            <table className="rb-table">
-              <thead><tr><th>Google keyword</th><th className="num">Searches a month</th><th className="num">AI Overview links to us</th></tr></thead>
-              <tbody>{r.keywords.map((k) => (
-                <tr key={k.id}><td>{k.keyword}</td><td className="num">{k.volume === null ? '–' : k.volume.toLocaleString('en-IN')}</td>
-                  <td className="num"><b className={k.cited > 0 ? 'hit' : 'miss'}>{k.cited}/{k.shown}</b></td></tr>
-              ))}</tbody>
-            </table>
-          </div>
-          <p className="rb-foot">Searches whose AI Overview linked to our site, out of searches that showed one.</p>
-        </>
-      ) : null}
-    </details>
-  );
-}
-
-function Pages({ list }) {
-  return (
-    <ul className="rb-winners">
-      {list.map((w) => (
-        <li key={w.url}>
-          <Favicon domain={host(w.url)} />
-          <div>
-            {w.who ? <b>{w.who}</b> : null}
-            <a href={w.url} target="_blank" rel="noopener noreferrer nofollow">{short(w.url)}<i aria-hidden="true"> ↗</i></a>
-            <p>{w.note}</p>
-          </div>
-        </li>
-      ))}
-    </ul>
-  );
-}
+const Loading = ({ failed }) => <p className="rq-load">{failed ? 'Could not load the details. Close and open the row again.' : 'Loading…'}</p>;
 
 // ---- one task: why, what to make, an example, how we will know
-function TaskDetail({ t, rec, baseline, openRec, assign, saving }) {
-  const b = t.body || {};
+function TaskDetail({ t, body, failed, questions, openQ, assign, saving }) {
+  const mine = t.targets.map((k) => questions.find((x) => x.key === k)).filter(Boolean);
   return (
     <>
-      <div className="rb-kicker"><span>{t.key}</span></div>
+      <div className="rb-kicker"><span>Task</span>{t.start ? <><span className="rb-dot">·</span><span>Start here</span></> : null}</div>
       <Dialog.Title className="rb-title">{t.title}</Dialog.Title>
       <div className="rt-meta">
-        <Channel channel={t.channel} /><Pill kind={t.kind} /><span className="rt-plain">{contentOf(t.kind)}</span><Prio p={t.priority} />
+        <Channel channel={t.channel} /><Pill kind={t.kind} /><Prio p={t.priority} /><For list={t.assistants} names />
         <span className="rt-meta-assign"><i>Assignee</i><Assignee value={t.assignee} onChange={(v) => assign(t.key, v)} saving={saving === t.key} /></span>
       </div>
-
-      <section className="rb-sec"><h3>Why</h3><Bullets items={(b.why || []).slice(0, 2)} /></section>
-      <section className="rb-sec rb-do"><h3>What to make</h3><ol className="rb-steps">{(b.include || []).slice(0, 4).map((x, i) => <li key={i}>{x}</li>)}</ol></section>
-      {b.model?.length ? <section className="rb-sec"><h3>Example to follow</h3><Pages list={b.model.slice(0, 1)} /></section> : null}
-      <section className="rb-sec"><h3>We will know it worked when</h3><Bullets items={(b.done || []).slice(0, 1)} /></section>
-
-      <section className="rb-sec rb-extra">
-        <Data r={t} baseline={baseline} />
-        {rec ? <button type="button" className="rb-open-rec" onClick={() => openRec(rec.key)}>Full reasoning: {rec.title}<span aria-hidden="true">→</span></button> : null}
-      </section>
+      {!body ? <Loading failed={failed} /> : (
+        <>
+          <section className="rb-sec"><h3>Why</h3><Bullets items={(body.why || []).slice(0, 4)} /></section>
+          <section className="rb-sec rb-do"><h3>What to make</h3><ol className="rb-steps">{(body.make || []).slice(0, 4).map((x, i) => <li key={i}>{x}</li>)}</ol></section>
+          {body.model?.length ? (
+            <section className="rb-sec"><h3>{body.model.length > 1 ? 'Examples to follow' : 'Example to follow'}</h3>
+              <ul className="rb-winners">
+                {body.model.slice(0, 3).map((w) => (
+                  <li key={w.url}><Favicon domain={host(w.url)} />
+                    <div><b>{w.title || host(w.url)}</b>
+                      <a href={w.url} target="_blank" rel="noopener noreferrer nofollow">{host(w.url)}<i aria-hidden="true"> ↗</i></a><span className="pp-tag">{w.tag}</span>
+                      <p>{w.note}</p></div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+          <section className="rb-sec"><h3>We will know it worked when</h3><Bullets items={(body.done || []).slice(0, 1)} /></section>
+        </>
+      )}
+      {mine.length ? (
+        <section className="rb-sec"><h3>{mine.length > 1 ? `The ${mine.length} questions this task serves` : 'The question this task serves'}</h3>
+          <ul className="rb-tasklist rq-qs">
+            {mine.slice(0, 8).map((x) => <li key={x.key}><button type="button" onClick={() => openQ(x.key)}><span className="rb-tl-title">{x.text}</span><span className="rq-go">See all sources →</span></button></li>)}
+          </ul>
+          {mine.length > 8 ? <p className="rb-foot">and {mine.length - 8} more.</p> : null}
+        </section>
+      ) : null}
     </>
   );
 }
 
-// ---- the reasoning behind a group of tasks
-function RecDetail({ r, tasks, baseline, openTask }) {
-  const b = r.body || {};
+// ---- one question: what each assistant did with it, the sources it used, and the tasks that follow
+function QuestionDetail({ x, body, failed, tasks, openTask }) {
+  const mine = body ? (body.tasks || []).map((k) => tasks.find((t) => t.key === k)).filter(Boolean) : [];
   return (
     <>
-      <div className="rb-kicker"><span>{r.key}</span><span className="rb-dot">·</span><span>the reasoning</span></div>
-      <Dialog.Title className="rb-title">{r.title}</Dialog.Title>
-      <Dialog.Description className="rb-lead">{b.opportunity}</Dialog.Description>
-
-      <section className="rb-sec"><h3>What our runs show</h3><Bullets items={(b.evidence || []).slice(0, 4)} /></section>
-      {b.winners?.length ? <section className="rb-sec"><h3>Who is winning today</h3><Pages list={b.winners.slice(0, 3)} /></section> : null}
-      <section className="rb-sec"><h3>Why they win</h3><Bullets items={b.why} /></section>
-      <section className="rb-sec rb-do">
-        <h3>What we should do</h3>
-        {tasks.length ? (
-          <ul className="rb-tasklist">
-            {tasks.map((t) => <li key={t.key}><button type="button" onClick={() => openTask(t.key)}><span className="rb-tl-title">{t.title}</span><Channel channel={t.channel} /></button></li>)}
-          </ul>
-        ) : <ol className="rb-steps">{(b.actions || []).map((x, i) => <li key={i}>{x}</li>)}</ol>}
-      </section>
-      <section className="rb-sec"><h3>Why this should work</h3><Bullets items={(b.change || []).slice(0, 2)} /></section>
-      <section className="rb-sec"><h3>We will know it worked when</h3><Bullets items={(b.measure || []).slice(0, 1)} /></section>
-      <section className="rb-sec"><h3>What we are not sure of</h3><Bullets items={(b.risks || []).slice(0, 2)} /></section>
-      <section className="rb-sec rb-extra"><Data r={r} baseline={baseline} /></section>
+      <div className="rb-kicker"><span>{x.kind === 'keyword' ? 'Google search we track' : 'Question we ask the assistants'}</span>{x.start ? <><span className="rb-dot">·</span><span>Start here</span></> : null}</div>
+      <Dialog.Title className="rb-title">{x.text}</Dialog.Title>
+      <div className="rt-meta"><Prio p={x.priority} /><span className="rt-plain">{STAGE[x.stage] || x.stage}</span>
+        {x.kind === 'keyword' && x.volume ? <span className="rt-plain">{x.volume.toLocaleString('en-IN')} searches a month</span> : null}
+        {x.kind === 'keyword' && x.rank ? <span className="rt-plain">We rank number {x.rank}</span> : null}
+      </div>
+      {!body ? <Loading failed={failed} /> : (
+        <>
+          {ENGINES.filter((e) => body.cells[e]).map((e) => {
+            const c = body.cells[e];
+            return (
+              <section className="rb-sec" key={e}>
+                <h3 className="rq-h"><AssistantIcon id={e} size={17} />{engineName(e)}
+                  <span className={`rq-score ${c.gap ? 'miss' : 'hit'}`}>{e === 'google' ? `Links to us in ${c.rec} of ${c.n} AI Overviews` : `Recommends us in ${c.rec} of ${c.n} answers`}</span></h3>
+                {c.names?.length ? <p className="rq-names">Names {c.names.map(([n, k]) => `${n} (${k})`).join(', ')}.</p> : null}
+                {c.sources?.length ? (
+                  <ul className="rb-pages">
+                    {c.sources.map((s) => (
+                      <li key={s.url}><Favicon domain={s.domain} />
+                        <a href={s.url} target="_blank" rel="noopener noreferrer nofollow"><b>{s.title || s.domain}</b><span>{s.domain} · {s.tag}{s.names_us ? ' · names us' : ''}</span></a>
+                        <span className="rq-cited">{s.answers} of {c.n}</span></li>
+                    ))}
+                  </ul>
+                ) : <p className="rq-names">No source was cited in most of its answers.</p>}
+                {c.sources?.length ? <p className="rb-foot">Sources it cited in most of its {e === 'google' ? 'AI Overviews' : 'answers'}, out of {c.cited_pages} pages cited in all.</p> : null}
+              </section>
+            );
+          })}
+          <section className="rb-sec rb-do"><h3>{mine.length ? `What to do: ${mine.length} ${mine.length === 1 ? 'task' : 'tasks'}` : 'Nothing to do'}</h3>
+            {mine.length ? (
+              <ul className="rb-tasklist">
+                {mine.map((t) => <li key={t.key}><button type="button" onClick={() => openTask(t.key)}><span className="rb-tl-title">{t.title}</span><Channel channel={t.channel} /><For list={t.assistants} /></button></li>)}
+              </ul>
+            ) : <p>We are already recommended here in most answers.</p>}
+          </section>
+        </>
+      )}
     </>
   );
 }
 
-export function RecBoard({ items, tasks: initialTasks, baseline, initial }) {
-  const [tasks, setTasks] = useState(() => initialTasks.map((t) => ({ ...t, priority: PRIORITY[items.find((r) => r.key === t.rec)?.grp] || 'Low' })));
-  const valid = (k) => items.some((r) => r.key === k) || tasks.some((t) => t.key === k);
-  const [open, setOpen] = useState(valid(initial) ? initial : null);
+function Score({ c }) {
+  if (!c) return <span className="rb-na">–</span>;
+  return <b className={`rq-cell ${c.gap ? 'miss' : 'hit'}`}>{c.rec}/{c.n}</b>;
+}
+
+export function RecBoard({ tasks: initialTasks, questions, baseline, leads, initial }) {
+  const [tasks, setTasks] = useState(initialTasks);
+  const start = initial?.task && initialTasks.some((t) => t.key === initial.task) ? { type: 'task', key: initial.task }
+    : initial?.q && questions.some((x) => x.key === initial.q) ? { type: 'q', key: initial.q } : null;
+  const [open, setOpen] = useState(start);
+  const [view, setView] = useState(start?.type === 'q' ? 'questions' : 'tasks');
   const [chan, setChan] = useState('');
+  const [eng, setEng] = useState('');
+  const [prio, setPrio] = useState('');
   const [who, setWho] = useState('');
+  const [qkind, setQkind] = useState('');
   const [saving, setSaving] = useState(null);
   const [failed, setFailed] = useState(false);
-  const curTask = tasks.find((t) => t.key === open) || null;
-  const curRec = items.find((r) => r.key === open) || null;
+  const [detail, setDetail] = useState({});
+  const [loadFailed, setLoadFailed] = useState(false);
+  const asked = useRef(new Set());
+  const curTask = open?.type === 'task' ? tasks.find((t) => t.key === open.key) : null;
+  const curQ = open?.type === 'q' ? questions.find((x) => x.key === open.key) : null;
+  const id = open ? `${open.type}:${open.key}` : null;
 
   useEffect(() => {
     const url = new URL(window.location.href);
-    url.searchParams.delete('rec'); url.searchParams.delete('task');
-    if (open) url.searchParams.set(open.startsWith('T-') ? 'task' : 'rec', open);
+    url.searchParams.delete('rec'); url.searchParams.delete('task'); url.searchParams.delete('q');
+    if (open) url.searchParams.set(open.type, open.key);
     window.history.replaceState(null, '', url);
-  }, [open]);
+    if (!open || asked.current.has(id)) return;
+    asked.current.add(id); setLoadFailed(false);
+    fetch(`/api/rec-item?${open.type}=${encodeURIComponent(open.key)}`).then((r) => (r.ok ? r.json() : Promise.reject())).then((j) => setDetail((d) => ({ ...d, [id]: j.body })))
+      .catch(() => { asked.current.delete(id); setLoadFailed(true); });
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function assign(key, value) {
     const before = tasks.find((t) => t.key === key)?.assignee ?? null;
@@ -214,52 +193,109 @@ export function RecBoard({ items, tasks: initialTasks, baseline, initial }) {
     setSaving(null);
   }
 
+  const byPrio = (p, s) => !prio || (prio === 'start' ? s : p === prio);
   const channels = CHANNEL_ORDER.filter((c) => tasks.some((t) => t.channel === c));
-  const rows = tasks.filter((t) => (!chan || t.channel === chan) && (!who || (who === 'none' ? !t.assignee : t.assignee === who)))
-    .sort((a, b) => RANK[a.priority] - RANK[b.priority]);
+  const rows = tasks.filter((t) => (!chan || t.channel === chan) && (!eng || t.assistants.includes(eng)) && byPrio(t.priority, t.start) && (!who || (who === 'none' ? !t.assignee : t.assignee === who)));
+  const qrows = questions.filter((x) => (!qkind || x.kind === qkind) && byPrio(x.priority, x.start));
+  const qEngines = ENGINES.filter((e) => qrows.some((x) => x.cells[e]));
+  const openTask = (key) => setOpen({ type: 'task', key });
+  const openQ = (key) => setOpen({ type: 'q', key });
 
   return (
     <div className="rb">
       <div className="rt-bar">
-        <span className="rt-count">{rows.length} of {tasks.length} tasks</span>
-        <label>Channel
-          <select value={chan} onChange={(e) => setChan(e.target.value)}><option value="">All</option>{channels.map((c) => <option key={c} value={c}>{c}</option>)}</select>
+        <div className="rt-tabs" role="tablist" aria-label="View">
+          <button type="button" role="tab" aria-selected={view === 'tasks'} className={view === 'tasks' ? 'on' : ''} onClick={() => setView('tasks')}>Tasks <span>{tasks.length}</span></button>
+          <button type="button" role="tab" aria-selected={view === 'questions'} className={view === 'questions' ? 'on' : ''} onClick={() => setView('questions')}>By question <span>{questions.length}</span></button>
+        </div>
+        <span className="rt-count">{view === 'tasks' ? `${rows.length} of ${tasks.length} tasks` : `${qrows.length} of ${questions.length}`}</span>
+        {view === 'tasks' ? (
+          <>
+            <label>Channel
+              <select value={chan} onChange={(e) => setChan(e.target.value)}><option value="">All</option>{channels.map((c) => <option key={c} value={c}>{c}</option>)}</select>
+            </label>
+            <label>For
+              <select value={eng} onChange={(e) => setEng(e.target.value)}><option value="">All</option>{ENGINES.map((e) => <option key={e} value={e}>{engineName(e)}</option>)}</select>
+            </label>
+          </>
+        ) : (
+          <label>Show
+            <select value={qkind} onChange={(e) => setQkind(e.target.value)}><option value="">All</option><option value="question">Assistant questions</option><option value="keyword">Google searches</option></select>
+          </label>
+        )}
+        <label>Priority
+          <select value={prio} onChange={(e) => setPrio(e.target.value)}><option value="">All</option><option value="start">Start here</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option></select>
         </label>
-        <label>Assignee
-          <select value={who} onChange={(e) => setWho(e.target.value)}><option value="">Anyone</option>{PEOPLE.map((p) => <option key={p} value={p}>{p}</option>)}<option value="none">Unassigned</option></select>
-        </label>
+        {view === 'tasks' ? (
+          <label>Assignee
+            <select value={who} onChange={(e) => setWho(e.target.value)}><option value="">Anyone</option>{PEOPLE.map((p) => <option key={p} value={p}>{p}</option>)}<option value="none">Unassigned</option></select>
+          </label>
+        ) : null}
         {failed ? <span className="rt-fail" role="status">Could not save the assignee. Try again.</span> : null}
       </div>
 
-      <div className="rt-wrap">
-        <table className="rt">
-          <thead><tr><th>Task</th><th>Type</th><th>Content</th><th>Channel</th><th>Priority</th><th>Assignee</th></tr></thead>
-          <tbody>
-            {rows.map((t) => (
-              <tr key={t.key} onClick={() => setOpen(t.key)}>
-                <td><button type="button" className="rt-title" onClick={(e) => { e.stopPropagation(); setOpen(t.key); }} aria-haspopup="dialog">{t.title}</button></td>
-                <td><Pill kind={t.kind} /></td>
-                <td className="rt-plain">{contentOf(t.kind)}</td>
-                <td><Channel channel={t.channel} /></td>
-                <td><Prio p={t.priority} /></td>
-                <td onClick={(e) => e.stopPropagation()}><Assignee value={t.assignee} onChange={(v) => assign(t.key, v)} saving={saving === t.key} /></td>
-              </tr>
-            ))}
-            {!rows.length ? <tr className="rt-empty"><td colSpan={6}>No tasks match these filters.</td></tr> : null}
-          </tbody>
-        </table>
-      </div>
-      <p className="rt-note">Every task comes from our own runs ({baseline.runs} so far, {baseline.from} to {baseline.to}). Open a task to see why it is on the list.</p>
+      {view === 'tasks' ? (
+        <div className="rt-wrap">
+          <table className="rt">
+            <thead><tr><th>Task</th><th>Type</th><th>Channel</th><th>For</th><th>Priority</th><th>Assignee</th></tr></thead>
+            <tbody>
+              {rows.map((t) => (
+                <tr key={t.key} onClick={() => openTask(t.key)}>
+                  <td><button type="button" className="rt-title" title={t.title} onClick={(e) => { e.stopPropagation(); openTask(t.key); }} aria-haspopup="dialog">{t.title}</button></td>
+                  <td><Pill kind={t.kind} /></td>
+                  <td><Channel channel={t.channel} /></td>
+                  <td><For list={t.assistants} /></td>
+                  <td><Prio p={t.priority} /></td>
+                  <td onClick={(e) => e.stopPropagation()}><Assignee value={t.assignee} onChange={(v) => assign(t.key, v)} saving={saving === t.key} /></td>
+                </tr>
+              ))}
+              {!rows.length ? <tr className="rt-empty"><td colSpan={6}>No tasks match these filters.</td></tr> : null}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="rt-wrap">
+          <table className="rt rq">
+            <thead><tr><th>Question or search</th>{qEngines.map((e) => <th key={e}><span className="asst"><AssistantIcon id={e} size={14} />{assistantName(e)}</span></th>)}<th className="num">Tasks</th><th>Priority</th></tr></thead>
+            <tbody>
+              {qrows.map((x) => (
+                <tr key={x.key} onClick={() => openQ(x.key)}>
+                  <td><button type="button" className="rt-title" onClick={(e) => { e.stopPropagation(); openQ(x.key); }} aria-haspopup="dialog">{x.label}</button>{x.start ? <span className="rt-start">Start here</span> : null}</td>
+                  {qEngines.map((e) => <td key={e}><Score c={x.cells[e]} /></td>)}
+                  <td className="num">{x.tasks || '–'}</td>
+                  <td><Prio p={x.priority} /></td>
+                </tr>
+              ))}
+              {!qrows.length ? <tr className="rt-empty"><td colSpan={qEngines.length + 3}>Nothing matches these filters.</td></tr> : null}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-      <Dialog.Root open={!!(curTask || curRec)} onOpenChange={(o) => { if (!o) setOpen(null); }}>
+      <p className="rt-note">
+        {view === 'questions' ? 'Each number is answers that recommend us with a link, out of answers collected. For Google it is AI Overviews that link to us. ' : null}
+        Built from the run of {baseline.runDate}.{baseline.stale ? ` A newer run (${baseline.latestDate}) exists; the list has not been rebuilt from it yet.` : ''}
+      </p>
+      <details className="rt-how">
+        <summary>How this list is made</summary>
+        <ol>
+          <li>Every run asks each assistant every tracked question three times, and records which sources it cites.</li>
+          <li>Where an assistant does not recommend us in at least half its answers, each source it cited in most of those answers becomes a task.</li>
+          <li>The source decides the channel. A list that leaves us out becomes outreach, a review site becomes a listing, a YouTube video becomes a video, and a product page or article becomes a page on our site. A channel that no assistant cited for a question gets no task for it.</li>
+          <li>Priority: High is a buying question where ChatGPT does not recommend us{leads?.total ? `, because ChatGPT sent ${leads.chatgpt} of our ${leads.total} leads from AI` : ''}. Medium is a how-to question, a question about a named competitor, or a Google search where we already rank on page one. The rest is Low.</li>
+          <li>“Start here” marks the ten High questions where ChatGPT already links to us or names us, so the step to a full recommendation is smallest.</li>
+        </ol>
+      </details>
+
+      <Dialog.Root open={!!(curTask || curQ)} onOpenChange={(o) => { if (!o) setOpen(null); }}>
         <Dialog.Portal>
           <Dialog.Overlay className="dlg-overlay" />
           <Dialog.Content className="pp rec" aria-describedby={undefined}>
             <div className="dlg-head rb-close"><span />
               <Dialog.Close asChild><button type="button" className="dlg-x" aria-label="Close">×</button></Dialog.Close>
             </div>
-            {curTask ? <TaskDetail t={curTask} rec={items.find((r) => r.key === curTask.rec)} baseline={baseline} openRec={setOpen} assign={assign} saving={saving} />
-              : curRec ? <RecDetail r={curRec} tasks={tasks.filter((t) => t.rec === curRec.key)} baseline={baseline} openTask={setOpen} />
+            {curTask ? <TaskDetail t={curTask} body={detail[id]} failed={loadFailed} questions={questions} openQ={openQ} assign={assign} saving={saving} />
+              : curQ ? <QuestionDetail x={curQ} body={detail[id]} failed={loadFailed} tasks={tasks} openTask={openTask} />
                 : <Dialog.Title className="rb-title">Recommendation</Dialog.Title>}
           </Dialog.Content>
         </Dialog.Portal>

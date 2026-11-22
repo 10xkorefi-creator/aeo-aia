@@ -753,3 +753,42 @@ table.rt td:first-child { white-space: normal; width: 44%; }
 .rb-extra .table-wrap { margin-top: 10px; }
 .rb-extra .rb-open-rec { margin-top: 0; text-align: left; height: auto; min-height: 34px; padding: 6px 12px; white-space: normal; }
 .rb-table td b { font-size: 13px; font-variant-numeric: tabular-nums; }
+
+/* Recommendations: tasks and questions views */
+.rt-tabs { display: inline-flex; padding: 2px; border: 1px solid var(--border); border-radius: 8px; background: var(--muted); }
+.rt-tabs button { height: 28px; padding: 0 12px; border: 0; border-radius: 6px; background: transparent; color: var(--muted-foreground); box-shadow: none; font-size: 13px; font-weight: 500; }
+.rt-tabs button span { font-weight: 400; font-variant-numeric: tabular-nums; margin-left: 4px; opacity: 0.8; }
+.rt-tabs button.on { background: var(--card); color: var(--foreground); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); }
+.rt-tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.rt-bar .rt-count { margin-right: auto; }
+.rt-for { display: inline-flex; align-items: center; gap: 6px; }
+.rt-for-i { display: inline-flex; align-items: center; gap: 5px; }
+.rt-meta .rt-for { gap: 12px; }
+.rt-start { display: inline-block; margin-left: 8px; padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 600; background: var(--accent-soft); color: var(--accent); white-space: nowrap; vertical-align: 1px; }
+table.rt td:first-child { width: 46%; }
+table.rt.rq td:first-child { width: 48%; }
+table.rt th.num, table.rt td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.rq-cell { font-variant-numeric: tabular-nums; font-weight: 600; }
+.rq-cell.miss, .rq-score.miss { color: var(--down-ink); }
+.rq-cell.hit, .rq-score.hit { color: var(--up-ink); }
+.rt-how { font-size: 13px; color: var(--muted-foreground); }
+.rt-how summary { cursor: pointer; width: fit-content; font-weight: 500; color: var(--foreground); }
+.rt-how ol { margin: 10px 0 0; padding-left: 20px; display: grid; gap: 6px; max-width: 96ch; line-height: 1.55; }
+.rq-load { margin: 22px 0 0; font-size: 13.5px; color: var(--muted-foreground); }
+.rq-h { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.rq-score { margin-left: auto; font-size: 13px; font-weight: 600; }
+.rq-names { margin: 0 0 4px !important; font-size: 13px !important; color: var(--muted-foreground); }
+.rq-cited { font-size: 12.5px; font-variant-numeric: tabular-nums; color: var(--muted-foreground); white-space: nowrap; }
+.rb-pages a b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rb-tasklist button { grid-template-columns: minmax(0, 1fr) auto auto; }
+.rq-qs button { grid-template-columns: minmax(0, 1fr) auto; }
+.rq-go { font-size: 12.5px; color: var(--accent); white-space: nowrap; }
+.rb-winners .pp-tag { margin-left: 8px; }
+.rb-winners b { overflow-wrap: anywhere; }
+table.rt:not(.rq) { table-layout: fixed; }
+table.rt:not(.rq) th:nth-child(2) { width: 138px; } table.rt:not(.rq) th:nth-child(3) { width: 128px; } table.rt:not(.rq) th:nth-child(4) { width: 104px; }
+table.rt:not(.rq) th:nth-child(5) { width: 92px; } table.rt:not(.rq) th:nth-child(6) { width: 172px; }
+table.rt:not(.rq) td:first-child { width: auto; }
+table.rt:not(.rq) .rt-title { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rt-bar { gap: 8px 14px; }
+.rt-bar select { max-width: 158px; }

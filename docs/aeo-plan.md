@@ -530,3 +530,33 @@ Limits to state in the review
 - Task panel cut to four short parts: Why (two points), What to make (up to four), Example to follow (one), We will know it worked when (one). The live numbers sit behind "See the data behind this"; the full reasoning for the group of tasks is one click further.
 - No "estimated lift" column: we have no sound way to estimate it from four runs.
 - The opportunity with no tasks (generic invoice OCR questions, left alone on purpose) no longer shows in the list; it is still at ?rec=REC-8.
+
+## 22/11/2026: Recommendations rebuilt per question and per assistant
+
+**Why.** Each assistant cites different sources for the same question (ChatGPT and Gemini share 6% of sites, ChatGPT and
+Perplexity 8%, Gemini and Perplexity 13%). The first version grouped questions by topic and picked channels by hand.
+Decision with the user: the channel must not be chosen up front; the sources each assistant cited for each question decide it.
+
+**What changed.**
+- New generator in `scripts/recs/` (export, read cited pages, build, load). It replaces the hand-written
+  `docs/recommendations.py` and `docs/rec_tasks.py`, which stay in the repo as history only.
+- It read 1,640 cited pages from the run of 21/11 (1,470 readable; the rest sit behind bot checks and are marked unread).
+- Output: 315 tasks for 85 questions and 78 Google searches. Website 142, Outreach 80, YouTube 48, LinkedIn 13,
+  Review site 11, Reddit 11, X 4, Instagram 4, Facebook 2. By priority: High 113, Medium 86, Low 116.
+- New table `aeo_rec_questions` (one row per question or search, with what each assistant did and the sources it used).
+  `aeo_rec_tasks` gained `assistants`, `priority`, `score`, `start_here`, `based_on_run`, `gen`. Loader function
+  `aeo_recs_apply_json`. The 38 old tasks and 9 old recommendations are switched off, not deleted.
+- The nine assignments made on the old tasks were carried to the new tasks on the same questions (Wasif Kareem 17 tasks,
+  Devansh Saini 5).
+- Page: Tasks view (Task, Type, Channel, For, Priority, Assignee) and a By question view (recommended per assistant,
+  tasks, priority). Opening a question shows, per assistant, the sources it cited and the tasks that follow. Detail is
+  loaded on open through `/api/rec-item`.
+
+**Rules.** See `scripts/recs/README.md`.
+
+**Known limits.**
+- The list is rebuilt by hand after a run; the page says when a newer run exists.
+- Page types come from rules (domain lists, how often a site names itself, list-style titles), so a few pages will be
+  mis-typed. Unread pages are flagged in their task.
+- A question and a Google search on the same subject each get their own page task; they are not merged.
+- Tracked competitor names are the 11 in `aeo_competitors`; "names X" lines under-count untracked tools.

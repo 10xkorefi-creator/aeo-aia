@@ -12,9 +12,9 @@ export async function POST(request) {
   try { body = await request.json(); } catch { return NextResponse.json({ error: 'bad request' }, { status: 400 }); }
   const task = String(body?.task || '');
   const who = body?.assignee ? String(body.assignee) : null;
-  if (!/^T-\d{2,3}$/.test(task) || (who !== null && !PEOPLE.includes(who))) return NextResponse.json({ error: 'bad request' }, { status: 400 });
+  if (!/^[A-Z]-[A-Za-z0-9.-]{1,60}$/.test(task) || (who !== null && !PEOPLE.includes(who))) return NextResponse.json({ error: 'bad request' }, { status: 400 });
   try {
-    const rows = await q`update public.aeo_rec_tasks set assignee = ${who}, updated_at = now() where task_key = ${task} returning task_key, assignee`;
+    const rows = await q`update public.aeo_rec_tasks set assignee = ${who}, updated_at = now() where task_key = ${task} and is_active returning task_key, assignee`;
     if (!rows.length) return NextResponse.json({ error: 'not found' }, { status: 404 });
     return NextResponse.json({ task: rows[0].task_key, assignee: rows[0].assignee });
   } catch {
