@@ -1,37 +1,28 @@
 import Link from 'next/link';
 import { q } from '@/lib/db';
 import { listRuns, pickRun } from '@/lib/data';
-import { pct, num, date, monthLabel } from '@/lib/format';
-import { Bars, Table, TestBanner, Ask } from '@/components/ui';
+import { num, date, monthLabel } from '@/lib/format';
+import { Table, TestBanner } from '@/components/ui';
 import { Minis } from '@/components/minis';
 import { AssistantIcon, assistantName } from '@/components/assistant';
-import { askHref } from '@/lib/ask';
-import { gpt as G, aio as A, funnel as F, overview as O } from '@/lib/glossary';
+import { ScoreTile, Movers } from '@/components/score';
+import { assistantChange, googleChange } from '@/lib/change';
+import { funnel as F, overview as O } from '@/lib/glossary';
 import { HUBSPOT_AI_SEGMENT_URL, HUBSPOT_AI_DEALS_URL, HUBSPOT_AI_WON_URL } from '@/lib/links';
 import { Info, Hint } from '@/components/info';
 
 export const dynamic = 'force-dynamic';
 
-// One numbered question per band: the page reads top to bottom as three questions.
+const ENGINES = ['chatgpt', 'gemini', 'perplexity'];
+const COLOR = { chatgpt: 'var(--asst-chatgpt)', gemini: 'var(--asst-gemini)', perplexity: 'var(--asst-perplexity)' };
+
+// The page reads top to bottom as two questions: where do we stand in AI answers (and did it move), and what did it bring.
 function Band({ n, title, lead, info, children }) {
   return (
     <section className="band">
       <div className="band-head"><span className="band-n">{n}</span><h2>{title}<Info tip={info} /></h2></div>
       {lead ? <p className="band-lead">{lead}</p> : null}
       {children}
-    </section>
-  );
-}
-
-function Engine({ logo, title, href, children }) {
-  return (
-    <section className="channel">
-      <div className="channel-head">
-        <img src={logo} alt="" />
-        <div><h3 className="channel-title">{title}</h3></div>
-        <Link href={href}>Details <span className="arrow">→</span></Link>
-      </div>
-      <div className="channel-body">{children}</div>
     </section>
   );
 }
@@ -51,156 +42,100 @@ export default async function Overview({ searchParams }) {
   const runs = await listRuns();
   const run = await pickRun(runs, sp?.run);
   const runId = run?.run_id ?? '';
-  const [gptRows, aio, gptSov, aioSov, months, visitsBy, leadsBy, gscFrom, asstRows, recRows, extra] = await Promise.all([
-    q`select * from public.aeo_gpt_run_metrics_mv where run_id = ${runId}`,
-    q`select * from public.aeo_aio_run_metrics_mv where run_id = ${runId}`,
-    q`select display_name, brand_key, role, mention_sov from public.aeo_gpt_sov_mv where run_id = ${runId} and role in ('own','sov') order by mention_sov desc nulls last`,
-    q`select display_name, brand_key, role, citation_sov from public.aeo_aio_sov_mv where run_id = ${runId} and role in ('own','sov') order by citation_sov desc nulls last`,
+  const asst = await assistantChange(runId);
+  const google = await googleChange(runId);
+  const [months, extra, brandThrough] = await Promise.all([
     q`select * from public.aeo_funnel_monthly_v order by month desc`,
-    q`select case when session_source ~* 'chatgpt|chat\\.openai' then 'ChatGPT' when session_source ~* 'gemini' then 'Gemini' when session_source ~* 'perplexity' then 'Perplexity'
-        when session_source ~* 'claude' then 'Claude' when session_source ~* 'copilot' then 'Copilot' else 'Other' end assistant, sum(sessions) visits
-      from public.aeo_ga4_ai_monthly where session_source !~* '^openai$' and month >= (select min(month) from public.aeo_funnel_monthly_v) group by 1`,
-    q`select lower(assistant) assistant, sum(contacts) leads, coalesce(sum(contacts) filter (where tier = 'strict'), 0) strict from public.aeo_hubspot_ai_leads_monthly group by 1`,
-    q`select min(date) d0 from public.aeo_gsc_ai_daily where source = 'gsc_genai_export_dates'`,
-    q`select engine, answers_ok, aia_mention_rate, aia_citation_rate from public.aeo_asst_run_metrics_mv where run_id = ${runId} and answers_ok > 0`,
-    q`select engine, answers, recommended, recommended_rate, recommended_rate_ci_low lo, recommended_rate_ci_high hi from public.aeo_asst_recommended_v where run_id = ${runId}`,
     // per month, in the same order as the funnel: searches for our name (Search Console)
     q`select (select sum(impressions) from public.aeo_gsc_brand_daily_v b where b.kind = 'brand' and date_trunc('month', b.date)::date = f.month) brand_searches
       from public.aeo_funnel_monthly_v f order by f.month desc`,
+    q`select max(date) d from public.aeo_gsc_brand_daily`,
   ]);
   months.forEach((m, i) => { m.brand_searches = extra[i]?.brand_searches ?? null; });
-  // The chain per assistant: recommended with a link (latest run) -> visits -> leads (months shown in the funnel)
-  const recBy = Object.fromEntries(recRows.map((r) => [r.engine, r]));
-  const chain = ['chatgpt', 'gemini', 'perplexity'].map((e) => ({ engine: e, rec: recBy[e],
-    visits: Number(visitsBy.find((v) => v.assistant === assistantName(e))?.visits || 0),
-    leads: Number(leadsBy.find((l) => l.assistant === e)?.leads || 0) }));
-  // Gemini and Perplexity appear next to ChatGPT once a run has collected them
-  const asstBy = Object.fromEntries(asstRows.map((r) => [r.engine, r]));
-  const manyAssistants = ['gemini', 'perplexity'].some((e) => asstBy[e]);
-  const [gpt] = gptRows;
-  const aioBy = Object.fromEntries(aio.map((r) => [r.segment, r]));
-  const b = aioBy.buyer, a = aioBy.all;
   const baselineRuns = runs.filter((r) => r.run_type !== 'test' && r.status === 'complete').length;
+  const prevDate = ENGINES.map((e) => asst[e].prev?.run_date).find(Boolean) || google.prev?.run_date;
 
-  // Funnel totals over the months shown (`months` is latest first)
+  // What moved: one row per assistant and question, then Google keywords (most searched first)
+  const icon = (id) => <AssistantIcon id={id} size={15} />;
+  const moves = (k) => [
+    ...ENGINES.flatMap((e) => asst[e][k].map((r) => ({ ...r, icon: icon(e) }))),
+    ...google[k].slice().sort((a, b) => b.weight - a.weight).map((r) => ({ ...r, icon: icon('google') })),
+  ];
+  const gained = moves('gained'), lost = moves('lost');
+
+  // Results over the months shown (`months` is latest first)
   const sum = (k) => months.reduce((t, m) => t + Number(m[k] || 0), 0);
   const first = months[months.length - 1], last = months[0];
-  const tot = { months: months.length, impressions: sum('google_ai_impressions'), visits: sum('visits'), leads: sum('leads'), leadsStrict: sum('leads_strict'),
-    deals: sum('deals'), won: sum('won'), gscFrom: gscFrom[0]?.d0, gscThrough: months.find((m) => m.gsc_through)?.gsc_through,
+  const tot = { months: months.length, visits: sum('visits'), leads: sum('leads'), leadsStrict: sum('leads_strict'), deals: sum('deals'), won: sum('won'),
     ga4Through: months.find((m) => m.ga4_through)?.ga4_through, hubspotThrough: months.find((m) => m.hubspot_through)?.hubspot_through };
   const per = (x, y, unit) => (y ? `${(100 * x / y).toFixed(1)} ${unit}` : '');
-  const names = ['ChatGPT', 'Gemini', 'Perplexity', 'Claude', 'Copilot', 'Other'];
-  const byAssistant = names.map((n) => ({ assistant: n, visits: Number(visitsBy.find((v) => v.assistant === n)?.visits || 0),
-    leads: Number(leadsBy.find((l) => l.assistant === n.toLowerCase())?.leads || 0) })).filter((r) => r.visits || r.leads)
-    .sort((x, y) => y.visits - x.visits).map((r) => ({ ...r, icon: <AssistantIcon id={r.assistant} />, txt: `${num(r.visits)} visit${r.visits === 1 ? '' : 's'} · ${num(r.leads)} lead${r.leads === 1 ? '' : 's'}` }));
-
-  // Monthly series for the small charts, oldest first
   const chrono = months.slice().reverse();
-  const series = (k) => chrono.map((m) => ({ label: monthLabel(m.month), value: m[k] === null || m[k] === undefined ? null : Number(m[k]),
-    partial: m.is_current_month || (k === 'google_ai_impressions' && m.impressions_partial) }));
+  const series = (k) => chrono.map((m) => ({ label: monthLabel(m.month), value: m[k] === null || m[k] === undefined ? null : Number(m[k]), partial: m.is_current_month }));
   const period = first && last ? `${monthLabel(first.month)} to ${monthLabel(last.month)}` : '';
 
   return (
     <>
       <div className="pagehead">
         <div><h1>Overview</h1>
-          <p className="hint">Where AI Accountant stands in AI answers in India. Latest run {runId || '–'} on {run ? date(run.run_date) : '–'} · {num(baselineRuns)} baseline run{baselineRuns === 1 ? '' : 's'} so far.</p></div>
+          <p className="hint">Run of {run ? date(run.run_date) : '–'}{prevDate ? <>, compared with the run of {date(prevDate)}</> : null} · {num(baselineRuns)} baseline run{baselineRuns === 1 ? '' : 's'} so far.</p></div>
       </div>
       <TestBanner run={run} />
 
-      <Band n="1" title="AI visibility" info={O.visible}
-        lead="We ask AI assistants and Google the questions our buyers ask, several times each, and count how often AI Accountant shows up. Blue is us; grey is the competition.">
-        <div className="grid2">
-          <Engine logo="/logos/assistants.svg" title="AI assistants" href="/assistants">
-            <p className="chain-lead">An assistant sends us a buyer when it <b>recommends AI Accountant by name and links to our site</b>. That share of answers is the figure to move.<Info tip={O.recommended} /></p>
-            <div className="table-wrap">
-              <table className="chain">
-                <thead><tr><th>Assistant</th><th className="num">Recommends us with a link</th><th className="num">Visits sent</th><th className="num">Leads</th></tr></thead>
-                <tbody>
-                  {chain.map((c) => (
-                    <tr key={c.engine}>
-                      <td><span className="asst"><AssistantIcon id={c.engine} size={16} />{assistantName(c.engine)}</span></td>
-                      <td className="num">{c.rec ? <><b className="chain-rate">{pct(c.rec.recommended_rate)}</b><span className="chain-sub">{num(c.rec.recommended)} of {num(c.rec.answers)} answers</span></> : <span className="chain-sub">not collected in this run</span>}</td>
-                      <td className="num">{num(c.visits)}</td>
-                      <td className="num">{num(c.leads)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <p className="chain-note">Recommendation rate: run {runId}. Visits and leads: {period}.</p>
-          </Engine>
-
-          <Engine logo="/logos/google.svg" title="Google AI Overviews" href="/ai-overviews">
-            <div className="stat">
-              <div className="stat-value">{pct(b?.aia_cited_rate)}</div>
-              <div className="stat-text">
-                <div className="stat-label">of buyer searches cite aiaccountant.com<Info tip={A.citedBuyer(b)} /><Ask href={askHref('aio_cited', runId, 'buyer')} /></div>
-              </div>
-            </div>
-            <ul className="facts">
-              <li>Cited on <b>{num(b?.keywords_aia_cited_any)} of {num(b?.keywords)}</b> buyer keywords at least once<Info tip={A.citedAll(a, b, aioBy.informational)} /></li>
-            </ul>
-            <div>
-              <h4>Against direct competitors<Info tip={A.sov(aioSov)} /></h4>
-              <Bars rows={aioSov} labelKey="display_name" valueKey="citation_sov" max={1} highlight={(r) => r.brand_key === 'aia'} />
-            </div>
-          </Engine>
+      <Band n="1" title="Where we stand in AI answers, and how it moved" info={O.visible}
+        lead="We ask the questions our buyers ask, three times each, and count how often AI Accountant is recommended. Each card shows the share in this run and how it moved since the run before.">
+        <div className="scores">
+          {ENGINES.map((e) => {
+            const a = asst[e], c = a.cur;
+            return <ScoreTile key={e} href={`/assistants?engine=${e}`} icon={<AssistantIcon id={e} size={18} />} name={assistantName(e)} color={COLOR[e]}
+              rate={c ? Number(c.recommended_rate) : null} history={a.history.map((h) => ({ rate: Number(h.recommended_rate) }))}
+              sub={c ? <>{num(c.recommended)} of {num(c.answers)} answers recommend us with a link</> : 'Not collected in this run'}
+              change={a} prev={a.prev} changeInfo={O.change} />;
+          })}
+          <ScoreTile href="/ai-overviews" icon={<AssistantIcon id="google" size={18} />} name="Google AI Overviews"
+            rate={google.cur ? Number(google.cur.rate) : null} history={google.history.map((h) => ({ rate: Number(h.rate) }))}
+            sub={google.cur ? <>{num(google.cur.hit)} of {num(google.cur.n)} buyer searches link to our site</> : 'Not collected in this run'}
+            change={google} prev={google.prev} changeInfo={O.change} />
         </div>
+        <p className="score-key">
+          <b>Assistants:</b> the share of answers that name AI Accountant as a product and link to aiaccountant.com.<Info tip={O.recommended} />{' '}
+          <b>Google:</b> the share of buyer searches whose AI Overview links to our site.{' '}
+          Do not compare one card with another; read each against its own earlier runs.
+        </p>
+        {prevDate ? (
+          <div className="card">
+            <h3 className="card-h">What moved since {date(prevDate)}<Info tip={O.moved} /></h3>
+            <Movers gained={gained} lost={lost} max={7} more={<><Link href="/assistants">AI assistants</Link> and <Link href="/ai-overviews">Google</Link> pages</>} />
+          </div>
+        ) : null}
       </Band>
 
-      <Band n="2" title="Traffic & Conversions" info={F.section(tot)}
+      <Band n="2" title="What it brought" info={F.section(tot)}
         lead={<>{period}: AI assistants sent <b>{num(tot.visits)}</b> visits, which became <b>{num(tot.leads)}</b> leads, <b>{num(tot.deals)}</b> deals and <b>{num(tot.won)}</b> customers. <a href="/api/src?k=funnel" target="_blank" rel="noopener noreferrer">See the data behind it</a>.</>}>
         <div className="card">
-          <div className="funnel-wrap">
-            <div className="fgroup seen">
-              <div className="fgroup-label"><AssistantIcon id="google" size={15} />Seen on Google</div>
-              <div className="funnel one">
-                <div className="fstep"><div className="fstep-label">AI impressions<Info tip={F.seen(tot)} /></div>
-                  <div className="fstep-value">{num(tot.impressions)}</div><div className="fstep-sub">{tot.gscFrom ? `since ${date(tot.gscFrom)}` : ''}</div></div>
-              </div>
-            </div>
-            <div className="fbreak" role="note"><span>Google does not report clicks from AI answers, so this cannot be linked to the steps on the right</span></div>
-            <div className="fgroup">
-              <div className="fgroup-label">From AI assistants<span className="logo-row">{['chatgpt', 'gemini', 'perplexity', 'claude', 'copilot'].map((id) => <span key={id} title={assistantName(id)}><AssistantIcon id={id} size={15} /></span>)}</span></div>
-              <div className="funnel four">
-                <div className="fstep"><div className="fstep-label">Visits<Info tip={F.visits(tot)} /></div>
-                  <div className="fstep-value">{num(tot.visits)}</div><div className="fstep-sub">to the website</div></div>
-                <div className="fstep"><div className="fstep-label">Leads<Info tip={F.leads(tot)} /><HubSpotLink href={HUBSPOT_AI_SEGMENT_URL} tip={F.hubspotLink} label="Open these leads in HubSpot" /></div>
-                  <div className="fstep-value">{num(tot.leads)}</div><div className="fstep-sub">{per(tot.leads, tot.visits, 'per 100 visits')}</div></div>
-                <div className="fstep"><div className="fstep-label">Deals<Info tip={F.deals(tot)} /><HubSpotLink href={HUBSPOT_AI_DEALS_URL} tip={F.hubspotDealsLink} label="Open these deals in HubSpot" /></div>
-                  <div className="fstep-value">{num(tot.deals)}</div><div className="fstep-sub">{per(tot.deals, tot.leads, 'per 100 leads')}</div></div>
-                <div className="fstep"><div className="fstep-label">Won<Info tip={F.won(tot)} /><HubSpotLink href={HUBSPOT_AI_WON_URL} tip={F.hubspotWonLink} label="Open these customers in HubSpot" /></div>
-                  <div className="fstep-value">{num(tot.won)}</div><div className="fstep-sub">{per(tot.won, tot.leads, 'per 100 leads')}</div></div>
-              </div>
-            </div>
+          <div className="funnel four">
+            <div className="fstep"><div className="fstep-label">Visits from AI assistants<Info tip={F.visits(tot)} /></div>
+              <div className="fstep-value">{num(tot.visits)}</div><div className="fstep-sub">to the website</div></div>
+            <div className="fstep"><div className="fstep-label">Leads<Info tip={F.leads(tot)} /><HubSpotLink href={HUBSPOT_AI_SEGMENT_URL} tip={F.hubspotLink} label="Open these leads in HubSpot" /></div>
+              <div className="fstep-value">{num(tot.leads)}</div><div className="fstep-sub">{per(tot.leads, tot.visits, 'per 100 visits')}</div></div>
+            <div className="fstep"><div className="fstep-label">Deals<Info tip={F.deals(tot)} /><HubSpotLink href={HUBSPOT_AI_DEALS_URL} tip={F.hubspotDealsLink} label="Open these deals in HubSpot" /></div>
+              <div className="fstep-value">{num(tot.deals)}</div><div className="fstep-sub">{per(tot.deals, tot.leads, 'per 100 leads')}</div></div>
+            <div className="fstep"><div className="fstep-label">Customers<Info tip={F.won(tot)} /><HubSpotLink href={HUBSPOT_AI_WON_URL} tip={F.hubspotWonLink} label="Open these customers in HubSpot" /></div>
+              <div className="fstep-value">{num(tot.won)}</div><div className="fstep-sub">{per(tot.won, tot.leads, 'per 100 leads')}</div></div>
           </div>
-          <div className="assist">
-            <h4>Which assistants send them<Info tip={F.byAssistant} /></h4>
-            <Bars rows={byAssistant} labelKey="assistant" valueKey="visits" format={(v) => num(v)} valueWidth={170} highlight={() => true} />
-          </div>
-        </div>
-      </Band>
-
-      <Band n="3" title="Trends" info={O.trend}
-        lead="One bar per month, oldest on the left. Read left to right as a chain: visits from AI assistants, people searching for our name, then leads and deals. Point at a month to see it in every chart. A lighter bar is a month with incomplete data, such as the month still in progress.">
-        <div className="card">
-          <Minis charts={[{ title: 'Visits from AI assistants', points: series('visits') },
-            { title: 'Searches for our name on Google', points: series('brand_searches') }, { title: 'Leads', points: series('leads') },
-            { title: 'Deals', points: series('deals') }, { title: 'Google AI impressions', points: series('google_ai_impressions') }]} />
+          <h3 className="card-h">Month by month<Info tip={O.trend} /></h3>
+          <Minis charts={[{ title: 'Visits from AI assistants', points: series('visits') }, { title: 'Searches for our name on Google', points: series('brand_searches') },
+            { title: 'Leads', points: series('leads') }, { title: 'Deals', points: series('deals') }]} />
           <details className="tableview">
             <summary>Show every month as a table</summary>
             <Table columns={[
               { key: 'month', label: 'Month', render: (m) => <span className="nowrap">{monthLabel(m.month)}{m.is_current_month ? <span className="muted"> (so far)</span> : null}</span> },
-              { key: 'google_ai_impressions', label: 'Google AI impressions', num: true, info: F.seen(tot), render: (m) => (m.google_ai_impressions === null ? '–' : <>{num(m.google_ai_impressions)}{m.impressions_partial ? <span className="muted"> part</span> : null}</>) },
-              { key: 'google_cited_rate', label: 'Google cited', num: true, info: F.cited, render: (m) => (m.google_cited_rate === null ? '–' : pct(m.google_cited_rate)) },
-              { key: 'visits', label: 'Visits', num: true, info: F.visits(tot), render: (m) => (m.visits === null ? '–' : num(m.visits)) },
+              { key: 'visits', label: 'Visits from AI assistants', num: true, info: F.visits(tot), render: (m) => (m.visits === null ? '–' : num(m.visits)) },
               { key: 'brand_searches', label: 'Searches for our name', num: true, info: O.chainBrand, render: (m) => (m.brand_searches === null ? '–' : num(m.brand_searches)) },
               { key: 'leads', label: 'Leads', num: true, info: F.leads(tot), render: (m) => num(m.leads) },
               { key: 'deals', label: 'Deals', num: true, info: F.deals(tot), render: (m) => num(m.deals) },
-              { key: 'won', label: 'Won', num: true, info: F.won(tot), render: (m) => num(m.won) }]} rows={months} />
+              { key: 'won', label: 'Customers', num: true, info: F.won(tot), render: (m) => num(m.won) }]} rows={months} />
           </details>
-          <p className="hint" style={{ margin: '14px 0 0' }}>Data loaded to: Search Console {date(tot.gscThrough)} · Google Analytics {date(tot.ga4Through)} · HubSpot {date(tot.hubspotThrough)}.</p>
+          <p className="hint" style={{ margin: '14px 0 0' }}>A lighter bar is the month still in progress. Week by week, next to the recommendation rate: <Link href="/assistants">AI assistants</Link>. Loaded to: Google Analytics {date(tot.ga4Through)} · Search Console {date(brandThrough[0]?.d)} · HubSpot {date(tot.hubspotThrough)}.</p>
         </div>
       </Band>
     </>

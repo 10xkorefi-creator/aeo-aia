@@ -10,7 +10,7 @@ const tabs = [
   ['/', 'Overview'],
   ['/assistants', 'AI assistants'],
   ['/ai-overviews', 'Google AI Overviews'],
-  ['/traffic', 'Traffic & conversions'],
+  ['/traffic', 'Visits & leads'],
   ['/lists', 'Prompts & keywords'],
   ['/runs', 'Runs & raw data'],
 ];

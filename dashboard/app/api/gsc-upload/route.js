@@ -23,7 +23,7 @@ function parseCsv(text) {
 const toInt = (v) => { const n = Number(String(v ?? '').replace(/[^0-9.-]/g, '')); return Number.isFinite(n) ? Math.round(n) : null; };
 
 export async function POST(req) {
-  const back = (qs) => Response.redirect(new URL(`/traffic?${qs}`, req.url), 303);
+  const back = (qs) => Response.redirect(new URL(`/runs?${qs}`, req.url), 303);
   try {
     const form = await req.formData();
     const expected = process.env.UPLOAD_PASSWORD || process.env.DASHBOARD_PASSWORD;

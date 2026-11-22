@@ -280,8 +280,8 @@ export const traffic = {
 // ---------- AEO funnel (Overview). t = totals over the months shown ----------
 export const funnel = {
   section: (t) => ({
-    title: 'Traffic & Conversions',
-    body: 'The whole path in one place: how often we are seen in AI answers, how many people then visit the site from an AI assistant, how many become leads in HubSpot, how many get a deal, and how many pay. Each stage is counted by a different system, so read it as a trend over time, not as the same people moving step by step.',
+    title: 'What it brought',
+    body: 'The results in one place: how many people visit the site from an AI assistant, how many become leads in HubSpot, how many get a deal, and how many pay. Each stage is counted by a different system, so read it as a trend over time, not as the same people moving step by step.',
     now: t ? `${t.months} months shown: ${num(t.visits)} visits, ${num(t.leads)} leads, ${num(t.deals)} deals, ${num(t.won)} customers.` : null,
   }),
   seen: (t) => ({
@@ -324,12 +324,16 @@ export const overview = {
     body: 'The share of answers to our tracked buyer questions where the assistant both names AI Accountant as a product and includes a link to aiaccountant.com. A link is what lets a reader reach our site, and being named is what makes them want to. Two in three AI-sourced leads first landed on our homepage or a product page, which is where these links point. Visits and leads are counted over a longer period than the run, so read the columns as a chain, not as one period.',
   },
   visible: {
-    title: 'AI visibility',
-    body: 'The baseline. For ChatGPT we count how often the answer names AI Accountant. For Google we count how often aiaccountant.com is one of the sources shown with the AI Overview. Each card also shows how we compare with our five direct competitors.',
+    title: 'Where we stand in AI answers',
+    body: 'One card for each place we track. For ChatGPT, Gemini and Perplexity the figure is the share of answers that name AI Accountant as a product and link to our site. For Google it is the share of buyer searches whose AI Overview links to our site. The small line is the same figure over the runs so far.',
   },
   change: {
     title: 'Real change or normal variation?',
-    body: 'AI answers differ a little every time they are asked, so two runs never give exactly the same rate. A change counts as real only when the new rate falls outside the range the previous run could plausibly have produced. Inside that range it is treated as no change.',
+    body: 'AI answers differ a little every time they are asked, so two runs never give exactly the same figure. We compare only the questions (or keywords) asked in both runs, one by one, and call the change real only when it is larger than that normal variation would explain. "No real change" means the difference is small enough to be chance: do not act on it. A real rise or drop is worth explaining.',
+  },
+  moved: {
+    title: 'What moved',
+    body: 'Questions and keywords where we went from not being recommended at all in the previous run to being recommended in at least half of the answers in this one, and the reverse. A change in a single answer is ignored, because one answer can flip by chance. The two figures are answers that recommended us out of answers collected, before and now. Look for the same question staying won or lost over two or three runs.',
   },
   chain: {
     title: 'Is AI visibility moving the outcomes?',
@@ -348,19 +352,19 @@ export const overview = {
     body: 'How many times people in India searched Google for AI Accountant by name ("ai accountant", "aiaccountant", or the name with a word such as login, pricing or Tally) and saw our site, from Search Console. It catches the people an AI answer sends who never click a link in it. Searches that use the phrase for the job or the idea (jobs, salary, courses, "best" and "top" lists) are left out. Search Console runs about two days behind.',
   },
   trend: {
-    title: 'Trends',
-    body: 'The same business figures month by month, so a rise or fall is visible at a glance. The number above each chart is the latest complete month, and the small label marks the highest month. Open the table underneath for every figure.',
+    title: 'Month by month',
+    body: 'The results month by month, so a rise or fall is visible at a glance. Read left to right: visits from AI assistants, people searching Google for our name, then leads and deals. The number above each chart is the latest complete month, and the small label marks the highest month. Point at a month to see it in every chart.',
   },
 };
 
 // ---------- Navigation tabs (no figures) ----------
 export const tabs = {
-  '/': 'The headline numbers for the latest run: AI assistants and Google side by side.',
+  '/': 'Where we stand in AI answers, what moved since the last run, and what it brought.',
   '/assistants': 'How often ChatGPT, Gemini and Perplexity recommend AI Accountant with a link, and the visits and leads that follow.',
   '/ai-overviews': 'How often Google\'s AI Overview links to aiaccountant.com for the keywords buyers search.',
-  '/traffic': 'Website visits and HubSpot contacts that came from AI assistants.',
+  '/traffic': 'Who visited from an AI assistant and who became a lead.',
   '/lists': 'The exact questions and keywords we track, and the brands we compare against.',
-  '/runs': 'Every data collection run, its status and its log.',
+  '/runs': 'Every data collection run, how fresh each source is, and the Search Console upload.',
 };
 
 // ---------- AI assistants page: one figure, and what follows from it ----------
@@ -374,7 +378,7 @@ export const assistants = {
   visits: { title: 'Visits sent', body: 'Visits to aiaccountant.com that Google Analytics traced to this assistant, over the months stated under the table. This is a longer period than one run.' },
   leads: { title: 'Leads', body: 'HubSpot contacts whose source is this assistant, over the same months as the visits. Counted with the same rule as the Leads figure on the Overview.' },
   rateTrend: { title: 'How to read this chart', body: 'Each point is one run. A line shows whether that assistant is recommending us more or less often over time. Point at a run to see the count behind each figure. Compare each line with its own past, not with the other lines.' },
-  visitsTrend: { title: 'How to read this chart', body: 'Visits per week that Google Analytics traced to each assistant. If the recommendation rate for an assistant rises and stays up, its line here should rise in the following weeks. This data is loaded by hand, so it can be a few days behind.' },
+  visitsTrend: { title: 'How to read this chart', body: 'Visits per week that Google Analytics traced to each assistant. If the recommendation rate for an assistant rises and stays up, its line here should rise in the following weeks. This data is refreshed every day and runs one day behind.' },
   byPrompt: { title: 'Which questions get us recommended', body: 'One row per tracked question. Each cell shows in how many of that assistant\'s answers we were recommended with a link, out of the answers collected. Questions showing 0 everywhere are where content work would add the most.' },
   brands: { title: 'Who else gets recommended with a link', body: 'The same figure for each direct competitor: the share of answers that name the brand and link to its own website. It shows who the assistants send buyers to when it is not us.' },
   pages: { title: 'Which of our pages they link to', body: 'Our pages that the assistants linked to in this run, with the visits AI assistants sent to each page in Google Analytics. Links to the homepage and product pages bring the visitors most likely to become leads; links to blog posts bring readers.' },

@@ -437,3 +437,34 @@ Open
 - AI assistants page: the two side-by-side charts (rate per run, weekly visits) are replaced by one weekly timeline of three stacked charts on a shared axis: recommends us with a link, visits sent (same colour per assistant), searches for our name. Each weekly rate pools every run of that week.
 - Charts draw complete weeks only. The table also shows incomplete weeks, marked "so far" (week in progress) or "part week" (data started mid-week).
 - Code now lives in GitHub (10xkorefi-creator/aeo-aia, public); dashboard edits are made in the repository copy and deployed from there.
+
+## 22 Nov 2026: Dashboard redesign around "what moved since the last run"
+
+Critique of the old design
+- No page showed change since the previous run; every figure was a snapshot.
+- The same figures were repeated on several pages (visits and leads per assistant on three pages, the weekly visits chart on two, Google AI impressions on four).
+- One table row mixed periods: a rate from one run next to 12 months of visits and leads.
+- Jargon (tiers, strict, segment, opp/SQL) and long tables that were mostly zeros (76 questions, 78 keywords, 94 contacts).
+
+What each page is now
+- Overview: (1) one card per tracked surface (ChatGPT, Gemini, Perplexity, Google AI Overviews) with the rate, a run-by-run line, and the change since the previous run with a verdict (real rise, real drop, no real change); a "What moved" list of questions and keywords won or lost. (2) "What it brought": visits, leads, deals, customers, and four monthly charts (visits, searches for our name, leads, deals).
+- AI assistants: the same cards per assistant, the weekly timeline (recommended, visited, searched for), the questions where we are recommended with new/lost markers, the gap collapsed underneath, competitors, our linked pages, most-cited websites.
+- Google AI Overviews: link rate card with change, appearances in the last 28 days against the 28 before, link rate per run, appearances per week, buyer keywords that link to us with new/lost markers, the gap and informational keywords collapsed, competitors, most-cited websites, our most-shown pages.
+- Visits & leads (was Traffic & conversions): three totals, one table by assistant (visits, viewed free trial, submitted form, leads), leads by assistant, landing pages, the full lead list collapsed.
+- Runs & raw data: now also holds "how fresh each source is" and the Search Console upload.
+
+Removed
+- Overview: the assistant table that mixed periods, the Google competitor bars, the Google AI impressions box in the funnel, "which assistants send them", the Google AI impressions and Google cited columns.
+- AI assistants: visits, leads and leads-per-100-visits columns; the question id and page type columns.
+- Google: keyword id and segment columns, the by-topic table.
+- Visits & leads: the recommendation column, engaged share, form-started column, the lead split, the automated-traffic row (now a footnote), the weekly visits chart (kept on AI assistants), the tier table, contacts per week.
+
+How change is judged (lib/change.js)
+- Like for like: only questions or keywords asked in both runs are compared.
+- Per question, this run's rate minus the previous run's; the change is the average of those differences. It is "real" only if larger than 1.96 times its standard error (paired test by question, which also handles answers to one question moving together).
+- A question counts as won or lost only when it went from 0 to at least half of the answers, or the reverse. Single-answer flips are ignored.
+- Run of 21/11 against 19/11: ChatGPT +0.9 pts, Gemini -2.8, Google +0.3 (none real); Perplexity +6.5 (real rise).
+
+Automation
+- New n8n workflow pmr82SL5aFzeAV7B "AEO Baseline v1 | Google Analytics, AI visits (daily)", 07:40 daily, published: four free Google Analytics reports via treg, loaded by aeo_ga4_refresh_json (daily visits replace by day; monthly visits upsert; free-trial journey for 16/08/2026 to yesterday). First run loaded to 21/11/2026.
+- Still by hand: HubSpot leads and deals (last pulled 18/11/2026) and the Google AI report upload.

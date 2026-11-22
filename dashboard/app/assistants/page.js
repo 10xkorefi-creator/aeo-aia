@@ -1,13 +1,15 @@
 import Link from 'next/link';
 import { q } from '@/lib/db';
 import { listRuns, pickRun } from '@/lib/data';
-import { pct, num, date, monthLabel } from '@/lib/format';
+import { pct, num, date } from '@/lib/format';
 import { Section, Table, RunPicker, TestBanner } from '@/components/ui';
 import { ChainTrend } from '@/components/chain-trend';
 import { PromptPanel } from '@/components/prompt-panel';
 import { AssistantIcon, assistantName } from '@/components/assistant';
 import { assistants as A, overview as O } from '@/lib/glossary';
 import { Info } from '@/components/info';
+import { ScoreTile, Moved } from '@/components/score';
+import { assistantChange } from '@/lib/change';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,13 +30,8 @@ export default async function Assistants({ searchParams }) {
   const run = await pickRun(runs, sp?.run);
   const runId = run?.run_id ?? '';
 
-  const [recAll, visitsBy, leadsBy, span, weekly, prompts, brands, pages, domains, weeks, weekRec] = await Promise.all([
-    q`select engine, run_id, run_date, answers, recommended, recommended_rate, recommended_rate_ci_low lo, recommended_rate_ci_high hi, prompts_recommended, prompts
-      from public.aeo_asst_recommended_v where run_type <> 'test' or run_id = ${runId} order by run_date, run_id`,
-    q`select case when session_source ~* 'chatgpt|chat\\.openai' then 'chatgpt' when session_source ~* 'gemini' then 'gemini' when session_source ~* 'perplexity' then 'perplexity' else 'other' end engine, sum(sessions) visits
-      from public.aeo_ga4_ai_monthly where session_source !~* '^openai$' and month >= (select min(month) from public.aeo_funnel_monthly_v) group by 1`,
-    q`select lower(assistant) engine, sum(contacts) leads from public.aeo_hubspot_ai_leads_monthly group by 1`,
-    q`select min(month) m0, max(month) m1 from public.aeo_funnel_monthly_v`,
+  const asst = await assistantChange(runId);
+  const [weekly, prompts, brands, pages, domains, weeks, weekRec] = await Promise.all([
     q`select to_char(date_trunc('week', date), 'YYYY-MM-DD') wk, ai_source engine, sum(sessions) visits
       from public.aeo_ga4_ai_traffic_v where ai_source in ('chatgpt', 'gemini', 'perplexity') group by 1, 2`,
     q`select m.engine, m.prompt_key, p.prompt_text, coalesce(p.theme, p.topic, '') topic, count(*) n, count(*) filter (where m.mentioned and m.cited) rec
@@ -61,12 +58,8 @@ export default async function Assistants({ searchParams }) {
       from public.aeo_asst_recommended_v where run_type <> 'test' and run_status = 'complete' group by 1, 2`,
   ]);
 
-  // ---- the chain for the selected run
-  const rec = Object.fromEntries(recAll.filter((r) => r.run_id === runId).map((r) => [r.engine, r]));
-  const withData = shown.filter((e) => Number(rec[e]?.answers) > 0);
-  const vBy = Object.fromEntries(visitsBy.map((r) => [r.engine, Number(r.visits)]));
-  const lBy = Object.fromEntries(leadsBy.map((r) => [r.engine, Number(r.leads)]));
-  const period = span[0]?.m0 ? `${monthLabel(span[0].m0)} to ${monthLabel(span[0].m1)}` : '';
+  const withData = shown.filter((e) => Number(asst[e].cur?.answers) > 0);
+  const prevDate = shown.map((e) => asst[e].prev?.run_date).find(Boolean);
 
   // ---- one weekly timeline: recommended with a link -> visits sent -> searches for our name
   const one = tab === 'all' ? null : assistantName(tab);
@@ -94,7 +87,10 @@ export default async function Assistants({ searchParams }) {
     const row = pm.get(r.prompt_key) || { prompt_key: r.prompt_key, prompt_text: r.prompt_text, topic: r.topic, total: 0 };
     row[r.engine] = r; if (shown.includes(r.engine)) row.total += Number(r.rec || 0); pm.set(r.prompt_key, row);
   }
+  const moved = (r, e) => asst[e].status.get(r.prompt_key);
+  const touched = (r) => r.total > 0 || shown.some((e) => moved(r, e));
   const promptRows = [...pm.values()].sort((a, b) => b.total - a.total || a.prompt_key.localeCompare(b.prompt_key));
+  const wonRows = promptRows.filter(touched), gapRows = promptRows.filter((r) => !touched(r));
   const promptsHit = promptRows.filter((r) => r.total > 0).length;
 
   // ---- brands: who else is recommended with a link
@@ -104,7 +100,7 @@ export default async function Assistants({ searchParams }) {
 
   const dm = new Map();
   for (const r of domains) { const row = dm.get(r.domain) || { domain: r.domain, top: 0 }; row[r.engine] = r; if (shown.includes(r.engine)) row.top = Math.max(row.top, Number(r.share_of_answers || 0)); dm.set(r.domain, row); }
-  const domainRows = [...dm.values()].filter((r) => r.top > 0).sort((a, b) => b.top - a.top).slice(0, 20);
+  const domainRows = [...dm.values()].filter((r) => r.top > 0).sort((a, b) => b.top - a.top).slice(0, 15);
   // our pages: on one assistant's tab, only the pages that assistant linked to
   const linked = (r) => shown.reduce((t, e) => t + Number(r[e] || 0), 0);
   const pageRows = pages.filter((r) => linked(r) > 0).sort((a, b) => linked(b) - linked(a));
@@ -128,31 +124,17 @@ export default async function Assistants({ searchParams }) {
         ))}
       </div>
 
-      <Section title={one ? `How often ${one} recommends us with a link` : 'How often each assistant recommends us with a link'} info={A.recommended}
-        hint="An assistant sends us a buyer when it names AI Accountant as a product and links to aiaccountant.com in the same answer. This is the figure to move; visits and leads follow from it.">
-        <div className="table-wrap">
-          <table className="chain wide">
-            <thead><tr><th>Assistant</th><th className="num">Recommends us with a link<Info tip={A.rate} align="end" /></th><th className="num">On how many questions<Info tip={A.questions} align="end" /></th>
-              <th className="num">Visits sent<Info tip={A.visits} align="end" /></th><th className="num">Leads<Info tip={A.leads} align="end" /></th><th className="num">Leads per 100 visits</th></tr></thead>
-            <tbody>
-              {shown.map((e) => {
-                const r = rec[e];
-                return (
-                  <tr key={e}>
-                    <td><Name id={e} /></td>
-                    <td className="num">{r ? <><b className="chain-rate ink">{pct(r.recommended_rate)}</b><span className="chain-sub">{num(r.recommended)} of {num(r.answers)} answers · likely {pct(r.lo)} to {pct(r.hi)}</span></> : <span className="chain-sub">not collected in this run</span>}</td>
-                    <td className="num">{r ? `${num(r.prompts_recommended)} of ${num(r.prompts)}` : '–'}</td>
-                    <td className="num">{num(vBy[e] || 0)}</td>
-                    <td className="num">{num(lBy[e] || 0)}</td>
-                    <td className="num">{vBy[e] ? (100 * (lBy[e] || 0) / vBy[e]).toFixed(1) : '–'}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        <p className="chain-note">Recommendation rate: run {runId} on {run ? date(run.run_date) : '–'}. Visits (Google Analytics) and leads (HubSpot): {period}. The rate cannot be compared across assistants as a predictor of leads, because far more buyers use ChatGPT; read each assistant against its own earlier runs.</p>
-      </Section>
+      <div className={`scores ${shown.length === 1 ? 'one' : 'three'}`}>
+        {shown.map((e) => {
+          const a = asst[e], c = a.cur;
+          return <ScoreTile key={e} icon={<AssistantIcon id={e} size={18} />} name={assistantName(e)} color={COLOR[e]}
+            rate={c ? Number(c.recommended_rate) : null} history={a.history.map((h) => ({ rate: Number(h.recommended_rate) }))}
+            sub={c ? <>{num(c.recommended)} of {num(c.answers)} answers recommend us with a link · on {num(c.prompts_recommended)} of {num(c.prompts)} questions</> : 'Not collected in this run'}
+            change={a} prev={a.prev} changeInfo={O.change} />;
+        })}
+      </div>
+      <p className="score-key">An assistant sends us a buyer when it <b>names AI Accountant as a product and links to aiaccountant.com</b> in the same answer.<Info tip={A.recommended} />{' '}
+        This is the figure to move. Far more buyers use ChatGPT, so do not compare one assistant with another; read each against its own earlier runs.</p>
 
       <Section title="Week by week: recommended, then visited, then searched for" info={O.chain}
         hint={`One timeline. When ${one || 'an assistant'} recommends us more often (1), the visits it sends should follow (2). People who see us in an answer but do not click often search for AI Accountant by name later (3); that count covers all assistants together. Point at a week to read all three.`}>
@@ -169,9 +151,13 @@ export default async function Assistants({ searchParams }) {
       </Section>
 
       <Section title="Which questions get us recommended" info={A.byPrompt}
-        hint={`Answers that recommend us with a link, out of answers collected. At least one assistant does so on ${num(promptsHit)} of ${num(promptRows.length)} questions; the rest are the gap. Click a question to see every page the answers cited.`}>
-        <Table columns={[{ key: 'prompt_key', label: '#' }, { key: 'prompt_text', label: 'Question asked', render: (r) => <PromptPanel run={runId} promptKey={r.prompt_key} text={r.prompt_text} engines={withData} /> }, { key: 'topic', label: 'Topic' },
-          ...cols((r, e) => (r[e] ? <span className={Number(r[e].rec) > 0 ? 'hit' : 'miss'}>{frac(r[e].rec, r[e].n)}</span> : '–'))]} rows={promptRows} />
+        hint={`Answers that recommend us with a link, out of answers collected, on the ${num(promptsHit)} of ${num(promptRows.length)} questions where at least one assistant does.${prevDate ? ` "New" and "lost" compare with the run of ${date(prevDate)}.` : ''} Click a question to see every page the answers cited.`}>
+        <Table columns={[{ key: 'prompt_text', label: 'Question asked', render: (r) => <PromptPanel run={runId} promptKey={r.prompt_key} text={r.prompt_text} engines={withData} /> }, { key: 'topic', label: 'Topic' },
+          ...cols((r, e) => (r[e] ? <><Moved status={moved(r, e)} /><span className={Number(r[e].rec) > 0 ? 'hit' : 'miss'}>{frac(r[e].rec, r[e].n)}</span></> : '–'))]} rows={wonRows} empty="No assistant recommends us on any tracked question in this run." />
+        <details className="tableview">
+          <summary>The gap: {num(gapRows.length)} questions where no assistant recommends us</summary>
+          <Table columns={[{ key: 'prompt_text', label: 'Question asked', render: (r) => <PromptPanel run={runId} promptKey={r.prompt_key} text={r.prompt_text} engines={withData} /> }, { key: 'topic', label: 'Topic' }]} rows={gapRows} />
+        </details>
       </Section>
 
       <div className="grid2">
@@ -180,10 +166,10 @@ export default async function Assistants({ searchParams }) {
             ...cols((r, e) => (r[e] ? pct(Number(r[e].rec) / Math.max(1, Number(r[e].n))) : '–'))]} rows={brandRows} />
         </Section>
         <Section title="Which of our pages they link to" info={A.pages}
-          hint={`Answers in this run linking to each page, and the visits AI assistants sent to that page${pages[0]?.d0 ? ` from ${date(pages[0].d0)} to ${date(pages[0].d1)}` : ''}.`}>
-          <Table columns={[{ key: 'path', label: 'Page', render: (r) => <span className="path">{r.path}</span> }, { key: 'page_type', label: 'Type' },
+          hint={`Answers in this run that link to each page, and the visits AI assistants sent to that page${pages[0]?.d0 ? ` from ${date(pages[0].d0)} to ${date(pages[0].d1)}` : ''}.`}>
+          <Table columns={[{ key: 'path', label: 'Page', render: (r) => <span className="path">{r.path}</span> },
             { key: 'total', label: 'Linked in answers', num: true, render: (r) => <>{num(linked(r))}<span className="chain-sub">{shown.filter((e) => Number(r[e]) > 0).map((e) => `${assistantName(e)} ${num(r[e])}`).join(' · ')}</span></> },
-            { key: 'visits', label: 'AI visits', num: true, render: (r) => num(r.visits ?? 0) }]} rows={pageRows} />
+            { key: 'visits', label: 'Visits from AI assistants', num: true, render: (r) => num(r.visits ?? 0) }]} rows={pageRows} />
         </Section>
       </div>
 
