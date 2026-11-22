@@ -328,8 +328,8 @@ export const overview = {
     body: 'One card for each place we track. For ChatGPT, Gemini and Perplexity the figure is the share of answers that name AI Accountant as a product and link to our site. For Google it is the share of buyer searches whose AI Overview links to our site. The small line is the same figure over the runs so far.',
   },
   change: {
-    title: 'Real change or normal variation?',
-    body: 'AI answers differ a little every time they are asked, so two runs never give exactly the same figure. We compare only the questions (or keywords) asked in both runs, one by one, and call the change real only when it is larger than that normal variation would explain. "No real change" means the difference is small enough to be chance: do not act on it. A real rise or drop is worth explaining.',
+    title: 'Is the change real?',
+    body: 'Two things move these figures without any work from us. First, an assistant answers a little differently each time it is asked. Second, the web results an assistant draws on shift from day to day, so a question can start or stop recommending us between two runs. We compare only the questions (or keywords) asked in both runs. "No real change" means the difference is small enough to be chance. "To confirm in the next run" means it is larger than chance, but one run cannot tell a lasting shift from a day-to-day swing: treat it as lasting only if the next run stays at the new level, and act on it only then.',
   },
   moved: {
     title: 'What moved',

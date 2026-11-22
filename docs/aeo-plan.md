@@ -468,3 +468,11 @@ How change is judged (lib/change.js)
 Automation
 - New n8n workflow pmr82SL5aFzeAV7B "AEO Baseline v1 | Google Analytics, AI visits (daily)", 07:40 daily, published: four free Google Analytics reports via treg, loaded by aeo_ga4_refresh_json (daily visits replace by day; monthly visits upsert; free-trial journey for 16/08/2026 to yesterday). First run loaded to 21/11/2026.
 - Still by hand: HubSpot leads and deals (last pulled 18/11/2026) and the Google AI report upload.
+
+## 22 Nov 2026: Why Perplexity rose 6.5 points with no AEO work
+
+- On the 72 questions asked in both runs (19/11 and 21/11): 24 then 38 answers recommended us. 6 questions moved up, none down. Four went from 0 of 3 to 3 of 3 (P028, P083, S007, S010), two from 0 to 1 of 3 (P050, S001).
+- Cause is on Perplexity's side: for those questions its search returned our pages that it had not returned two days earlier (for example three bank-reconciliation blog posts for P028; /gst-recon and the GST product page for P083). Answers linking to aiaccountant.com: 44 then 69 of 216. Model (sonar) and sources per answer (10.0) were unchanged.
+- Perplexity gives the same result for all 3 answers to a question (every count is a multiple of 3), so a question moves as a block and one changed search result moves the rate by 1.4 points.
+- The label "real rise" overstated it. The test shows the move is larger than re-asking noise; it cannot show that it lasts or that we caused it. With two Perplexity runs the normal day-to-day swing is unknown.
+- Dashboard wording changed: "real rise" / "real drop" are now "rise, to confirm in the next run" / "drop, to confirm in the next run". Rule for reading: treat a change as lasting only if the next run stays at the new level.

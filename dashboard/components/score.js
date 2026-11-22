@@ -4,7 +4,7 @@ import { Info } from '@/components/info';
 
 const day = (v) => date(v).slice(0, 5);
 
-// "▲ 1.6 pts since 19/11 · no real change". Colour is used only for a change that passed the test; the arrow and the
+// "▲ 1.6 pts since 19/11 · no real change" or "▲ 6.5 pts since 19/11 · rise, to confirm in the next run". Colour is used only for a change that passed the test; the arrow and the
 // words carry the same meaning, so it never depends on colour alone.
 export function Change({ change, prev, info }) {
   if (!prev) return <div className="chg none">First run: nothing to compare with yet</div>;
@@ -12,7 +12,9 @@ export function Change({ change, prev, info }) {
   const pts = Math.abs(change.delta * 100);
   const flat = pts < 0.05;
   const arrow = flat ? '' : change.delta > 0 ? '▲' : '▼';
-  const verdict = change.verdict === 'up' ? 'real rise' : change.verdict === 'down' ? 'real drop' : 'no real change';
+  // "to confirm": larger than re-asking would explain, but an assistant's own search results also shift from day to day,
+  // so it only counts as lasting once the next run stays at the new level.
+  const verdict = change.verdict === 'up' ? 'rise, to confirm in the next run' : change.verdict === 'down' ? 'drop, to confirm in the next run' : 'no real change';
   return (
     <div className={`chg ${change.verdict || 'same'}`}>
       <span className="chg-pill">{flat ? 'No change' : <>{arrow} {pts.toFixed(1)} pts</>}</span>
