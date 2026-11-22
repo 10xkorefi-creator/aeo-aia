@@ -476,3 +476,10 @@ Automation
 - Perplexity gives the same result for all 3 answers to a question (every count is a multiple of 3), so a question moves as a block and one changed search result moves the rate by 1.4 points.
 - The label "real rise" overstated it. The test shows the move is larger than re-asking noise; it cannot show that it lasts or that we caused it. With two Perplexity runs the normal day-to-day swing is unknown.
 - Dashboard wording changed: "real rise" / "real drop" are now "rise, to confirm in the next run" / "drop, to confirm in the next run". Rule for reading: treat a change as lasting only if the next run stays at the new level.
+
+## 22 Nov 2026: Likely range now worked out by question
+
+- aeo_asst_recommended_v: the range is a Wilson interval on "effective answers" (answers divided by the design effect between questions), not on the raw answer count. New column effective_answers. With no recommended answers the number of questions is used.
+- Run of 21/11: ChatGPT 5.3%, likely 2.4% to 11.3% (was 3.0 to 9.0); Gemini 5.7%, 3.2% to 10.0% (was 3.4 to 9.5); Perplexity 19.3%, 12.1% to 29.4% (was 14.7 to 24.9). Perplexity's 228 answers are worth about 78 independent ones.
+- AI assistants page: each card shows the likely range; the Perplexity card says it is collected through the API, not the app. Three answers per question kept (user decision).
+- Not yet done: the same correction for Google AI Overviews (its 4 searches per keyword also move together).

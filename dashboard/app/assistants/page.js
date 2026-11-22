@@ -130,6 +130,7 @@ export default async function Assistants({ searchParams }) {
           return <ScoreTile key={e} icon={<AssistantIcon id={e} size={18} />} name={assistantName(e)} color={COLOR[e]}
             rate={c ? Number(c.recommended_rate) : null} history={a.history.map((h) => ({ rate: Number(h.recommended_rate) }))}
             sub={c ? <>{num(c.recommended)} of {num(c.answers)} answers recommend us with a link · on {num(c.prompts_recommended)} of {num(c.prompts)} questions</> : 'Not collected in this run'}
+            note={c ? <>Likely range {pct(c.lo)} to {pct(c.hi)}<Info tip={A.range} />{e === 'perplexity' ? <span className="score-tag">collected through the API, not the app</span> : null}</> : null}
             change={a} prev={a.prev} changeInfo={O.change} />;
         })}
       </div>

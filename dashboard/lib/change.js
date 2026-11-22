@@ -32,7 +32,7 @@ function compare(cur, prev) {
 
 // The three assistants: share of answers that recommend us with a link.
 export async function assistantChange(runId) {
-  const hist = await q`select v.engine, v.run_id, v.run_date, v.answers, v.recommended, v.recommended_rate, v.prompts_recommended, v.prompts
+  const hist = await q`select v.engine, v.run_id, v.run_date, v.answers, v.recommended, v.recommended_rate, v.recommended_rate_ci_low lo, v.recommended_rate_ci_high hi, v.prompts_recommended, v.prompts
     from public.aeo_asst_recommended_v v join public.aeo_runs r on r.run_id = v.run_id
     where (v.run_type <> 'test' and v.run_status in ('complete', 'partial')) or v.run_id = ${runId} order by r.created_at`;
   const out = {};

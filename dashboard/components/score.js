@@ -40,7 +40,7 @@ export function Spark({ points, color = 'var(--accent)' }) {
 }
 
 // One tracked surface: the rate now, what it is counted from, and how it moved since the run before.
-export function ScoreTile({ icon, name, rate, sub, change, prev, history, color, href, changeInfo }) {
+export function ScoreTile({ icon, name, rate, sub, note, change, prev, history, color, href, changeInfo }) {
   const body = (
     <>
       <div className="score-head">{icon}<span>{name}</span></div>
@@ -49,6 +49,7 @@ export function ScoreTile({ icon, name, rate, sub, change, prev, history, color,
         <Spark points={(history || []).map((h) => h.rate ?? h.recommended_rate)} color={color} />
       </div>
       <div className="score-sub">{sub}</div>
+      {note ? <div className="score-note">{note}</div> : null}
       {rate === null || rate === undefined ? null : <Change change={change} prev={prev} info={changeInfo} />}
     </>
   );

@@ -569,6 +569,8 @@ a.score:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .score-value { font-size: 34px; line-height: 1.05; font-weight: 700; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
 .score-sub { color: var(--muted-foreground); font-size: 12.5px; line-height: 1.4; text-wrap: pretty; }
 .spark { flex: none; overflow: visible; margin-bottom: 4px; }
+.score-note { color: var(--muted-foreground); font-size: 12.5px; line-height: 1.4; }
+.score-tag { display: block; margin-top: 2px; font-size: 12px; }
 .chg { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; margin-top: 4px; font-size: 12.5px; color: var(--muted-foreground); }
 .chg-pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; background: var(--muted); color: var(--foreground); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .chg.up .chg-pill { background: var(--up-bg); color: var(--up-ink); }
