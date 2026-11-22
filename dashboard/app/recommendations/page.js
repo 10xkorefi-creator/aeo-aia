@@ -81,7 +81,7 @@ export default async function Recommendations({ searchParams }) {
 
   const taskItems = tasks.map((t) => {
     const { questions, keywords } = evidence(t.prompt_keys || [], t.keyword_ids || []);
-    return { key: t.task_key, rec: t.rec_key, title: t.title, channel: t.channel, kind: t.kind, effort: t.effort, status: t.status, body: t.body || {}, questions, keywords };
+    return { key: t.task_key, rec: t.rec_key, title: t.title, channel: t.channel, kind: t.kind, effort: t.effort, status: t.status, assignee: t.assignee || null, body: t.body || {}, questions, keywords };
   });
 
   const baseline = { runId, runDate: run ? date(run.run_date) : '–', from: firstRun ? date(firstRun.run_date) : '–', to: lastRun ? date(lastRun.run_date) : '–',
@@ -92,7 +92,7 @@ export default async function Recommendations({ searchParams }) {
     <>
       <div className="pagehead">
         <div><h1>Recommendations</h1>
-          <p className="hint">The biggest AEO opportunities for AI Accountant, ranked, and the individual tasks under each. Every opportunity and every task is built from our own baseline runs, not from general advice.</p></div>
+          <p className="hint">What to do next to get AI Accountant recommended more often, as a list of tasks in priority order. Click a task for the details.</p></div>
       </div>
       <RecBoard items={items} tasks={taskItems} baseline={baseline} initial={typeof sp?.task === 'string' ? sp.task : typeof sp?.rec === 'string' ? sp.rec : null} />
     </>

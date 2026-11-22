@@ -522,3 +522,11 @@ Limits to state in the review
   - So most video and social tasks are justified by Google AI Overviews, not by ChatGPT. Not every question gets every channel.
 - Page: rows are tasks under each opportunity, filter chips by channel, task panel (why, what to make, model, what it should move live, done when) and opportunity panel (the reasoning, now listing its tasks). Links: ?task=T-02, ?rec=REC-1.
 - Questions in REC-7 (the control group for REC-1) were kept out of REC-1 task targets.
+
+## 22 Nov 2026: Recommendations page simplified to a flat task table (user request)
+
+- One flat table, no groups: Task, Type, Content, Channel, Priority, Assignee. Sorted by priority (High = the two "start here" opportunities, Medium = "next", Low = "later" and tracking). Filters: channel, assignee.
+- Assignee column: Unassigned, Wasif Kareem or Devansh Saini, saved from the page (aeo_rec_tasks.assignee, route /api/task-assign). The dashboard database role may update that one column only.
+- Task panel cut to four short parts: Why (two points), What to make (up to four), Example to follow (one), We will know it worked when (one). The live numbers sit behind "See the data behind this"; the full reasoning for the group of tasks is one click further.
+- No "estimated lift" column: we have no sound way to estimate it from four runs.
+- The opportunity with no tasks (generic invoice OCR questions, left alone on purpose) no longer shows in the list; it is still at ?rec=REC-8.
