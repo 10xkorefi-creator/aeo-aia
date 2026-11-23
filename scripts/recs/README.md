@@ -30,6 +30,8 @@ Rules, in `build.py`:
 - New page or update: a close page of ours with 100+ Google clicks in 90 days, or any product page, is only added to;
   a close blog page with little traffic can be reworked; if our nearest page is about something else, the task is a new
   page linked from it.
+- An update task lists only what our page lacks next to the cited pages (tools named, question wording, table,
+  name spelling, length, age). If it lacks nothing, no page task is made.
 - Task keys are stable (`W-P001`, `O-<page>`, `R-<site>`, `Y-K042`), so assignees survive a rebuild.
 
 `urls.py` and `read_pages.py` expect to run inside the working folder. Reading is plain HTTP; pages behind a bot

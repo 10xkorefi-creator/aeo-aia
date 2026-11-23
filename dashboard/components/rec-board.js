@@ -103,6 +103,12 @@ function TaskDetail({ t, body, failed, questions, openQ, assign, saving }) {
                       <p>{body.ours.clicks.toLocaleString('en-IN')} clicks from Google in the last 90 days.{body.ours.queries?.length ? ` Ranks for ${body.ours.queries.map((x) => `“${x}”`).join(', ')}.` : ''} {body.ours.cited ? 'Already cited for this prompt.' : 'Not cited for this prompt.'} {body.ours.note}</p></div>
                   </li>
                 </ul>
+                {body.ours.has?.length || body.ours.missing?.length ? (
+                  <div className="rd-gap">
+                    {body.ours.missing?.length ? <div><h5 className="miss">Missing next to the cited pages</h5><Bullets items={body.ours.missing} /></div> : null}
+                    {body.ours.has?.length ? <div><h5>Already on the page</h5><Bullets items={body.ours.has} /></div> : null}
+                  </div>
+                ) : null}
               </>
             ) : null}
 
@@ -152,6 +158,7 @@ function QuestionDetail({ x, body, failed, tasks, openTask }) {
                 <h3 className="rq-h"><AssistantIcon id={e} size={17} />{engineName(e)}
                   <span className={`rq-score ${c.gap ? 'miss' : 'hit'}`}>{e === 'google' ? `Links to us in ${c.rec} of ${c.n} AI Overviews` : `Recommends us in ${c.rec} of ${c.n} answers`}</span></h3>
                 {c.names?.length ? <p className="rq-names">Names {c.names.map(([n, k]) => `${n} (${k})`).join(', ')}.</p> : null}
+                {c.proof ? <p className="rq-names">{c.proof}</p> : null}
                 {c.sources?.length ? (
                   <ul className="rb-pages">
                     {c.sources.map((s) => (
@@ -170,7 +177,8 @@ function QuestionDetail({ x, body, failed, tasks, openTask }) {
               <ul className="rb-tasklist">
                 {mine.map((t) => <li key={t.key}><button type="button" onClick={() => openTask(t.key)}><span className="rb-tl-title">{t.title}</span><Channel channel={t.channel} /><For list={t.assistants} /></button></li>)}
               </ul>
-            ) : <p>We are already recommended here in most answers.</p>}
+            ) : <p>{body.own_ok ? 'No task was produced for this one.' : 'We are already recommended here in most answers.'}</p>}
+            {body.own_ok ? <p className="rq-own">No change is recommended on our own page, <a href={body.own_ok.url} target="_blank" rel="noopener noreferrer">{body.own_ok.title || body.own_ok.url}</a>. It already has what the cited pages have: {body.own_ok.has.slice(0, 4).join(' ')}</p> : null}
           </section>
         </>
       )}
@@ -318,6 +326,7 @@ export function RecBoard({ tasks: initialTasks, questions, baseline, leads, init
           <li>Where an assistant does not recommend us in at least half its answers, each source it cited in most of those answers becomes a task.</li>
           <li>The source decides the channel. A list that leaves us out becomes outreach, a review site becomes a listing, a YouTube video becomes a video, and a product page or article becomes a page on our site. A channel that no assistant cited for a question gets no task for it.</li>
           <li>Priority: High is a buying question where ChatGPT does not recommend us{leads?.total ? `, because ChatGPT sent ${leads.chatgpt} of our ${leads.total} leads from AI` : ''}. Medium is a how-to question, a question about a named competitor, or a Google search where we already rank on page one. The rest is Low.</li>
+          <li>Before any change to one of our pages, we read the page itself. The task lists only what the page lacks next to the cited pages: tools the assistants name, the wording of the question, a comparison table, how our name is written. If the page lacks nothing, no page task is made.</li>
           <li>For a page on our site, we first look for a page we already have, by its title and the Google searches it ranks for. A close page with real Google traffic (100 or more clicks in 90 days) or a product page is only added to. A close blog page with little traffic can be reworked. If our nearest page is about something else, we write a new page and link to it from the old one.</li>
           <li>“Start here” marks the ten High questions where ChatGPT already links to us or names us, so the step to a full recommendation is smallest.</li>
         </ol>

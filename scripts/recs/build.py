@@ -70,7 +70,7 @@ REFERENCE = re.compile(r'(\.gov|\.gov\.in|\.nic\.in|(^|\.)icai\.org|icai[a-z]*\.
 VENDOR = re.compile(r'tallysolutions|vyapar|suvit|hisabkitab|gsthero|vouchrit|nanonets|cashflo|zoho|cleartax|clear\.in|mastersindia|xero\.com|intuit|quickbooks|sage\.com|netsuite|razorpay|bill\.com|highradius|'
                     r'refrens|busy\.in|rippling|paylocity|ivalua|gusto\.com|brex\.com|ramp\.com|rho\.co|margerp|mybillbook|khatabook|giddh|docsumo|rossum|dext\.com|tipalti|stampli|rillion|medius|basware|coupa|oracle\.com|sap\.com|freshbooks|wave(apps)?\.com')
 LISTY = re.compile(r'\b(best|top|alternatives?|vs\.?|versus|compar\w+|reviews?|ranked|leading|tools for|software for|add-?ons?)\b', re.I)
-BRANDS = [('Vyapar TaxOne / Suvit', r'\btax ?one\b|\bsuvit\b'), ('Docs by Ira', r'docs by ira|tally ?prime(\'s)? ai\b'), ('Hisabkitab', r'\bhisab ?kitab\b'), ('GSTHero', r'\bgst ?hero\b'), ('VouchrIt', r'\bvouchr?it\b'),
+BRANDS = [('Vyapar TaxOne / Suvit', r'\btax ?one\b|\bsuvit\b'), ('Docs by Ira', r'docs by ira|\btally ?ira\b'), ('Hisabkitab', r'\bhisab ?kitab\b'), ('GSTHero', r'\bgst ?hero\b'), ('VouchrIt', r'\bvouchr?it\b'),
           ('Nanonets', r'\bnanonets\b'), ('Cashflo', r'\bcashflo\b'), ('Provi AI', r'\bprovi ai\b'), ('Qosh AI', r'\bqosh\b'), ('Zoho Books', r'\bzoho (books|invoice|expense)\b'), ('ClearTax', r'\bclear ?tax\b'),
           ('Masters India', r'\bmasters ?india\b'), ('KDK Spectrum', r'\bkdk\b'), ('IRIS Sapphire', r'\biris (sapphire|gst|business)\b'), ('Winman', r'\bwinman\b'), ('TallyConnects', r'\btally ?connects?\b'),
           ('udiMagic', r'\budi ?magic\b'), ('Excel2Tally', r'\bexcel ?(2|to) ?tally\b'), ('Quick2Tally', r'\bquick2tally\b'), ('QuickBooks', r'\bquickbooks\b'), ('Xero', r'\bxero\b'), ('Busy', r'\bbusy (accounting|software|21)\b'),
@@ -80,8 +80,10 @@ BRANDS = [('Vyapar TaxOne / Suvit', r'\btax ?one\b|\bsuvit\b'), ('Docs by Ira', 
           ('Sage', r'\bsage (intacct|50|accounting|300)\b'), ('NetSuite', r'\bnetsuite\b'), ('FreshBooks', r'\bfreshbooks\b'), ('Wave', r'\bwave accounting\b'), ('Tipalti', r'\btipalti\b'), ('Stampli', r'\bstampli\b'),
           ('Bill.com', r'\bbill\.com\b'), ('RazorpayX', r'\brazorpay ?x\b'), ('Open', r'\bopen money\b'), ('Biz Analyst', r'\bbiz ?analyst\b'), ('Tally on Mobile', r'\btally on mobile\b'), ('Vyapar', r'\bvyapar\b(?! tax)'),
           ('ChatGPT', r'\bchatgpt\b'), ('Microsoft Copilot', r'\bcopilot\b'), ('Kolossus', r'\bkolossus\b'), ('Coraa', r'\bcoraa\b'), ('Accuraik', r'\baccuraik\b'), ('Finexo', r'\bfinexo\b'), ('Turia', r'\bturia\b'),
-          ('EasemyGST', r'\bease ?my ?gst\b'), ('Gen GST', r'\bgen gst\b'), ('Octa GST', r'\bocta ?gst\b'), ('CompuTax', r'\bcomputax\b'), ('Taxmann', r'\btaxmann\b'), ('Zoho', r'\bzoho\b(?! (books|invoice|expense))')]
+          ('EasemyGST', r'\bease ?my ?gst\b'), ('Gen GST', r'\bgen gst\b'), ('Octa GST', r'\bocta ?gst\b'), ('CompuTax', r'\bcomputax\b'), ('Taxmann', r'\btaxmann\b')]
+BRANDS += [('TallyPrime', r'\btally ?prime\b|\btally\b(?! (ki|on mobile|connects?|add))'), ('Flick AI', r'\bflick ?ai\b')]
 BRANDS = [(n, re.compile(p, re.I)) for n, p in BRANDS]
+GENERIC = ('ChatGPT', 'Microsoft Copilot')
 US = re.compile(r'aiaccountant\.com|AI Accountant(?!s)(?! (tools?|software|apps?|agents?)\b)')
 JUNK = re.compile(r'^(related|recent|popular|latest|more|other) |table of contents|conclusion|faq|frequently asked|leave a (reply|comment)|share this|about (the )?author|categories|tags|subscribe|newsletter|'
                   r'comments?$|contact us|follow us|quick links|you may also|read more|top stories|sign up|get started|ready to|book a demo|key takeaways|summary$|final thoughts|introduction$|overview$|references$', re.I)
@@ -120,7 +122,7 @@ def source(url, lab=''):
             rx_root = re.compile(r'\b' + re.escape(root) + r'\b', re.I)
             self_listed = len(root) >= 3 and (any(rx_root.search(h) for h in (p.get('h2') or [])) or len(rx_root.findall(text)) >= 6)
             vendor = bool(VENDOR.search(d)) or p.get('cta', 0) >= 2 or self_listed
-            products = [b for b in s['brands'] if b not in ('ChatGPT', 'Microsoft Copilot')]
+            products = [b for b in s['brands'] if b not in GENERIC + ('TallyPrime',)]
             listy = (bool(LISTY.search(head)) and len(products) >= 3) or len(products) >= 7
             s['type'] = 'reference' if REFERENCE.search(d) else 'vendor_list' if listy and vendor else 'list' if listy else 'vendor' if vendor else 'article'
         else:
@@ -154,6 +156,12 @@ for c in L('aio_cites'):
     if c['run_id'] == PREV: prev.add(('google', c['keyword_id'], norm(c['url'])))
     if c['run_id'] == RUN:
         x = cit[('google', c['keyword_id'])][norm(c['url'])]; x['caps'].add(c['capture_id']); x['label'] = x['label'] or (c['label'] or ''); x.setdefault('url', c['url'].split('?utm_')[0])
+ANSW = C.defaultdict(list)
+try:
+    for a in L('answers_chatgpt'): ANSW[('chatgpt', a['prompt_key'])].append(a['response_markdown'] or '')
+    for a in L('answers_llm'): ANSW[(a['engine'], a['prompt_key'])].append(a['response_text'] or '')
+except FileNotFoundError: pass
+def strip_links(t): return re.sub(r'\]\([^)]*\)|https?://\S+', ' ', t)
 SHORTB = {'taxone': 'Vyapar TaxOne / Suvit', 'tally_ai': 'Docs by Ira', 'zoho_books': 'Zoho Books'}
 
 def cell(engine, q):
@@ -166,6 +174,11 @@ def cell(engine, q):
     rec, named, linked = sum(1 for a, b in us if a and b), sum(1 for a, b in us if a), sum(1 for a, b in us if b)
     if engine == 'google': rec = linked     # for Google the measure is the link in the AI Overview
     names = C.Counter(b for c in caps.values() for b, (m, _) in c.items() if m and b not in ('aia', 'tally'))
+    texts = ANSW.get((engine, q)) or []
+    full = None
+    if texts:
+        lab = (prompts[q]['prompt_text'] if q in prompts else '').lower()
+        full = C.Counter(b for t in texts for b, rx in BRANDS if rx.search(strip_links(t)) and b not in GENERIC and not (b == 'TallyPrime' and 'tally' in lab) and not rx.search(lab))
     need = 2 if n >= 2 else 1
     rows = sorted(cit.get((engine, q), {}).items(), key=lambda kv: (-len(kv[1]['caps']), kv[1]['pos']))
     strong = [(u, x) for u, x in rows if len(x['caps']) >= need and len(x['caps']) * 2 >= n]
@@ -174,7 +187,14 @@ def cell(engine, q):
     for u, x in strong:
         s = dict(source(x['url'], x['label'])); s['answers'] = len(x['caps']); s['n'] = n; s['prev'] = (engine, q, u) in prev
         srcs.append(s)
-    return {'n': n, 'rec': rec, 'named': named, 'linked': linked, 'gap': rec * 2 < n, 'names': [[SHORTB.get(b, brand_name[b]), k] for b, k in names.most_common(4)],
+    name_list = [[b, k] for b, k in full.most_common(5)] if full is not None else [[SHORTB.get(b, brand_name[b]), k] for b, k in names.most_common(4)]
+    # outside proof: on how many of the pages this assistant cited does each named tool appear, and on how many do we
+    read = [s for s in srcs if 'brands' in s]
+    proof = None
+    if len(read) >= 3:
+        proof = {'read': len(read), 'tools': [[b, sum(1 for s in read if b in s['brands'])] for b, k in name_list[:4] if k * 2 >= n],
+                 'us_other': sum(1 for s in read if s.get('names_us') and s['type'] != 'ours'), 'us_own': sum(1 for s in srcs if s['type'] == 'ours')}
+    return {'n': n, 'rec': rec, 'named': named, 'linked': linked, 'gap': rec * 2 < n, 'names': name_list, 'proof': proof,
             'sources': srcs, 'all_ours': [x['url'] for u, x in rows if OURS.search(dom(x['url']))], 'cited_pages': len(rows)}
 
 questions = {}
@@ -250,7 +270,15 @@ for x in order:
                 use(task('S-%s-%s' % (ty.lower(), q), channel=ty, kind='Post', q=q), q, e, s)
         if web or not c['sources']: use(task('W-' + q, channel='Website', q=q), q, e)
 
-def why_lines(x, engines):
+def proof_line(c, e):
+    p = c.get('proof')
+    if not p or not p['tools']: return None
+    us = p['us_other'] + p['us_own']
+    o, w = p['us_other'], p['us_own']
+    ours_txt = 'none' if not us else 'our own page only' if not o and w == 1 else 'our own %d pages only' % w if not o else ('%d that %s not ours' % (o, 'is' if o == 1 else 'are')) + (' and %d of our own' % w if w else '')
+    return 'Of the %d pages %s cited, %s. AI Accountant is on %s.' % (p['read'], 'Google' if e == 'google' else NAME[e], andj('%s is on %d' % (b, k) for b, k in p['tools'][:3]), ours_txt)
+
+def why_lines(x, engines, proof=True):
     out = []
     for e in engines:
         c = x['cells'].get(e)
@@ -262,8 +290,10 @@ def why_lines(x, engines):
             line = '%s recommends us in %s answers.' % (NAME[e], of(c['rec'], c['n']))
             if c['linked'] > c['rec']: line += ' It links to our site in %d of them without naming us.' % c['linked'] if c['named'] == 0 else ' It links to our site in %d.' % c['linked']
             elif c['named'] > c['rec']: line += ' It names us in %d but does not link to us.' % c['named']
-        if c['names']: line += ' It names %s.' % ', '.join(n for n, _ in c['names'][:3])
+        if c['names']: line += ' It names %s.' % ', '.join(n for n, _ in c['names'][:4])
         out.append(line)
+        pl = proof_line(c, e)
+        if pl and proof: out.append(pl)
     return out
 
 # ---------- our own pages (ours.py): which page of ours, if any, already covers a question
@@ -278,6 +308,7 @@ def toks(t):
     for w in re.findall(r'[a-z0-9]+', t):
         if w in STOP or re.fullmatch(r'20\d\d|\d', w): continue
         if w.endswith('ies') and len(w) > 4: w = w[:-3] + 'y'
+        elif w.endswith(('sses', 'xes', 'ches')): w = w[:-2]
         elif w.endswith('s') and not w.endswith('ss') and len(w) > 3: w = w[:-1]
         out.add(WORDMAP.get(w, w))
     return out
@@ -287,6 +318,13 @@ NOT_CONTENT = re.compile(r'/(gads|privacy|terms|about-us|free-trial|partnerships
 OURPAGES = {k: p for k, p in OURDATA['pages'].items() if not NOT_CONTENT.search(k)}
 for p in OURPAGES.values():
     p['tt'] = toks(p['title'] + ' ' + p['h1'] + ' ' + p['url'].rstrip('/').split('/')[-1].replace('-', ' '))
+    p['ht'] = p['tt'] | toks(' '.join((p.get('h2') or []) + (p.get('h3') or [])))
+    tx = p.get('text') or ''
+    p['brands'] = [n for n, rx in BRANDS if rx.search(tx)]
+    p['us_exact'] = len(re.findall(r'AI Accountant', tx)); p['us_joined'] = len(re.findall(r'AIAccountant', tx)); p['us_aia'] = len(re.findall(r'\bAIA\b', tx))
+    p['us_any'] = len(re.findall(r'(?i)ai ?accountant', tx)) + p['us_aia']
+    pos = next((int(m.group(1)) for h in (p.get('h2') or []) + (p.get('h3') or []) for m in [re.match(r'\s*(\d+)[.)]\s*(AI ?Accountant|AIAccountant)', h, re.I)] if m), None)
+    p['us_pos'] = pos
     p['qq'] = [(q, toks(q)) for q, c, i, pos in p['queries'] if i >= 5]
 def closest(label, cited):
     """Our page closest to a question: by its title and by the searches it ranks for. A page an assistant already cites gets a small bonus."""
@@ -294,11 +332,11 @@ def closest(label, cited):
     citedn = {norm(u) for u in cited}
     if len(Q) < 2: return None
     for k, p in OURPAGES.items():
-        st = len(Q & p['tt']) / len(Q); sq, bq = 0, ''
+        st = len(Q & p['tt']) / len(Q); sh = len(Q & p['ht']) / len(Q); sq, bq = 0, ''
         for q, t in p['qq']:
             j = len(Q & t) / len(Q | t) if t else 0
             if j > sq: sq, bq = j, q
-        sim = max(st * (0.9 if st == 1 else 0.8), sq)
+        sim = max(st * (0.9 if st == 1 else 0.8), sq, sh * 0.7)
         if k in citedn and sim >= RELATED - 0.2: sim += 0.1
         if not best or (round(sim, 2), st + sq, p['clicks']) > (best['sim'], best['fit'], best['clicks']): best = {'sim': round(sim, 2), 'fit': st + sq, 'key': k, 'url': p['url'], 'title': p['title'], 'clicks': p['clicks'], 'impressions': p['impressions'], 'cited': k in citedn,
                                                                                'queries': [q for q, c, i, pos in p['queries'][:3] if i >= 5]}
@@ -315,6 +353,58 @@ EARNS = C.defaultdict(set)
 for (e, q), urls in cit.items():
     for u, x in urls.items():
         if OURS.search(dom(x['url'])) and len(x['caps']) >= 2: EARNS[u].add(q)
+
+def page_gaps(own, x, engines, uniq, fmt, mode):
+    """What our page already has for this question, and what it lacks next to the pages the assistants cite."""
+    p = OURPAGES[own['key']]; has, missing, acts = [], [], []
+    ms = [m for m in uniq if m.get('words')]
+    named = C.Counter()
+    for e in engines:
+        for b, k in x['cells'][e]['names']:
+            if k * 2 >= x['cells'][e]['n']: named[b] += k
+    named = [b for b, _ in named.most_common(6)]
+    # our name
+    if not p['us_any']:
+        missing.append('Does not name AI Accountant.'); acts.append('Name AI Accountant on the page and say what it does for this job.')
+    else:
+        how = 'Names AI Accountant' + (' and lists it as number %d' % p['us_pos'] if p['us_pos'] else '')
+        has.append(how + '.')
+        if p['us_joined'] + p['us_aia'] >= 2 and p['us_joined'] + p['us_aia'] > p['us_exact']:
+            wrote = andj(['“%s”' % w for w, k in (('AIAccountant', p['us_joined']), ('AIA', p['us_aia'])) if k])
+            missing.append('Writes our name as %s and %s as “AI Accountant”.' % (wrote, 'never' if not p['us_exact'] else 'only %d times' % p['us_exact']))
+            acts.append('Write our name as “AI Accountant” wherever the page says %s, the way the rest of our site and other sites write it.' % wrote)
+    # the tools the assistants name
+    listy = fmt in ('compare', 'alternatives', 'pricing') or len([b for b in p['brands'] if b not in GENERIC]) >= 4
+    on = [b for b in named if b in p['brands']]; off = [b for b in named if b not in p['brands']]
+    if on: has.append('Covers %s, which the assistants name.' % andj(on[:4]))
+    if off and listy:
+        missing.append('Does not mention %s, which the assistants name for this %s.' % (andj(off[:4]), 'question' if x['kind'] == 'question' else 'search'))
+        acts.append('Add %s to the comparison, with how AI Accountant differs.' % andj(off[:4]))
+    # the question's own words
+    lab = re.sub(r'(?i)gstr[\s-]?(\d)([ab])', r'GSTR-\1\2', x['label']); lab = re.sub(r'(?i)tally prime', 'Tally-Prime', lab)
+    words = [w.replace('Tally-Prime', 'Tally Prime') for w in re.findall(r'[A-Za-z0-9-]+', lab) if toks(w) and not (toks(w) <= p['ht'])]
+    if words:
+        missing.append('The title and headings do not use %s from the %s.' % (andj('“%s”' % w for w in words[:4]), 'question' if x['kind'] == 'question' else 'search'))
+        acts.append('Add a heading that uses the wording of the %s: “%s”.' % ('question' if x['kind'] == 'question' else 'search', x['label']))
+    else: has.append('Title and headings use the wording of the %s.' % ('question' if x['kind'] == 'question' else 'search'))
+    # format and length
+    if ms:
+        tab = sum(1 for m in ms[:8] if m.get('tables'))
+        if p.get('tables'): has.append('Has a comparison table.')
+        elif tab * 2 >= len(ms[:8]):
+            missing.append('No comparison table; %d of the %d cited pages have one.' % (tab, len(ms[:8]))); acts.append('Add a comparison table; %d of the %d cited pages have one.' % (tab, len(ms[:8])))
+        med = int(statistics.median(m['words'] for m in ms[:8]))
+        if p.get('words', 0) and p['words'] < 0.6 * med and mode == 'rework':
+            missing.append('{:,} words; the cited pages run to about {:,}.'.format(p['words'], med // 50 * 50)); acts.append('Expand it from {:,} to about {:,} words.'.format(p['words'], med // 50 * 50))
+        else: has.append('{:,} words (cited pages: about {:,}).'.format(p.get('words', 0), med // 50 * 50))
+    if p.get('updated'):
+        try:
+            import datetime
+            age = (datetime.date.today() - datetime.datetime.strptime(p['updated'], '%B %d, %Y').date()).days
+            if age > 180: missing.append('Last updated %s.' % p['updated']); acts.append('Bring it up to date; it was last updated %s.' % p['updated'])
+            else: has.append('Updated %s.' % p['updated'])
+        except ValueError: pass
+    return has, missing, acts
 
 def andj(xs):
     xs = list(xs)
@@ -341,7 +431,7 @@ FORMAT = {'compare': ('Write a comparison page for %s and publish it on the aiac
           'explainer': ('Write a short guide that answers %s in its first paragraph and publish it on the aiaccountant.com blog.', 'After the answer, show how AI Accountant does this%s.'),
           'product': ('Create a product page for %s under Products on aiaccountant.com.', 'Say what AI Accountant does for this job, who it is for and what it costs%s.')}
 
-rows = []
+rows = []; skipped = []; OWN_OK = {}
 for key, t in tasks.items():
     engines = [e for e in ENGINES + ['google'] if any(te == e for _, te in t['targets'])]
     qs = list(dict.fromkeys(tq for tq, _ in t['targets']))
@@ -386,13 +476,17 @@ for key, t in tasks.items():
         path = own['url'].replace('https://', '').replace('www.', '').rstrip('/') if own else ''
         span = 'in the last 90 days'
         lnn = [NAME[e] for e in engines if e != 'google' and best['cells'][e]['linked'] > best['cells'][e]['rec'] and best['cells'][e]['named'] < best['cells'][e]['linked']]
+        has, missing, acts = page_gaps(own, best, engines, uniq, fmt, mode) if mode in ('add', 'rework') else ([], [], [])
+        if mode in ('add', 'rework') and not acts:
+            # our page already has what the cited pages have: nothing to change on it, the gap is elsewhere
+            skipped.append((key, best['key'], own['url'])); OWN_OK[best['key']] = {'url': own['url'], 'title': own['title'], 'has': has, 'cited': own['cited']}; continue
         if mode == 'add':
-            body['task']['lead'] = 'Add a section to %s that answers %s. Do not rewrite the page.' % (path, quoted)
-            body['task']['points'].append('Keep the URL, title, main heading and existing sections. ' + ('The page brought {:,} clicks from Google {}.'.format(own['clicks'], span) if own['clicks'] >= PROTECT else 'It is a product page, so we add to it and change nothing else.'))
-            body['task']['points'].append(('In the new section: ' + point[0].lower() + point[1:]) % named)
+            body['task']['lead'] = 'Make %s to %s for %s. Leave the rest of the page as it is.' % ('this change' if len(acts) == 1 else 'these %d changes' % min(len(acts), 4), path, quoted)
+            body['task']['points'] += acts[:4]
+            body['task']['points'].append('Keep the URL, title and existing sections: ' + ('the page brought {:,} clicks from Google {}.'.format(own['clicks'], span) if own['clicks'] >= PROTECT else 'it is a product page.'))
         elif mode == 'rework':
             body['task']['lead'] = 'Rework %s so that it answers %s.' % (path, quoted)
-            body['task']['points'].append(point % named)
+            body['task']['points'] += acts[:4]
             body['task']['points'].append('It is free to rework: it brought {} from Google {}.'.format('no clicks' if not own['clicks'] else '1 click' if own['clicks'] == 1 else 'only {:,} clicks'.format(own['clicks']), span))
         else:
             body['task']['lead'] = lead % quoted
@@ -400,17 +494,16 @@ for key, t in tasks.items():
             if mode == 'new_linked':
                 why_not = (' It ranks for different searches (%s).' % ', '.join('“%s”' % q for q in own['queries'][:2])) if own['queries'] else ''
                 body['task']['points'].append('Link to the new page from %s, our nearest page%s, and leave that page as it is.%s' % (path, ', which is already cited for this ' + what if own['cited'] else '', why_not))
-        if lnn and ours and own['cited']: body['task']['points'].append('Say in plain words what AI Accountant does for this job. %s already %s this page but %s other tools from it.' % (andj(lnn), 'reads' if len(lnn) == 1 else 'read', 'names' if len(lnn) == 1 else 'name'))
         if own:
-            body['ours'] = {'url': own['url'], 'title': own['title'], 'clicks': own['clicks'], 'queries': own['queries'], 'cited': own['cited'], 'mode': mode,
+            body['ours'] = {'url': own['url'], 'title': own['title'], 'clicks': own['clicks'], 'queries': own['queries'], 'cited': own['cited'], 'mode': mode, 'has': has, 'missing': missing,
                             'note': {'add': 'Close match with real Google traffic, so we only add to it.' if own['clicks'] >= PROTECT else 'Close match, and a product page, so we only add to it.', 'rework': 'Close match with little Google traffic, so it can be reworked.',
                                      'new_linked': 'Nearest page, but about something else, so we write a new page and link to it from here.'}[mode]}
         if ours:
             keep = [k for k in sorted(EARNS.get(norm(own['url']), ()), key=lambda k: questions[k]['pos'] if k in questions else 999) if k != best['key'] and k in questions]
-            if keep: body['task']['points'].append('Keep the parts that already get this page cited for %s.' % andj('“%s”' % questions[k]['label'] for k in keep[:2]) + (' and %d more' % (len(keep) - 2) if len(keep) > 2 else ''))
+            if keep: body['task']['points'].append('Keep the parts that already get this page cited for %s%s.' % (andj('“%s”' % questions[k]['label'] for k in keep[:2]), ' and %d more' % (len(keep) - 2) if len(keep) > 2 else ''))
         if ours: body['check'].append('Note the date of the change and watch this page\'s Google clicks for four weeks. Put the old version back if they fall.')
         ms = [m['s'] for m in models if m['s'].get('words')]
-        if ms and mode != 'add':
+        if ms and mode in ('new', 'new_linked'):
             med = int(statistics.median(m['words'] for m in ms[:6]) // 50 * 50)
             extra = [n for n, f in (('a comparison table', 'tables'), ('a questions-and-answers section', 'faq')) if sum(1 for m in ms[:6] if m.get(f)) * 2 >= len(ms[:6])]
             body['task']['points'].append('About {:,} words{}, which is what the cited pages run to.'.format(max(med, 300), (', with ' + ' and '.join(extra)) if extra else ''))
@@ -422,6 +515,17 @@ for key, t in tasks.items():
         lists = [s for s in uniq if s['type'] in LISTS]; lists_us = [s for s in lists if s.get('names_us')]
         no_page = [NAME[e] for e in engines if e != 'google' and best['cells'][e]['named'] > best['cells'][e]['rec'] and best['cells'][e]['linked'] == 0]
         if ours and not own['cited']: body['works'].append('We already have a page on this, but no assistant cited it for this %s in the latest run%s.' % (what, (': they cite pages that name ' + andj(n for n, _ in names.most_common(3))) if names else ''))
+        took = []
+        if ours and own['cited'] and OURPAGES[own['key']]['us_any']:
+            pb = set(OURPAGES[own['key']]['brands'])
+            for e in engines:
+                if e == 'google': continue
+                if own['key'] not in {norm(u) for u in best['cells'][e]['all_ours']}: continue
+                tk = [b for b, k in best['cells'][e]['names'] if b in pb and k * 2 >= best['cells'][e]['n']]
+                if tk and best['cells'][e]['named'] == 0: took.append('%s read this page and named %s from it, but not AI Accountant%s.' % (NAME[e], andj(tk[:3]), ', which the page lists as number %d' % OURPAGES[own['key']]['us_pos'] if OURPAGES[own['key']]['us_pos'] else ''))
+        if took:
+            body['works'].append(took[0])
+            body['works'].append('So the page is used as a source for the other tools on it. Fixing the page helps, but the stronger lever is outside proof: the outreach and listing tasks for this prompt.')
         elif ours and lnn: body['works'].append('%s already %s our page for this %s, so we are in what %s. The gap is that the page does not present AI Accountant as the answer.' % (andj(lnn), 'cites' if len(lnn) == 1 else 'cite', what, 'it reads' if len(lnn) == 1 else 'they read'))
         elif no_page: body['works'].append('%s already %s AI Accountant here but %s no page of ours to link to. A page that matches the question gives %s the link.' % (andj(no_page), 'names' if len(no_page) == 1 else 'name', 'has' if len(no_page) == 1 else 'have', 'it' if len(no_page) == 1 else 'them'))
         vend = [s for s in uniq if s['type'] == 'vendor']
@@ -445,7 +549,7 @@ for key, t in tasks.items():
         body['today'] = ['This list is cited for %d of our tracked questions and searches: %s.' % (len(qs), cites(models[0]))]
         if s.get('brands'): body['today'].append('It names %s. AI Accountant is not on it.' % ', '.join(s['brands'][:6]))
         else: body['check'].append('We could not read this page automatically. Open it first and check whether AI Accountant is already on it.')
-        body['today'] += why_lines(best, engines)[:1]
+        body['today'] += why_lines(best, engines, False)[:1]
         body['model_title'] = 'The list we want to be on'
         body['works'] = ['%s %s this list when answering, and %s the tools it names. Once the list names AI Accountant, those answers have a source that does.' % (who, 'reads' if one else 'read', 'repeats' if one else 'repeat')]
         body['done'] = ['The list names AI Accountant, and %s %s us on the questions that cite it.' % (who, 'names' if one else 'name')]
@@ -465,7 +569,7 @@ for key, t in tasks.items():
         title = 'Answer the %s thread “%s”' % (t['channel'], (s['title'] or best['label'])[:70])
         body['task']['lead'] = 'Reply in the %s thread “%s” with a useful answer that mentions AI Accountant as one option.' % (t['channel'], (s['title'] or best['label'])[:90])
         body['task']['points'] = ['Post from a real, named account and answer the question first. Promotional replies get removed.']
-        body['today'] = ['The thread is cited for %s: %s.' % (quoted, cites(models[0]))] + why_lines(best, engines)[:1]
+        body['today'] = ['The thread is cited for %s: %s.' % (quoted, cites(models[0]))] + why_lines(best, engines, False)[:1]
         body['model_title'] = 'The thread'
         body['works'] = ['%s %s this thread for its answer. A reply that mentions AI Accountant puts our name in a source it already uses.' % (who, 'reads' if one else 'read')]
         body['done'] = ['The thread mentions AI Accountant, and %s %s us for this %s.' % (who, 'names' if one else 'name', what)]
@@ -487,7 +591,7 @@ for key, t in tasks.items():
         if titles: body['task']['points'].append(('Word the title like the ones cited: ' if ch == 'YouTube' else 'Open it the way the cited ones do: ') + '; '.join('“%s”' % x[:80] for x in titles) + '.')
         body['task']['points'].append('Link to our page for this %s in the %s.' % (what, 'description' if ch == 'YouTube' else 'post'))
         body['today'] = ['%s for this %s.' % ('; '.join('%s cited %s in %s %s' % ('Google' if e == 'google' else NAME[e], ('%d %ss' % (len(models), thing)) if len(models) > 1 and one else ('an ' if thing[0] in 'XI' else 'a ') + thing, of(*top[e]), 'AI Overviews' if e == 'google' else 'answers') for e in engines if e in top), 'question' if isq else 'keyword')]
-        body['today'] += why_lines(best, engines)[:1]
+        body['today'] += why_lines(best, engines, False)[:1]
         body['model_title'] = '%ss cited today' % thing
         body['works'] = ['%s %s %s for this %s, and none of the ones cited is ours. One of our own gives %s a source that shows AI Accountant.' % (who, 'uses' if one else 'use', thing + 's', what, 'it' if one else 'them')]
         body['done'] = ['%s %s our %s for this %s.' % (who, 'cites' if one else 'cite', thing, what)]
@@ -512,12 +616,12 @@ for x in order:
     cells = {}
     for e, c in x['cells'].items():
         if not c: continue
-        cells[e] = {'n': c['n'], 'rec': c['rec'], 'named': c['named'], 'linked': c['linked'], 'gap': c['gap'], 'names': c['names'], 'cited_pages': c['cited_pages'],
+        cells[e] = {'n': c['n'], 'rec': c['rec'], 'named': c['named'], 'linked': c['linked'], 'gap': c['gap'], 'names': c['names'], 'proof': proof_line(c, e), 'cited_pages': c['cited_pages'],
                     'sources': [{'url': s['url'], 'domain': s['domain'], 'title': s['title'], 'tag': TAG[s['type']], 'answers': s['answers'], 'prev': s['prev'], 'names_us': bool(s.get('names_us')),
                                  'words': s.get('words'), 'brands': (s.get('brands') or [])[:4]} for s in c['sources'][:8]]}
     mine = [r['task_key'] for r in rows if x['key'] in r['prompt_keys'] + r['keyword_ids']]
     qrows.append({'q_key': x['key'], 'kind': x['kind'], 'text': x['text'], 'label': x['label'], 'stage': x['stage'], 'topic': x['topic'], 'priority': x['priority'], 'score': x['score'], 'pos': x['pos'],
-                  'start_here': x['key'] in START, 'volume': x['volume'], 'organic_rank': x['rank'], 'body': {'cells': cells, 'tasks': mine}, 'based_on_run': RUN})
+                  'start_here': x['key'] in START, 'volume': x['volume'], 'organic_rank': x['rank'], 'body': {'cells': cells, 'tasks': mine, 'own_ok': OWN_OK.get(x['key'])}, 'based_on_run': RUN})
 for r in rows: r['start_here'] = r['q'] in START; r['based_on_run'] = RUN; del r['qpos'], r['q']
 json.dump(qrows, open(W + '/questions.json', 'w'), ensure_ascii=False)
 json.dump(rows, open(W + '/tasks.json', 'w'), ensure_ascii=False)

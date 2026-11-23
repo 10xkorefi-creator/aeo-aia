@@ -803,3 +803,11 @@ table.rt:not(.rq) .rt-title { display: block; max-width: 100%; overflow: hidden;
 @media (hover: hover) and (pointer: fine) { .rd-q:hover { color: var(--accent); text-decoration: underline; opacity: 1; } }
 .rd-more { background: none; border: 0; box-shadow: none; padding: 0; height: auto; font: inherit; color: var(--accent); cursor: pointer; }
 .rd-mix { margin: 0 0 10px !important; font-size: 13px !important; color: var(--muted-foreground); }
+
+.rd-gap { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 10px 0 4px 30px; }
+.rd-gap h5 { margin: 0 0 6px; font-size: 12px; font-weight: 600; color: var(--muted-foreground); }
+.rd-gap h5.miss { color: var(--down-ink); }
+.rd-gap .rb-bullets { font-size: 13px; gap: 5px; padding-left: 16px; }
+@media (max-width: 720px) { .rd-gap { grid-template-columns: 1fr; margin-left: 0; } }
+.rq-own { margin-top: 10px !important; font-size: 13px !important; color: var(--muted-foreground); }
+.rq-own a { color: var(--accent); }

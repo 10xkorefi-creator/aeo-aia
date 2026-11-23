@@ -601,3 +601,33 @@ page on this" with its clicks and searches.
 **Limits.** Matching is by words in titles and searches, so a few matches will be loose. The 100-click line is a starting
 point. Several prompts often point at one page (ten at `/blog/best-ai-tools-for-ca-in-india`); they are separate tasks
 with a note to do them in one edit, not merged.
+
+## 23/11/2026: Website tasks now read our own pages and the full answers
+
+**Why.** The task for "best AI accounting software for small business" told us to list AI Accountant on
+`/blog/best-accounting-software-for-small-businesses-in-india`, which already lists it as number 1. The generator had
+matched our pages by title and searches only, never by what is on them. The user asked for every page of the site to be
+read first.
+
+**What changed.**
+- `ours.py` now reads the content of all 445 sitemap pages: headings, text, tables, last-updated date.
+- `export.py` also pulls the 810 full answers of the latest run. Tools named in an answer are now found in the answer
+  text (about 65 tool names), not only among the 11 tracked competitors.
+- Each update task is built from the gap between our page and the cited pages: tools the assistants name that the page
+  lacks, wording of the question missing from title and headings, no comparison table where the cited pages have one,
+  how our name is written, length (rework only) and age. The panel shows "Missing next to the cited pages" and
+  "Already on the page".
+- If our page lacks nothing, no page task is made; the question view says so. 36 questions and searches are in that state.
+- New evidence line per assistant: on how many of the pages it cited each named tool appears, and on how many we do.
+- Where an assistant read our page, named other tools from it and skipped us, the task says so and points to the
+  outreach and listing tasks as the stronger lever.
+
+**Finding worth keeping.** On the small-business page our name is written "AIAccountant" (6 times) and "AIA" (4), never
+"AI Accountant". Six pages on the site use "AIAccountant"; 398 use "AI Accountant". ChatGPT cited that page and named
+Zoho Books, TallyPrime and Vyapar (numbers 2 to 4 on our list) without naming us (number 1).
+
+**Result.** 267 tasks (was 305): Website 106 (add only 25, rework 29, new page linked from a related page 52),
+Outreach 68, YouTube 48, LinkedIn 13, Review site 11, Reddit 11, X 4, Instagram 4, Facebook 2.
+
+**Limits.** Tool names are matched by a fixed list, so a tool outside it is not seen. Why an assistant skips our name on
+a page that lists us is not visible in the data; the task states the observation and the differences, not a proven cause.

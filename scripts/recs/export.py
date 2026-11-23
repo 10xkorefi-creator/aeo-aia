@@ -25,3 +25,7 @@ get('aeo_aio_citations_base_mv', {'select': 'capture_id,run_id,keyword_id,url,la
 get('aeo_aio_mentions_base_mv', {'select': 'capture_id,run_id,keyword_id,brand_key,display_name,role,named,cited', 'run_id': RUNS, 'order': 'run_id,capture_id,brand_key'}, 'aio_mentions')
 get('aeo_aio_keyword_metrics_mv', {'select': '*', 'run_id': RUNS}, 'kw_metrics')
 get('aeo_hubspot_ai_contacts_v', {'select': 'ai_channel,is_internal,attribution_tier,reached_opportunity'}, 'leads')
+# the full answers of the latest run, so the generator can see every tool an assistant named, not only the tracked ones
+LATEST = sorted(r['run_id'] for r in json.load(open('data/runs.json')) if r['run_type'] != 'test' and r['status'] in ('complete', 'partial'))[-1]
+get('aeo_gpt_captures', {'select': 'prompt_key,sample_no,response_markdown', 'run_id': 'eq.' + LATEST, 'status': 'eq.ok'}, 'answers_chatgpt')
+get('aeo_llm_captures', {'select': 'engine,prompt_key,sample_no,response_text', 'run_id': 'eq.' + LATEST, 'status': 'eq.ok'}, 'answers_llm')

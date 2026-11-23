@@ -31,14 +31,22 @@ while True:
     off += 25000
 sm = subprocess.run(['curl', '-sS', '-m', '40', '-A', UA, 'https://www.aiaccountant.com/sitemap.xml'], capture_output=True, text=True).stdout
 urls = sorted(set(re.findall(r'<loc>([^<]+)</loc>', sm)))
-def head(u):
+def read(u):
+    """The whole page: title, headings, the article text, and whether it has a table or a questions section."""
     raw = subprocess.run(['curl', '-sS', '-L', '--compressed', '-m', '30', '-A', UA, u], capture_output=True, text=True).stdout
-    return u, clean((re.search(r'(?is)<title[^>]*>(.*?)</title>', raw) or [None, ''])[1])[:200], clean((re.search(r'(?is)<h1[^>]*>(.*?)</h1>', raw) or [None, ''])[1])[:200]
+    body = re.sub(r'(?is)<(script|style|noscript|svg|nav|footer|header|form|aside)\b[^>]*>.*?</\1>', ' ', raw)
+    body = re.split(r'(?is)<h2[^>]*>\s*(Latest Articles|Related (Posts|Articles)|You may also like)', body)[0]
+    hs = [(m.group(1), clean(m.group(2))[:140]) for m in re.finditer(r'(?is)<h([23])[^>]*>(.*?)</h\1>', body)]
+    text = clean(body)
+    upd = re.search(r'Updated On:\s*([A-Za-z]+ \d{1,2}, \d{4})', text)
+    return {'url': u, 'title': clean((re.search(r'(?is)<title[^>]*>(.*?)</title>', raw) or [None, ''])[1])[:200], 'h1': clean((re.search(r'(?is)<h1[^>]*>(.*?)</h1>', raw) or [None, ''])[1])[:200],
+            'h2': [h for l, h in hs if l == '2' and h][:30], 'h3': [h for l, h in hs if l == '3' and h][:60], 'words': len(text.split()), 'tables': len(re.findall(r'(?i)<table', body)) > 0,
+            'faq': bool(re.search(r'(?i)frequently asked|\bFAQs?\b', text)), 'updated': upd.group(1) if upd else None, 'text': text[:70000]}
 out = {}
 with ThreadPoolExecutor(12) as ex:
-    for u, title, h1 in ex.map(head, urls):
-        k = norm(u); g = pages.get(k, {'clicks': 0, 'impressions': 0, 'queries': {}})
+    for p in ex.map(read, urls):
+        k = norm(p['url']); g = pages.get(k, {'clicks': 0, 'impressions': 0, 'queries': {}})
         qs = sorted(g['queries'].items(), key=lambda kv: (-kv[1][0], -kv[1][1]))[:25]
-        out[k] = {'url': u, 'title': title, 'h1': h1, 'clicks': g['clicks'], 'impressions': g['impressions'], 'queries': [[q, v[0], v[1], round(v[2], 1)] for q, v in qs]}
+        out[k] = {**p, 'clicks': g['clicks'], 'impressions': g['impressions'], 'queries': [[q, v[0], v[1], round(v[2], 1)] for q, v in qs]}
 json.dump({'from': str(start), 'to': str(end), 'pages': out}, open('ours.json', 'w'), ensure_ascii=False)
 print('sitemap', len(urls), 'with clicks', sum(1 for p in out.values() if p['clicks']), 'window', start, end, 'total clicks', sum(p['clicks'] for p in out.values()))
