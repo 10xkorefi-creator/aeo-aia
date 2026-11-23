@@ -311,7 +311,7 @@ for key, t in tasks.items():
             u = [(k, n, tq) for te, k, n, tq in m['uses'] if te == e]
             if not u: continue
             k, n, _ = max(u, key=lambda x: x[0] / x[1]); nq = len({tq for _, _, tq in u}); unit = 'AI Overviews' if e == 'google' else 'answers'
-            out.append('%s in %s %s' % (NAME[e], of(k, n), unit) if nq == 1 else '%s for %d of them (in up to %s %s)' % (NAME[e], nq, of(k, n), unit))
+            out.append('%s in %s %s' % (NAME[e], of(k, n), unit) if nq == 1 else '%s for %d prompts (in up to %s %s)' % (NAME[e], nq, of(k, n), unit))
         return '; '.join(out)
     one = len(engines) == 1 and engines != ['google']
     for i, m in enumerate(models[:4]): body['model'][i]['note'] = page_note(m['s'], cites(m))
