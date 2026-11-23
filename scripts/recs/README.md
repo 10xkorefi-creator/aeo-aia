@@ -24,6 +24,8 @@ Rules, in `build.py`:
 - Priority: High is a buying question where ChatGPT has a gap. Medium is a how-to question, a question about a named
   competitor, or a Google search where we rank on page one. The rest is Low. "Start here" is the ten High questions
   where ChatGPT already links to or names us.
+- For a page on our site, the kind of page comes from the question's wording and the kind of pages cited: comparison,
+  alternatives, pricing guide, step-by-step guide or short guide on the blog, or a product page under Products.
 - Task keys are stable (`W-P001`, `O-<page>`, `R-<site>`, `Y-K042`), so assignees survive a rebuild.
 
 `urls.py` and `read_pages.py` expect to run inside the working folder. Reading is plain HTTP; pages behind a bot

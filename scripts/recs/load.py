@@ -10,4 +10,5 @@ def call(payload):
     if '"tasks"' not in r.stdout: sys.exit(1)
 T = json.load(open(W + '/tasks.json')); Q = json.load(open(W + '/questions.json')); run = json.load(open(W + '/meta.json'))['run']
 for i in range(0, len(Q), 40): call({'run': run, 'tasks': [], 'questions': Q[i:i + 40]})
-for i in range(0, len(T), 80): call({'run': run, 'tasks': T[i:i + 80], 'final': i + 80 >= len(T)})
+for i in range(0, len(T), 80): call({'run': run, 'tasks': T[i:i + 80]})
+call({'run': run, 'tasks': [], 'keys': [t['task_key'] for t in T]})   # switches off tasks this build no longer produces

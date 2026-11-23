@@ -560,3 +560,18 @@ Decision with the user: the channel must not be chosen up front; the sources eac
   mis-typed. Unread pages are flagged in their task.
 - A question and a Google search on the same subject each get their own page task; they are not merged.
 - Tracked competitor names are the 11 in `aeo_competitors`; "names X" lines under-count untracked tools.
+
+## 23/11/2026: Task panel reordered for the Goal 2 review
+
+Asked for by the user ahead of the review meeting: the panel must explain itself under cross-questioning.
+
+- Order is now: **Task** (one specific sentence saying what to make and where it is published, plus up to three points),
+  **What's driving this recommendation** (the prompt or prompts covered with our score per assistant, what the
+  assistants do today, and the competitor pages we are imitating with who cites each), **Why this should work**,
+  **Check before starting** (only when the source was not cited in the previous run or could not be read), and
+  **We will know it worked when**.
+- The kind of page is taken from the question's wording and the kind of pages cited for it: comparison page,
+  alternatives page, pricing guide, step-by-step guide or short guide on the blog, or a product page under Products.
+- Outreach rules tightened: unread pages only count as lists when the title says so, and government and large vendor
+  sites are excluded. Tasks went from 315 to 305 (Outreach 80 to 70).
+- Loader fixed: a rebuild now switches off tasks it no longer produces (it only did so when the run changed).

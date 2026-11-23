@@ -54,12 +54,15 @@ function Assignee({ value, onChange, saving }) {
 const Bullets = ({ items }) => <ul className="rb-bullets">{(items || []).map((t, i) => <li key={i}>{t}</li>)}</ul>;
 const Loading = ({ failed }) => <p className="rq-load">{failed ? 'Could not load the details. Close and open the row again.' : 'Loading…'}</p>;
 
-// ---- one task: why, what to make, an example, how we will know
+// ---- one task: the task itself first, then what is driving it, why it should work and how we will know
 function TaskDetail({ t, body, failed, questions, openQ, assign, saving }) {
   const mine = t.targets.map((k) => questions.find((x) => x.key === k)).filter(Boolean);
+  const cols = ENGINES.filter((e) => t.assistants.includes(e));
+  const [all, setAll] = useState(false);
+  const shown = all ? mine : mine.slice(0, 5);
   return (
     <>
-      <div className="rb-kicker"><span>Task</span>{t.start ? <><span className="rb-dot">·</span><span>Start here</span></> : null}</div>
+      <div className="rb-kicker"><span>Recommendation</span>{t.start ? <><span className="rb-dot">·</span><span>Start here</span></> : null}</div>
       <Dialog.Title className="rb-title">{t.title}</Dialog.Title>
       <div className="rt-meta">
         <Channel channel={t.channel} /><Pill kind={t.kind} /><Prio p={t.priority} /><For list={t.assistants} names />
@@ -67,32 +70,51 @@ function TaskDetail({ t, body, failed, questions, openQ, assign, saving }) {
       </div>
       {!body ? <Loading failed={failed} /> : (
         <>
-          <section className="rb-sec"><h3>Why</h3><Bullets items={(body.why || []).slice(0, 4)} /></section>
-          <section className="rb-sec rb-do"><h3>What to make</h3><ol className="rb-steps">{(body.make || []).slice(0, 4).map((x, i) => <li key={i}>{x}</li>)}</ol></section>
-          {body.model?.length ? (
-            <section className="rb-sec"><h3>{body.model.length > 1 ? 'Examples to follow' : 'Example to follow'}</h3>
-              <ul className="rb-winners">
-                {body.model.slice(0, 3).map((w) => (
-                  <li key={w.url}><Favicon domain={host(w.url)} />
-                    <div><b>{w.title || host(w.url)}</b>
-                      <a href={w.url} target="_blank" rel="noopener noreferrer nofollow">{host(w.url)}<i aria-hidden="true"> ↗</i></a><span className="pp-tag">{w.tag}</span>
-                      <p>{w.note}</p></div>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ) : null}
+          <section className="rb-sec rb-do"><h3>Task</h3>
+            <p className="rd-lead">{body.task?.lead}</p>
+            {body.task?.points?.length ? <Bullets items={body.task.points} /> : null}
+          </section>
+
+          <section className="rb-sec"><h3>What’s driving this recommendation</h3>
+            <h4>{mine.length > 1 ? `The ${mine.length} prompts this covers` : mine[0]?.kind === 'keyword' ? 'The Google search this covers' : 'The prompt this covers'}</h4>
+            <div className="table-wrap">
+              <table className="rb-table rd-prompts">
+                <thead><tr><th>{mine.some((x) => x.kind === 'keyword') && mine.some((x) => x.kind !== 'keyword') ? 'Prompt or search' : mine[0]?.kind === 'keyword' ? 'Search' : 'Prompt'}</th>
+                  {cols.map((e) => <th key={e} className="num"><span className="asst"><AssistantIcon id={e} size={14} />{assistantName(e)}</span></th>)}</tr></thead>
+                <tbody>{shown.map((x) => (
+                  <tr key={x.key}><td><button type="button" className="rd-q" onClick={() => openQ(x.key)}>{x.text}</button></td>
+                    {cols.map((e) => <td key={e} className="num"><Score c={x.cells[e]} /></td>)}</tr>
+                ))}</tbody>
+              </table>
+            </div>
+            <p className="rb-foot">Answers that recommend us with a link, out of answers collected{cols.includes('google') ? '; for Google, AI Overviews that link to us' : ''}. Click a prompt to see every source cited for it.
+              {mine.length > 5 && !all ? <> <button type="button" className="rd-more" onClick={() => setAll(true)}>Show all {mine.length}</button></> : null}</p>
+
+            <h4>What the assistants do today</h4>
+            <Bullets items={(body.today || body.why || []).slice(0, 4)} />
+
+            {body.model?.length ? (
+              <>
+                <h4>{body.model_title || 'Sources cited today'}</h4>
+                {body.mix ? <p className="rd-mix">{body.mix}</p> : null}
+                <ul className="rb-winners">
+                  {body.model.slice(0, 4).map((w) => (
+                    <li key={w.url}><Favicon domain={host(w.url)} />
+                      <div><b>{w.title || host(w.url)}</b>
+                        <a href={w.url} target="_blank" rel="noopener noreferrer nofollow">{host(w.url)}<i aria-hidden="true"> ↗</i></a><span className="pp-tag">{w.tag}</span>
+                        <p>{w.note}</p></div>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
+          </section>
+
+          {body.works?.length ? <section className="rb-sec"><h3>Why this should work</h3><Bullets items={body.works.slice(0, 2)} /></section> : null}
+          {body.check?.length ? <section className="rb-sec"><h3>Check before starting</h3><Bullets items={body.check.slice(0, 2)} /></section> : null}
           <section className="rb-sec"><h3>We will know it worked when</h3><Bullets items={(body.done || []).slice(0, 1)} /></section>
         </>
       )}
-      {mine.length ? (
-        <section className="rb-sec"><h3>{mine.length > 1 ? `The ${mine.length} questions this task serves` : 'The question this task serves'}</h3>
-          <ul className="rb-tasklist rq-qs">
-            {mine.slice(0, 8).map((x) => <li key={x.key}><button type="button" onClick={() => openQ(x.key)}><span className="rb-tl-title">{x.text}</span><span className="rq-go">See all sources →</span></button></li>)}
-          </ul>
-          {mine.length > 8 ? <p className="rb-foot">and {mine.length - 8} more.</p> : null}
-        </section>
-      ) : null}
     </>
   );
 }
