@@ -249,7 +249,7 @@ export function RecBoard({ tasks: initialTasks, questions, baseline, leads, init
       <div className="rt-bar">
         <div className="rt-tabs" role="tablist" aria-label="View">
           <button type="button" role="tab" aria-selected={view === 'tasks'} className={view === 'tasks' ? 'on' : ''} onClick={() => setView('tasks')}>Tasks <span>{tasks.length}</span></button>
-          <button type="button" role="tab" aria-selected={view === 'questions'} className={view === 'questions' ? 'on' : ''} onClick={() => setView('questions')}>By question <span>{questions.length}</span></button>
+          <button type="button" role="tab" aria-selected={view === 'questions'} className={view === 'questions' ? 'on' : ''} onClick={() => setView('questions')}>By prompt <span>{questions.length}</span></button>
         </div>
         <span className="rt-count">{view === 'tasks' ? `${rows.length} of ${tasks.length} tasks` : `${qrows.length} of ${questions.length}`}</span>
         {view === 'tasks' ? (
