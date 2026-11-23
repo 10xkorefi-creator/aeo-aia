@@ -31,6 +31,8 @@ while True:
     off += 25000
 sm = subprocess.run(['curl', '-sS', '-m', '40', '-A', UA, 'https://www.aiaccountant.com/sitemap.xml'], capture_output=True, text=True).stdout
 urls = sorted(set(re.findall(r'<loc>([^<]+)</loc>', sm)))
+import os
+if os.path.exists('extra_urls.txt'): urls = sorted(set(urls) | {l.strip() for l in open('extra_urls.txt') if l.strip()})   # pages published but not yet in the sitemap
 def read(u):
     """The whole page: title, headings, the article text, and whether it has a table or a questions section."""
     raw = subprocess.run(['curl', '-sS', '-L', '--compressed', '-m', '30', '-A', UA, u], capture_output=True, text=True).stdout

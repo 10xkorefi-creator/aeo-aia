@@ -25,6 +25,7 @@ function ChannelIcon({ channel, size = 15 }) {
 }
 const Channel = ({ channel }) => <span className="rt-chan"><ChannelIcon channel={channel} />{channel}</span>;
 const Pill = ({ kind }) => { const [label, cls] = TYPE[kind] || ['Other', 'trk']; return <span className={`rt-pill ${cls}`}>{label}</span>; };
+const Done = () => <span className="rt-done"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" /></svg>Done</span>;
 const Prio = ({ p }) => <span className={`rt-prio ${String(p).toLowerCase()}`}>{p === 'Done' ? 'No gap' : p}</span>;
 const For = ({ list, names }) => (
   <span className="rt-for" title={list.map(engineName).join(', ')}>
@@ -62,11 +63,11 @@ function TaskDetail({ t, body, failed, questions, openQ, assign, saving }) {
   const shown = all ? mine : mine.slice(0, 5);
   return (
     <>
-      <div className="rb-kicker"><span>Recommendation</span>{t.start ? <><span className="rb-dot">·</span><span>Start here</span></> : null}</div>
+      <div className="rb-kicker"><span>Recommendation</span>{t.done ? <><span className="rb-dot">·</span><span>Done</span></> : null}{t.start ? <><span className="rb-dot">·</span><span>Start here</span></> : null}</div>
       <Dialog.Title className="rb-title">{t.title}</Dialog.Title>
       <div className="rt-meta">
-        <Channel channel={t.channel} /><Pill kind={t.kind} /><Prio p={t.priority} /><For list={t.assistants} names />
-        <span className="rt-meta-assign"><i>Assignee</i><Assignee value={t.assignee} onChange={(v) => assign(t.key, v)} saving={saving === t.key} /></span>
+        <Channel channel={t.channel} /><Pill kind={t.kind} />{t.done ? <Done /> : <Prio p={t.priority} />}<For list={t.assistants} names />
+        <span className="rt-meta-assign"><i>{t.done ? 'Done by' : 'Assignee'}</i><Assignee value={t.assignee} onChange={(v) => assign(t.key, v)} saving={saving === t.key} /></span>
       </div>
       {!body ? <Loading failed={failed} /> : (
         <>
@@ -236,9 +237,9 @@ export function RecBoard({ tasks: initialTasks, questions, baseline, leads, init
     setSaving(null);
   }
 
-  const byPrio = (p, s) => !prio || (prio === 'start' ? s : p === prio);
+  const byPrio = (p, s, d) => !prio || (prio === 'done' ? !!d : prio === 'start' ? s && !d : p === prio && !d);
   const channels = CHANNEL_ORDER.filter((c) => tasks.some((t) => t.channel === c));
-  const rows = tasks.filter((t) => (!chan || t.channel === chan) && (!eng || t.assistants.includes(eng)) && byPrio(t.priority, t.start) && (!who || (who === 'none' ? !t.assignee : t.assignee === who)));
+  const rows = tasks.filter((t) => (!chan || t.channel === chan) && (!eng || t.assistants.includes(eng)) && byPrio(t.priority, t.start, t.done) && (!who || (who === 'none' ? !t.assignee : t.assignee === who)));
   const qrows = questions.filter((x) => (!qkind || x.kind === qkind) && byPrio(x.priority, x.start));
   const qEngines = ENGINES.filter((e) => qrows.some((x) => x.cells[e]));
   const openTask = (key) => setOpen({ type: 'task', key });
@@ -267,7 +268,7 @@ export function RecBoard({ tasks: initialTasks, questions, baseline, leads, init
           </label>
         )}
         <label>Priority
-          <select value={prio} onChange={(e) => setPrio(e.target.value)}><option value="">All</option><option value="start">Start here</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option></select>
+          <select value={prio} onChange={(e) => setPrio(e.target.value)}><option value="">All</option><option value="start">Start here</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option>{view === 'tasks' ? <option value="done">Done</option> : null}</select>
         </label>
         {view === 'tasks' ? (
           <label>Assignee
@@ -283,12 +284,12 @@ export function RecBoard({ tasks: initialTasks, questions, baseline, leads, init
             <thead><tr><th>Task</th><th>Type</th><th>Channel</th><th>For</th><th>Priority</th><th>Assignee</th></tr></thead>
             <tbody>
               {rows.map((t) => (
-                <tr key={t.key} onClick={() => openTask(t.key)}>
+                <tr key={t.key} className={t.done ? 'is-done' : undefined} onClick={() => openTask(t.key)}>
                   <td><button type="button" className="rt-title" title={t.title} onClick={(e) => { e.stopPropagation(); openTask(t.key); }} aria-haspopup="dialog">{t.title}</button></td>
                   <td><Pill kind={t.kind} /></td>
                   <td><Channel channel={t.channel} /></td>
                   <td><For list={t.assistants} /></td>
-                  <td><Prio p={t.priority} /></td>
+                  <td>{t.done ? <Done /> : <Prio p={t.priority} />}</td>
                   <td onClick={(e) => e.stopPropagation()}><Assignee value={t.assignee} onChange={(v) => assign(t.key, v)} saving={saving === t.key} /></td>
                 </tr>
               ))}

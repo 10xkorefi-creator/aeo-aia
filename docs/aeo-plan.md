@@ -648,3 +648,22 @@ to the tracked prompt list.
 - Read: best fit for the page is the cost prompt and the outsource-or-in-house prompt. "Hire an accountant for Tally data
   entry" is answered with job boards and freelancer sites and is not worth chasing.
 - Two answers per prompt and one run: treat as a first look, not a measurement.
+
+## 23/11/2026: Prompt P089 added for /hire-accountant, with its first answers filled into the last two runs
+
+Asked by the user, who accepted the effect on the numbers.
+
+- New tracked prompt **P089 "how much does it cost to hire an accountant in India"** (list v4, unbranded, decision stage).
+  Chosen from the six tried in experiment E20261123-HIRE because it fits the page best and none of our pages is cited for it.
+- Its answers were placed in the runs of 19/11 (R20261119-M1) and 21/11 (R20261121-S1): three per assistant per run, 18 in
+  all. **All 18 were collected on 23/11/2026**, two from the experiment and four more per assistant collected for this
+  (about $0.10). They went through the normal apply functions, so `captured_at` shows the true date. Each run has an event
+  `prompt_backfilled`, and the prompt's `change_note` says the same.
+- Effect on the last two runs: unbranded answers per assistant go from 228 to 231, with no extra recommendation, so the
+  headline rates dip slightly (ChatGPT 12 of 231, Gemini 13 of 231, Perplexity 44 of 231 on 21/11). The run of 25/11 is the
+  first true reading for this prompt.
+- Recommendations: task `W-P089` "New page for …" is first on the list, marked Done by Wasif Kareem on 23/11/2026
+  (published at /hire-accountant). The panel carries a note that the prompt was added on 23/11 and when its answers were
+  collected. `scripts/recs/done.json` holds finished work so a rebuild keeps it; `extra_urls.txt` in the working folder
+  lets `ours.py` read a page that is not in the sitemap yet.
+- Page: tasks have a Done state (shown in place of priority; filter "Done").

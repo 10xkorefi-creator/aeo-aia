@@ -9,7 +9,7 @@ chosen up front: a channel only appears when an assistant cited it for that ques
 Input:  data/*.json (export.py) and pages.jsonl (read_pages.py), in the working folder given as argv[1].
 Output: questions.json and tasks.json in the same folder, ready to load into aeo_rec_questions and aeo_rec_tasks.
 """
-import json, re, sys, hashlib, statistics, collections as C, urllib.parse
+import json, os, re, sys, hashlib, statistics, collections as C, urllib.parse
 
 W = sys.argv[1].rstrip('/')
 L = lambda f: json.load(open('%s/data/%s.json' % (W, f)))
@@ -299,7 +299,7 @@ def why_lines(x, engines, proof=True):
 # ---------- our own pages (ours.py): which page of ours, if any, already covers a question
 PROTECT = 100          # clicks from Google in 90 days above which a page is only added to, never restructured
 SAME, RELATED = 0.8, 0.5
-STOP = set('best top which what how to is are can does do did i my we our a an the for in of on with and or any there it use used using good india indian me you your from by at as that this be vs into than most should will get via online new latest list guide complete ultimate'.split())
+STOP = set('much many best top which what how to is are can does do did i my we our a an the for in of on with and or any there it use used using good india indian me you your from by at as that this be vs into than most should will get via online new latest list guide complete ultimate'.split())
 WORDMAP = {'automation': 'automate', 'automated': 'automate', 'automating': 'automate', 'reconciliation': 'reconcile', 'reconciling': 'reconcile', 'pricing': 'price', 'cost': 'price', 'bookkeeper': 'bookkeeping',
            'convert': 'import', 'converter': 'import', 'app': 'software', 'tool': 'software', 'chartered': 'ca'}
 def toks(t):
@@ -432,6 +432,8 @@ FORMAT = {'compare': ('Write a comparison page for %s and publish it on the aiac
           'product': ('Create a product page for %s under Products on aiaccountant.com.', 'Say what AI Accountant does for this job, who it is for and what it costs%s.')}
 
 rows = []; skipped = []; OWN_OK = {}
+# work already finished: the task stays on the list, first, marked done (scripts/recs/done.json)
+DONE = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'done.json')))
 for key, t in tasks.items():
     engines = [e for e in ENGINES + ['google'] if any(te == e for _, te in t['targets'])]
     qs = list(dict.fromkeys(tq for tq, _ in t['targets']))
@@ -476,11 +478,22 @@ for key, t in tasks.items():
         path = own['url'].replace('https://', '').replace('www.', '').rstrip('/') if own else ''
         span = 'in the last 90 days'
         lnn = [NAME[e] for e in engines if e != 'google' and best['cells'][e]['linked'] > best['cells'][e]['rec'] and best['cells'][e]['named'] < best['cells'][e]['linked']]
-        has, missing, acts = page_gaps(own, best, engines, uniq, fmt, mode) if mode in ('add', 'rework') else ([], [], [])
+        done = DONE.get(best['key'])
+        if done:
+            dk = norm(done['url']); mode = 'done'
+            own = {'sim': 1.0, 'fit': 2, 'key': dk, 'url': done['url'], 'title': OURPAGES.get(dk, {}).get('title', ''), 'clicks': OURPAGES.get(dk, {}).get('clicks', 0), 'impressions': 0,
+                   'cited': dk in {norm(u) for u in cited_ours}, 'queries': []}
+            path = done['url'].replace('https://', '').replace('www.', '').rstrip('/'); ours = []; kind = 'New page'; title = 'New page for %s' % quoted
+        has, missing, acts = page_gaps(own, best, engines, uniq, fmt, mode) if mode in ('add', 'rework') or (mode == 'done' and own['key'] in OURPAGES) else ([], [], [])
         if mode in ('add', 'rework') and not acts:
             # our page already has what the cited pages have: nothing to change on it, the gap is elsewhere
             skipped.append((key, best['key'], own['url'])); OWN_OK[best['key']] = {'url': own['url'], 'title': own['title'], 'has': has, 'cited': own['cited']}; continue
-        if mode == 'add':
+        if mode == 'done':
+            body['task']['lead'] = (lead % quoted).replace('and publish it on the aiaccountant.com blog', 'and publish it on aiaccountant.com')
+            body['task']['points'].append('Done on %s by %s: published at %s.' % (done['date'], done['by'], path))
+            body['done_by'] = done['by']; body['done_on'] = done['date']
+            if done.get('note'): body['check'].append(done['note'])
+        elif mode == 'add':
             body['task']['lead'] = 'Make %s to %s for %s. Leave the rest of the page as it is.' % ('this change' if len(acts) == 1 else 'these %d changes' % min(len(acts), 4), path, quoted)
             body['task']['points'] += acts[:4]
             body['task']['points'].append('Keep the URL, title and existing sections: ' + ('the page brought {:,} clicks from Google {}.'.format(own['clicks'], span) if own['clicks'] >= PROTECT else 'it is a product page.'))
@@ -496,7 +509,7 @@ for key, t in tasks.items():
                 body['task']['points'].append('Link to the new page from %s, our nearest page%s, and leave that page as it is.%s' % (path, ', which is already cited for this ' + what if own['cited'] else '', why_not))
         if own:
             body['ours'] = {'url': own['url'], 'title': own['title'], 'clicks': own['clicks'], 'queries': own['queries'], 'cited': own['cited'], 'mode': mode, 'has': has, 'missing': missing,
-                            'note': {'add': 'Close match with real Google traffic, so we only add to it.' if own['clicks'] >= PROTECT else 'Close match, and a product page, so we only add to it.', 'rework': 'Close match with little Google traffic, so it can be reworked.',
+                            'note': {'done': 'The page made for this prompt.', 'add': 'Close match with real Google traffic, so we only add to it.' if own['clicks'] >= PROTECT else 'Close match, and a product page, so we only add to it.', 'rework': 'Close match with little Google traffic, so it can be reworked.',
                                      'new_linked': 'Nearest page, but about something else, so we write a new page and link to it from here.'}[mode]}
         if ours:
             keep = [k for k in sorted(EARNS.get(norm(own['url']), ()), key=lambda k: questions[k]['pos'] if k in questions else 999) if k != best['key'] and k in questions]
@@ -597,7 +610,8 @@ for key, t in tasks.items():
         body['done'] = ['%s %s our %s for this %s.' % (who, 'cites' if one else 'cite', thing, what)]
     score = sum(questions[tq]['score'] * (WEIGHT.get(e, 0.1)) for tq, e in t['targets'])
     rows.append({'task_key': key, 'title': title, 'channel': t['channel'], 'kind': kind, 'priority': best['priority'], 'assistants': engines, 'score': round(score, 4),
-                 'prompt_keys': [k for k in qs if questions[k]['kind'] == 'question'], 'keyword_ids': [k for k in qs if questions[k]['kind'] == 'keyword'], 'body': body, 'qpos': best['pos'], 'q': best['key']})
+                 'prompt_keys': [k for k in qs if questions[k]['kind'] == 'question'], 'keyword_ids': [k for k in qs if questions[k]['kind'] == 'keyword'], 'body': body, 'qpos': 0 if body.get('done_by') and t['channel'] == 'Website' else best['pos'], 'q': best['key'],
+                 'status': 'Done' if body.get('done_by') and t['channel'] == 'Website' else 'To do', 'assignee': body.get('done_by') if t['channel'] == 'Website' else None})
 
 same = C.defaultdict(list)
 for r in rows:

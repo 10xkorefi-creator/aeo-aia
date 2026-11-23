@@ -811,3 +811,6 @@ table.rt:not(.rq) .rt-title { display: block; max-width: 100%; overflow: hidden;
 @media (max-width: 720px) { .rd-gap { grid-template-columns: 1fr; margin-left: 0; } }
 .rq-own { margin-top: 10px !important; font-size: 13px !important; color: var(--muted-foreground); }
 .rq-own a { color: var(--accent); }
+
+.rt-done { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 9px; border-radius: 6px; font-size: 12px; font-weight: 600; background: var(--up-bg); color: var(--up-ink); }
+table.rt tr.is-done .rt-title { color: var(--muted-foreground); }
