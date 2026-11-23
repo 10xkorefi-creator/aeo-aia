@@ -631,3 +631,20 @@ Outreach 68, YouTube 48, LinkedIn 13, Review site 11, Reddit 11, X 4, Instagram 
 
 **Limits.** Tool names are matched by a fixed list, so a tool outside it is not seen. Why an assistant skips our name on
 a page that lists us is not visible in the data; the task states the observation and the differences, not a proven cause.
+
+## 23/11/2026: Side experiment E20261123-HIRE (the new /hire-accountant page)
+
+Asked by the user: does the new page https://www.aiaccountant.com/hire-accountant relate to any tracked prompt? It does
+not, so six "hiring an accountant" prompts were run once as a separate experiment. Nothing was added to the dashboard or
+to the tracked prompt list.
+
+- Prompts: `docs/experiments/E20261123-HIRE-prompts.json`. ChatGPT, Gemini and Perplexity, 2 answers each, India: 36 answers.
+- Script: `scripts/exp_prompts.py`. Data: table `aeo_prompt_experiments` (new; the dashboard role has no access to it).
+- Cost: about $0.15.
+- Result: AI Accountant named in 0 of 36 answers. Our site linked in 8 of 36 (ChatGPT 4, Perplexity 4), through four older
+  blog posts: best-virtual-accounting-services-india, outsourced-bookkeeping-india-complete-guide,
+  ai-accountant-vs-human-accountant and accounting-automation-software. The new page is not cited (published the same day,
+  not yet in the sitemap). Only 8 of 36 answers mention AI as an option at all. Gemini cited no sources on 5 of 6 prompts.
+- Read: best fit for the page is the cost prompt and the outsource-or-in-house prompt. "Hire an accountant for Tally data
+  entry" is answered with job boards and freelancer sites and is not worth chasing.
+- Two answers per prompt and one run: treat as a first look, not a measurement.
