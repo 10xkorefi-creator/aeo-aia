@@ -93,6 +93,19 @@ function TaskDetail({ t, body, failed, questions, openQ, assign, saving }) {
             <h4>What the assistants do today</h4>
             <Bullets items={(body.today || body.why || []).slice(0, 4)} />
 
+            {body.ours ? (
+              <>
+                <h4>Our own page on this</h4>
+                <ul className="rb-winners">
+                  <li><Favicon domain="aiaccountant.com" />
+                    <div><b>{body.ours.title || host(body.ours.url)}</b>
+                      <a href={body.ours.url} target="_blank" rel="noopener noreferrer">{body.ours.url.replace(/^https?:\/\/(www\.)?/, '')}<i aria-hidden="true"> ↗</i></a>
+                      <p>{body.ours.clicks.toLocaleString('en-IN')} clicks from Google in the last 90 days.{body.ours.queries?.length ? ` Ranks for ${body.ours.queries.map((x) => `“${x}”`).join(', ')}.` : ''} {body.ours.cited ? 'Already cited for this prompt.' : 'Not cited for this prompt.'} {body.ours.note}</p></div>
+                  </li>
+                </ul>
+              </>
+            ) : null}
+
             {body.model?.length ? (
               <>
                 <h4>{body.model_title || 'Sources cited today'}</h4>
@@ -305,6 +318,7 @@ export function RecBoard({ tasks: initialTasks, questions, baseline, leads, init
           <li>Where an assistant does not recommend us in at least half its answers, each source it cited in most of those answers becomes a task.</li>
           <li>The source decides the channel. A list that leaves us out becomes outreach, a review site becomes a listing, a YouTube video becomes a video, and a product page or article becomes a page on our site. A channel that no assistant cited for a question gets no task for it.</li>
           <li>Priority: High is a buying question where ChatGPT does not recommend us{leads?.total ? `, because ChatGPT sent ${leads.chatgpt} of our ${leads.total} leads from AI` : ''}. Medium is a how-to question, a question about a named competitor, or a Google search where we already rank on page one. The rest is Low.</li>
+          <li>For a page on our site, we first look for a page we already have, by its title and the Google searches it ranks for. A close page with real Google traffic (100 or more clicks in 90 days) or a product page is only added to. A close blog page with little traffic can be reworked. If our nearest page is about something else, we write a new page and link to it from the old one.</li>
           <li>“Start here” marks the ten High questions where ChatGPT already links to us or names us, so the step to a full recommendation is smallest.</li>
         </ol>
       </details>

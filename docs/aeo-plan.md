@@ -575,3 +575,29 @@ Asked for by the user ahead of the review meeting: the panel must explain itself
 - Outreach rules tightened: unread pages only count as lists when the title says so, and government and large vendor
   sites are excluded. Tasks went from 315 to 305 (Outreach 80 to 70).
 - Loader fixed: a rebuild now switches off tasks it no longer produces (it only did so when the run changed).
+
+## 23/11/2026: New page or update, decided against our own site and Search Console
+
+**Why.** The first task said "new page" for "best AI tool for tally prime" although we already have
+`/blog/ultimate-guide-tally-prime-automation` ("Tally Prime AI Tool"). The generator only knew about pages of ours that
+an assistant had cited. The user also raised the risk that updating a page breaks the searches it already ranks for.
+
+**Rule agreed with the user.**
+1. Close page with real Google traffic (100+ clicks in 90 days), or any product, tool or landing page: add a section only.
+   Keep URL, title, main heading and existing sections.
+2. Close blog page with little traffic: free to rework.
+3. Our nearest page is about something else: write a new page and link to it from the old one.
+
+**How it is applied.** `scripts/recs/ours.py` reads all 445 URLs in the sitemap with their titles, plus 90 days of
+Search Console clicks and the searches each page ranks for (23/08 to 20/11/2026). `build.py` scores each of our pages
+against the prompt by title and by ranking searches (0.8 or more is a close match, 0.5 to 0.8 is a related page), with a
+small bonus for a page an assistant already cites.
+
+**Result for the 142 website tasks.** Add only 35, rework 49, new page linked from a related page 52, new page 6.
+Each update task also says which other prompts the page is already cited for (to keep those parts), how many other tasks
+touch the same page, and to watch the page's Google clicks for four weeks after the change. The panel shows "Our own
+page on this" with its clicks and searches.
+
+**Limits.** Matching is by words in titles and searches, so a few matches will be loose. The 100-click line is a starting
+point. Several prompts often point at one page (ten at `/blog/best-ai-tools-for-ca-in-india`); they are separate tasks
+with a note to do them in one edit, not merged.

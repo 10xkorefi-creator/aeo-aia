@@ -266,6 +266,56 @@ def why_lines(x, engines):
         out.append(line)
     return out
 
+# ---------- our own pages (ours.py): which page of ours, if any, already covers a question
+PROTECT = 100          # clicks from Google in 90 days above which a page is only added to, never restructured
+SAME, RELATED = 0.8, 0.5
+STOP = set('best top which what how to is are can does do did i my we our a an the for in of on with and or any there it use used using good india indian me you your from by at as that this be vs into than most should will get via online new latest list guide complete ultimate'.split())
+WORDMAP = {'automation': 'automate', 'automated': 'automate', 'automating': 'automate', 'reconciliation': 'reconcile', 'reconciling': 'reconcile', 'pricing': 'price', 'cost': 'price', 'bookkeeper': 'bookkeeping',
+           'convert': 'import', 'converter': 'import', 'app': 'software', 'tool': 'software', 'chartered': 'ca'}
+def toks(t):
+    t = t.lower().replace('tallyprime', 'tally prime'); t = re.sub(r'gstr[\s-]?(\d)([ab])', r'gstr\1\2', t); t = re.sub(r'add[\s-]ons?', 'addon', t)
+    out = set()
+    for w in re.findall(r'[a-z0-9]+', t):
+        if w in STOP or re.fullmatch(r'20\d\d|\d', w): continue
+        if w.endswith('ies') and len(w) > 4: w = w[:-3] + 'y'
+        elif w.endswith('s') and not w.endswith('ss') and len(w) > 3: w = w[:-1]
+        out.add(WORDMAP.get(w, w))
+    return out
+try: OURDATA = json.load(open(W + '/ours.json'))
+except FileNotFoundError: OURDATA = {'pages': {}}
+NOT_CONTENT = re.compile(r'/(gads|privacy|terms|about-us|free-trial|partnerships|testimonials|customer-stories|ca-day|us|careers|contact|testing-page)(/|$)|aiaccountant\.com$|/blog$')
+OURPAGES = {k: p for k, p in OURDATA['pages'].items() if not NOT_CONTENT.search(k)}
+for p in OURPAGES.values():
+    p['tt'] = toks(p['title'] + ' ' + p['h1'] + ' ' + p['url'].rstrip('/').split('/')[-1].replace('-', ' '))
+    p['qq'] = [(q, toks(q)) for q, c, i, pos in p['queries'] if i >= 5]
+def closest(label, cited):
+    """Our page closest to a question: by its title and by the searches it ranks for. A page an assistant already cites gets a small bonus."""
+    Q = toks(label); best = None
+    citedn = {norm(u) for u in cited}
+    if len(Q) < 2: return None
+    for k, p in OURPAGES.items():
+        st = len(Q & p['tt']) / len(Q); sq, bq = 0, ''
+        for q, t in p['qq']:
+            j = len(Q & t) / len(Q | t) if t else 0
+            if j > sq: sq, bq = j, q
+        sim = max(st * (0.9 if st == 1 else 0.8), sq)
+        if k in citedn and sim >= RELATED - 0.2: sim += 0.1
+        if not best or (round(sim, 2), st + sq, p['clicks']) > (best['sim'], best['fit'], best['clicks']): best = {'sim': round(sim, 2), 'fit': st + sq, 'key': k, 'url': p['url'], 'title': p['title'], 'clicks': p['clicks'], 'impressions': p['impressions'], 'cited': k in citedn,
+                                                                               'queries': [q for q, c, i, pos in p['queries'][:3] if i >= 5]}
+    if best and best['sim'] < RELATED:
+        # nothing close by topic: fall back to a page an assistant already cites for this question, as the place to link from
+        for k in citedn:
+            p = OURPAGES.get(k)
+            if p: return {'sim': 0.0, 'fit': 0, 'key': k, 'url': p['url'], 'title': p['title'], 'clicks': p['clicks'], 'impressions': p['impressions'], 'cited': True, 'queries': [q for q, c, i, pos in p['queries'][:3] if i >= 5]}
+        return None
+    return best
+
+# which of our pages are already cited, and for which questions (latest run), so an update does not throw that away
+EARNS = C.defaultdict(set)
+for (e, q), urls in cit.items():
+    for u, x in urls.items():
+        if OURS.search(dom(x['url'])) and len(x['caps']) >= 2: EARNS[u].add(q)
+
 def andj(xs):
     xs = list(xs)
     return xs[0] if len(xs) == 1 else ', '.join(xs[:-1]) + ' and ' + xs[-1]
@@ -320,26 +370,47 @@ for key, t in tasks.items():
     if t['channel'] == 'Website':
         srcs = [s for e in engines for s in best['cells'][e]['sources']]
         uniq = list({norm(s['url']): s for s in srcs}.values())
-        ours = [u for c in best['cells'].values() if c for u in c['all_ours'] if urllib.parse.urlparse(u).path.strip('/')]
-        ours = [u for u, _ in C.Counter(ours).most_common(2)]
-        kind = 'Update page' if ours or (not isq and best['close']) else 'New page'
-        title = ('Update our page for %s' if kind == 'Update page' else 'New page for %s') % quoted
+        cited_ours = [u for c in best['cells'].values() if c for u in c['all_ours'] if urllib.parse.urlparse(u).path.strip('/')]
+        own = closest(best['label'], cited_ours)
+        # the three rules: a close page with real Google traffic is only added to; a close page with little traffic can be reworked;
+        # when our nearest page is about something else, write a new page and link to it from the old one
+        selling = bool(own) and '/blog/' not in own['url']      # product, tool and landing pages sell: they are only ever added to
+        mode = 'new' if not own else 'new_linked' if own['sim'] < SAME else 'add' if own['clicks'] >= PROTECT or selling else 'rework'
+        ours = [own['url']] if own and mode in ('add', 'rework') else []
+        kind = 'Update page' if ours else 'New page'
+        title = ('Update our page for %s' if ours else 'New page for %s') % quoted
         fmt = page_format(best, uniq)
         names = C.Counter(n for e in engines for n, k in best['cells'][e]['names'])
         named = (': ' + andj(n for n, _ in names.most_common(3))) if names and fmt in ('compare', 'alternatives') else ''
         lead, point = FORMAT[fmt]
-        if ours:
-            path = ours[0].replace('https://', '').replace('www.', '').rstrip('/')
-            body['task']['lead'] = 'Update %s so that it answers %s.' % (path, quoted)
-        elif kind == 'Update page':
-            body['task']['lead'] = 'Update the page of ours that ranks number %d on Google for %s.' % (best['rank'], quoted)
+        path = own['url'].replace('https://', '').replace('www.', '').rstrip('/') if own else ''
+        span = 'in the last 90 days'
+        lnn = [NAME[e] for e in engines if e != 'google' and best['cells'][e]['linked'] > best['cells'][e]['rec'] and best['cells'][e]['named'] < best['cells'][e]['linked']]
+        if mode == 'add':
+            body['task']['lead'] = 'Add a section to %s that answers %s. Do not rewrite the page.' % (path, quoted)
+            body['task']['points'].append('Keep the URL, title, main heading and existing sections. ' + ('The page brought {:,} clicks from Google {}.'.format(own['clicks'], span) if own['clicks'] >= PROTECT else 'It is a product page, so we add to it and change nothing else.'))
+            body['task']['points'].append(('In the new section: ' + point[0].lower() + point[1:]) % named)
+        elif mode == 'rework':
+            body['task']['lead'] = 'Rework %s so that it answers %s.' % (path, quoted)
+            body['task']['points'].append(point % named)
+            body['task']['points'].append('It is free to rework: it brought {} from Google {}.'.format('no clicks' if not own['clicks'] else '1 click' if own['clicks'] == 1 else 'only {:,} clicks'.format(own['clicks']), span))
         else:
             body['task']['lead'] = lead % quoted
-        body['task']['points'].append(point % named)
-        lnn = [NAME[e] for e in engines if e != 'google' and best['cells'][e]['linked'] > best['cells'][e]['rec'] and best['cells'][e]['named'] < best['cells'][e]['linked']]
-        if lnn and ours: body['task']['points'].append('Say near the top, in plain words, what AI Accountant does for this job. %s already %s this page but %s other tools from it.' % (andj(lnn), 'reads' if len(lnn) == 1 else 'read', 'names' if len(lnn) == 1 else 'name'))
+            body['task']['points'].append(point % named)
+            if mode == 'new_linked':
+                why_not = (' It ranks for different searches (%s).' % ', '.join('“%s”' % q for q in own['queries'][:2])) if own['queries'] else ''
+                body['task']['points'].append('Link to the new page from %s, our nearest page%s, and leave that page as it is.%s' % (path, ', which is already cited for this ' + what if own['cited'] else '', why_not))
+        if lnn and ours and own['cited']: body['task']['points'].append('Say in plain words what AI Accountant does for this job. %s already %s this page but %s other tools from it.' % (andj(lnn), 'reads' if len(lnn) == 1 else 'read', 'names' if len(lnn) == 1 else 'name'))
+        if own:
+            body['ours'] = {'url': own['url'], 'title': own['title'], 'clicks': own['clicks'], 'queries': own['queries'], 'cited': own['cited'], 'mode': mode,
+                            'note': {'add': 'Close match with real Google traffic, so we only add to it.' if own['clicks'] >= PROTECT else 'Close match, and a product page, so we only add to it.', 'rework': 'Close match with little Google traffic, so it can be reworked.',
+                                     'new_linked': 'Nearest page, but about something else, so we write a new page and link to it from here.'}[mode]}
+        if ours:
+            keep = [k for k in sorted(EARNS.get(norm(own['url']), ()), key=lambda k: questions[k]['pos'] if k in questions else 999) if k != best['key'] and k in questions]
+            if keep: body['task']['points'].append('Keep the parts that already get this page cited for %s.' % andj('“%s”' % questions[k]['label'] for k in keep[:2]) + (' and %d more' % (len(keep) - 2) if len(keep) > 2 else ''))
+        if ours: body['check'].append('Note the date of the change and watch this page\'s Google clicks for four weeks. Put the old version back if they fall.')
         ms = [m['s'] for m in models if m['s'].get('words')]
-        if ms:
+        if ms and mode != 'add':
             med = int(statistics.median(m['words'] for m in ms[:6]) // 50 * 50)
             extra = [n for n, f in (('a comparison table', 'tables'), ('a questions-and-answers section', 'faq')) if sum(1 for m in ms[:6] if m.get(f)) * 2 >= len(ms[:6])]
             body['task']['points'].append('About {:,} words{}, which is what the cited pages run to.'.format(max(med, 300), (', with ' + ' and '.join(extra)) if extra else ''))
@@ -350,7 +421,8 @@ for key, t in tasks.items():
         body['model_title'] = 'Competitor pages we are imitating'
         lists = [s for s in uniq if s['type'] in LISTS]; lists_us = [s for s in lists if s.get('names_us')]
         no_page = [NAME[e] for e in engines if e != 'google' and best['cells'][e]['named'] > best['cells'][e]['rec'] and best['cells'][e]['linked'] == 0]
-        if ours and lnn: body['works'].append('%s already %s our page for this %s, so we are in what %s. The gap is that the page does not present AI Accountant as the answer.' % (andj(lnn), 'cites' if len(lnn) == 1 else 'cite', what, 'it reads' if len(lnn) == 1 else 'they read'))
+        if ours and not own['cited']: body['works'].append('We already have a page on this, but no assistant cited it for this %s in the latest run%s.' % (what, (': they cite pages that name ' + andj(n for n, _ in names.most_common(3))) if names else ''))
+        elif ours and lnn: body['works'].append('%s already %s our page for this %s, so we are in what %s. The gap is that the page does not present AI Accountant as the answer.' % (andj(lnn), 'cites' if len(lnn) == 1 else 'cite', what, 'it reads' if len(lnn) == 1 else 'they read'))
         elif no_page: body['works'].append('%s already %s AI Accountant here but %s no page of ours to link to. A page that matches the question gives %s the link.' % (andj(no_page), 'names' if len(no_page) == 1 else 'name', 'has' if len(no_page) == 1 else 'have', 'it' if len(no_page) == 1 else 'them'))
         vend = [s for s in uniq if s['type'] == 'vendor']
         if lists and len(lists) * 5 >= len(uniq) * 2:
@@ -359,7 +431,7 @@ for key, t in tasks.items():
         elif len(vend) * 2 >= len(uniq) and uniq:
             body['works'].append('%d of the %d sources cited are the product pages of the tools the assistants name. They name the tools whose own pages answer the %s, and none of those pages is ours.' % (len(vend), len(uniq), what))
         elif not body['works']:
-            body['works'].append('%s of the sources cited for this %s %s ours. The assistants can only recommend us with a link when a page of ours answers it.' % ('None' if not ours else 'Only %d' % len(ours), what, 'is' if len(ours) <= 1 else 'are'))
+            body['works'].append('%s of the sources cited for this %s %s ours. The assistants can only recommend us with a link when a page of ours answers it.' % ('None' if not cited_ours else 'Only %d' % len(set(cited_ours)), what, 'is' if len(set(cited_ours)) <= 1 else 'are'))
         body['done'] = ['%s %s AI Accountant with a link in at least half the answers to this question, two runs in a row.' % (who, 'recommends' if one else 'recommend')]
         if engines == ['google']: body['done'] = ['Google\'s AI Overview links to our site on at least half the searches for this keyword, two runs in a row.']
     elif t['channel'] == 'Outreach':
@@ -423,6 +495,13 @@ for key, t in tasks.items():
     rows.append({'task_key': key, 'title': title, 'channel': t['channel'], 'kind': kind, 'priority': best['priority'], 'assistants': engines, 'score': round(score, 4),
                  'prompt_keys': [k for k in qs if questions[k]['kind'] == 'question'], 'keyword_ids': [k for k in qs if questions[k]['kind'] == 'keyword'], 'body': body, 'qpos': best['pos'], 'q': best['key']})
 
+same = C.defaultdict(list)
+for r in rows:
+    o = r['body'].get('ours')
+    if o and o['mode'] in ('add', 'rework'): same[o['url']].append(r)
+for url, rs in same.items():
+    if len(rs) > 1:
+        for r in rs: r['body']['check'].insert(0, '%d other %s this same page. Make the changes in one edit.' % (len(rs) - 1, 'task updates' if len(rs) == 2 else 'tasks update'))
 CH = ['Website', 'Outreach', 'Review site', 'YouTube', 'LinkedIn', 'Reddit', 'Quora', 'X', 'Facebook', 'Instagram']
 rows.sort(key=lambda r: (r['qpos'], CH.index(r['channel']), -r['score']))
 for i, r in enumerate(rows): r['sort'] = i + 1
