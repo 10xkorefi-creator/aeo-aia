@@ -26,11 +26,14 @@ select public.aeo_task_set_live('<task_key>', '<lastPublished>'::timestamptz);
 ```sql
 select task_key, title, kind, body from public.aeo_rec_tasks
 where is_active and channel = 'Website' and status = 'To do'
+  and coalesce((body->'ours'->>'clicks')::int, 0) < 300      -- our best pages on Google are never edited by the agent
   and ((body->'ours'->>'mode' in ('add', 'rework') and body->'ours'->>'url' like '%/blog/%')
     or (coalesce(body->'ours'->>'mode', 'new') in ('new', 'new_linked') and body->'task'->>'lead' not like 'Create a product page%'))
 order by sort limit 8;
 ```
 Only blog work is in scope. Product pages and other designed pages are left for a person.
+
+Pages that do well on Google are protected. A page with 300 or more clicks in 90 days (`ours.clicks`) is never edited by you; its task stays To do for a person. A page with 100 to 299 clicks gets small additions only (mode **add**): one or two new sections, nothing removed, nothing reworded.
 
 ## Step 2. For each task
 The brief is in `body`: `task.lead` and `task.points` say what to make; `today` says what the assistants do now; `ours` is our own page (`url`, `mode`, `has`, `missing`); `model` lists the competitor pages being cited; `check` holds warnings.
@@ -87,6 +90,8 @@ python3 scripts/blog-images/upload.py out <post-slug>
 - Include AI Accountant in any comparison the brief asks for, described by what it does for that job.
 
 ## Hard limits
+- Never edit the homepage, https://www.aiaccountant.com, in any way: not its content, its settings, its code or its links. If a brief seems to need a change there, skip that part and say so in your note.
+- Never rewrite, restructure, retitle or shorten a page that has 100 or more clicks from Google in 90 days. Add to it or leave it.
 - Never publish: no site publish, no item publish.
 - Never delete, archive or unpublish anything. Never set `isDraft` on a post that is already live. Never change the slug of an existing post.
 - Touch only the Blog Posts collection in Webflow, and only `aeo_task_set_draft` / `aeo_task_set_live` in Supabase.

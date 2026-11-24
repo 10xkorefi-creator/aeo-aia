@@ -715,3 +715,15 @@ in one theme close to the brand.
   the user's request; more changes are coming before the agent is used.
 - The scheduled task's prompt is now a short pointer to the instructions file in the repository, so later edits to the
   file take effect without touching the task.
+
+## 24/11/2026: Blog audit, and two standing rules for the Webflow agent
+
+- Audit of the 224 live "Ai Accountant" blog posts, the old n8n blog workflow and the blog page template:
+  `docs/blog-audit.md` (per-post notes in `docs/blog-audit-notes.md`).
+- Rules from the user, now in `docs/agents/webflow-agent.md`: the agent never edits the homepage in any way; pages that do
+  well on Google get no major changes. In practice: 300+ clicks in 90 days means the agent does not edit the page at all;
+  100 to 299 means small additions only.
+- Decision not to backfill CMS fields in bulk: the "Updated On" date shown on every post is the item's own last-updated date
+  (it matches on 367 of 370 posts). Filling thumbnail or updated-date fields on all 227 posts would stamp today's date on
+  every one of them when published, which would misstate freshness and touch the top pages. Fields are filled when a post
+  is edited for a real reason.
