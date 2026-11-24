@@ -694,3 +694,14 @@ the task Draft on the dashboard with "done by the agent", and assigns it to Wasi
   instructions: tasks on the same page are done in one edit; the body before the edit is stored on the task
   (`agent_before`) so it can be put back; our site has no price list, so pricing briefs describe terms without a figure;
   cover images are left for the reviewer.
+
+## 24/11/2026: Blog images (cover and in-post figures)
+
+Asked by the user: automate the cover image (text over image, logo on top, author at the bottom) and images inside posts,
+in one theme close to the brand.
+
+- `scripts/blog-images/render.js` draws images from templates with the pre-installed browser: cover (dark or light), bar and
+  range charts, cards, checklist, table and steps. No image model, so text, logo and numbers are exact. Theme follows the
+  brand guide (white, black, grey, one accent `#314DD0`, the official A-Star files).
+- `scripts/blog-images/upload.py` hosts them in a new public Supabase storage bucket, `blog-images`.
+- Samples made for the pilot draft "accounts payable automation cost" and sent to the user for a decision on the theme.
