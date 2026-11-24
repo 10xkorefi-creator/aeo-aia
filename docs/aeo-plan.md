@@ -772,3 +772,17 @@ Designer, which the connector cannot do.
   empty fields; switching the template on (`shouldPublish` is still false, which is why author addresses return not found).
 - Not yet verified: how the page looks, and two token types in the Person schema (image and link). They can only be checked
   once the template is switched on and published to staging.
+
+## 24/11/2026: FAQ schema field, and the audit's writing rules saved in the agent
+
+- New rich-text field on Blog Posts, "FAQ schema" (`faq-schema`). The blog template renders it through a hidden rich-text
+  element at the end of the body, so a post with the field filled serves a FAQPage JSON-LD in the page's own HTML, where
+  crawlers that do not run scripts can read it. A plain-text field could not be used: Webflow HTML-escapes plain text in
+  page code, which breaks JSON.
+- One line added to the footer script so the browser-built FAQ is skipped when the served one is present. Every other byte
+  of the footer is unchanged; the earlier version is in `docs/webflow-template/footer.before-faq-guard.html`.
+- Tested on staging: the test post (Tally Prime) serves one valid FAQPage with its 10 questions and still has exactly one
+  after scripts run; two other posts behave exactly as before. Not published to the live domains by us.
+- Side finding, already the case before today: the same escaping puts `&amp;` and `&#39;` into the headline or description
+  of the Article schema on 87 posts. The data stays valid; the text is slightly off.
+- `docs/agents/webflow-agent.md` now holds the FAQ field format and the writing rules from the audit ("How to write a post").

@@ -82,6 +82,30 @@ python3 scripts/blog-images/upload.py out <post-slug>
    Webflow copies the pictures to its own storage when the post is saved.
 5. Say in your note which images you added.
 
+## FAQ schema
+When the post has a questions section, set the post's `faq-schema` field (rich text) to exactly one custom-code block and nothing else:
+```html
+<div data-rt-embed-type='true'><script type="application/ld+json" data-faq-schema>{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Question as written in the post?","acceptedAnswer":{"@type":"Answer","text":"The answer as plain text."}}]}</script></div>
+```
+One entry per question in the post, in the same order, with the same wording. Answers are plain text: no HTML tags, and valid JSON (escape double quotes and line breaks). Keep the `data-faq-schema` attribute; the page uses it to avoid a second copy. If you change the questions, rebuild the field. If the post has no questions section, leave the field empty.
+
+## How to write a post
+These rules come from the blog audit (`docs/blog-audit.md`). They replace the old fixed template.
+
+1. **One post answers one tracked prompt.** The brief names it. Do not widen the topic to fit keywords.
+2. **Open with the answer.** The first thing after the title is a short block headed "Quick answer": two to four sentences that answer the prompt and name the tools, AI Accountant among them where it honestly belongs. No benefit bullets, no warm-up, no "key takeaways" block before it.
+3. **Titles and headings are what people type.** A search or a question with the object named (Tally Prime, GSTR-2B, bank statement). Never "ultimate", "secret", "game changer", "swear by", "smarter", "effortless" or similar.
+4. **Describe AI Accountant the same way every time.** The name is written "AI Accountant", never AIAccountant, AIA, AiA or Ai Accountant; correct any of those you find in a post you are editing. Say what it does for this exact job, who it is for, how it is priced in the site's own words, and what it does not do. One honest passage, not a line at the end of every answer.
+5. **In "best" lists and comparisons, do not simply rank ourselves first.** Either place AI Accountant where a fair reader would, with its limits stated, or keep it outside the ranking in a section headed "Where AI Accountant fits". Add a "choose this if" line for each tool, rivals included.
+6. **Compare with the tools buyers actually name.** Use the tools in the brief (`today`) and on the cited pages, such as Docs by Ira, Vyapar TaxOne (formerly Suvit), Zoho Books, ClearTax and Hisabkitab. Do not pad a list with QuickBooks, Xero, FreshBooks or Sage unless the cited pages feature them for this prompt.
+7. **Use a table for any comparison**: price, who it is for, Tally support, limits. Under it, one line giving the source for each tool and "checked" with the month and year.
+8. **Every number has a source that states it.** Link the specific page, not a homepage. No source, no number. Never invent an example, a customer, a code, a section number or a threshold. A tax or compliance rule (GST, TDS, e-invoicing limits, due dates) goes in only if you confirmed it in this run on a government or other primary page; otherwise leave it out and say so in your note.
+9. **Use what only we have.** Where a case study or figure on aiaccountant.com fits the topic, use it and link it. Never make one up.
+10. **Length follows the cited pages**, as the brief says; usually 1,200 to 2,000 words. Cut anything that does not help answer the prompt.
+11. **One questions section, at the end**: four to eight questions people really ask about this topic, each answered in two or three sentences that make sense alone. Do not end answers with our name.
+12. **No fixed skeleton.** A list post, a comparison, a how-to, a pricing guide and an explainer are built differently. Let the prompt decide the sections.
+13. **Our own facts.** Take them from aiaccountant.com pages and from https://www.aiaccountant.com/llms.txt . Where the two disagree (for example whether there is a free trial), state neither and say so in your note.
+
 ## Writing rules
 - Facts about AI Accountant come only from aiaccountant.com. Never state a price, number, customer name or feature that is not on our site. If the brief needs one that is missing, leave it out and say so in the note. Our site publishes no price list: for a pricing brief, describe how our pricing works in the site's own words and give no figure.
 - Facts about other tools come only from the cited pages or the tool's own site. Stay neutral; no put-downs.
