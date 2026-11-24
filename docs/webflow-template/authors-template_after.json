@@ -1,0 +1,296 @@
+{
+ "_note": "Authors template (page 67ed19ac5d8a1253defd24d4) after rebuild; read back 2026-11-24 via data_element_tool get_all_elements depth -1 and data_element_settings_tool all_raw_settings. Nothing published.",
+ "element_tree": {
+  "id": {
+   "component": "67ed19ac5d8a1253defd24d4",
+   "element": "6737c128c225bcae9dedd4d4"
+  },
+  "type": "Body",
+  "children": [
+   {
+    "id": {
+     "component": "67ed19ac5d8a1253defd24d4",
+     "element": "7f34d093-6d05-945b-a206-8cccdb586682"
+    },
+    "type": "ComponentInstance",
+    "instanceDetails": {
+     "type": "ComponentInstance",
+     "id": "7d522556-fce5-8674-0f58-f8179baf2b6e",
+     "name": "nav-bar-2",
+     "props": [
+      {
+       "propId": "7f57d6ec-f6e5-feef-ae3e-d21eea2ede9d",
+       "value": "base",
+       "hasOverride": false,
+       "name": "Variant"
+      },
+      {
+       "propId": "6d3fecb8-e497-1faa-484c-9ef12318b578",
+       "value": {
+        "mode": "url",
+        "to": "https://www.aiaccountant.com/book-a-demo"
+       },
+       "hasOverride": false,
+       "name": "Link"
+      },
+      {
+       "propId": "36913ad6-a7b4-c5a7-72f3-421cbe0f6c7a",
+       "value": "Book a Free Trial",
+       "hasOverride": false,
+       "name": "Text"
+      }
+     ],
+     "slots": []
+    }
+   },
+   {
+    "id": {
+     "component": "67ed19ac5d8a1253defd24d4",
+     "element": "8e66d20f-40ff-51e7-d627-853bc29f57ba"
+    },
+    "type": "Block",
+    "styleNames": [
+     "hero-section-3"
+    ],
+    "settings": {
+     "tag": "section",
+     "visibility": true,
+     "block": {
+      "tag": "section"
+     }
+    },
+    "children": [
+     {
+      "id": {
+       "component": "67ed19ac5d8a1253defd24d4",
+       "element": "5a570fb4-c873-5f07-ce44-ea19a5074b78"
+      },
+      "type": "Block",
+      "styleNames": [
+       "author-profile-wrap"
+      ],
+      "settings": {
+       "tag": "div",
+       "visibility": true,
+       "block": {
+        "tag": "div"
+       }
+      },
+      "children": [
+       {
+        "id": {
+         "component": "67ed19ac5d8a1253defd24d4",
+         "element": "eb2e4a74-f306-a057-857d-b25aeb26f37e"
+        },
+        "type": "Image",
+        "styleNames": [
+         "author-profile-photo"
+        ],
+        "settings": {
+         "visibility": true
+        }
+       },
+       {
+        "id": {
+         "component": "67ed19ac5d8a1253defd24d4",
+         "element": "fcc65e04-1144-f6d7-18bc-cd876e8ca0b7"
+        },
+        "type": "Heading",
+        "styleNames": [
+         "title-hero",
+         "text-semibold"
+        ],
+        "settings": {
+         "tag": "h1",
+         "visibility": true,
+         "headingLevel": 1
+        }
+       },
+       {
+        "id": {
+         "component": "67ed19ac5d8a1253defd24d4",
+         "element": "0356e8eb-d0c1-0e34-eb4c-012a2f668ece"
+        },
+        "type": "Block",
+        "styleNames": [
+         "author-profile-role"
+        ],
+        "settings": {
+         "tag": "div",
+         "visibility": true,
+         "block": {
+          "tag": "div"
+         }
+        }
+       },
+       {
+        "id": {
+         "component": "67ed19ac5d8a1253defd24d4",
+         "element": "752c2c7c-4edd-e160-ad96-32f1db7021c0"
+        },
+        "type": "RichText",
+        "styleNames": [
+         "Rich Text Block"
+        ],
+        "settings": {
+         "tag": "div",
+         "visibility": true
+        }
+       },
+       {
+        "id": {
+         "component": "67ed19ac5d8a1253defd24d4",
+         "element": "f2a5e5a2-16b3-b928-92fb-93e4bf162342"
+        },
+        "type": "Link",
+        "styleNames": [
+         "author-profile-link"
+        ],
+        "attributes": {
+         "target": "_blank",
+         "rel": "noopener"
+        },
+        "settings": {
+         "visibility": true
+        },
+        "children": [
+         {
+          "id": {
+           "component": "67ed19ac5d8a1253defd24d4",
+           "element": "2e4f8403-e25f-74da-1005-06fbf1402107"
+          },
+          "type": "String",
+          "textContent": "LinkedIn"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": {
+     "component": "67ed19ac5d8a1253defd24d4",
+     "element": "33ff87d8-2a60-2e10-ceda-98bb293cdb00"
+    },
+    "type": "ComponentInstance",
+    "instanceDetails": {
+     "type": "ComponentInstance",
+     "id": "c3b1a284-00b3-aca3-1abd-fdaa18452e48",
+     "name": "footer",
+     "props": [],
+     "slots": []
+    }
+   }
+  ]
+ },
+ "bindings_read_back": {
+  "eb2e4a74-f306-a057-857d-b25aeb26f37e (Image)": {
+   "assetId": {
+    "sourceType": "cms",
+    "collectionId": "67ed19ac5d8a1253defd249c",
+    "collectionName": "Authors",
+    "fieldId": "a872c56311950fb5734a05c8fdceb74a",
+    "fieldName": "Picture",
+    "fieldGroup": null,
+    "fieldType": "image"
+   },
+   "altText": {
+    "sourceType": "cms",
+    "collectionId": "67ed19ac5d8a1253defd249c",
+    "collectionName": "Authors",
+    "fieldId": "f004d238d249016cd2ba63de560b7b18",
+    "fieldName": "Name",
+    "fieldGroup": null,
+    "fieldType": "plainText"
+   }
+  },
+  "fcc65e04-1144-f6d7-18bc-cd876e8ca0b7 (Heading h1)": {
+   "text": {
+    "sourceType": "cms",
+    "collectionId": "67ed19ac5d8a1253defd249c",
+    "collectionName": "Authors",
+    "fieldId": "f004d238d249016cd2ba63de560b7b18",
+    "fieldName": "Name",
+    "fieldGroup": null,
+    "fieldType": "plainText"
+   }
+  },
+  "0356e8eb-d0c1-0e34-eb4c-012a2f668ece (role text block)": {
+   "text": {
+    "sourceType": "cms",
+    "collectionId": "67ed19ac5d8a1253defd249c",
+    "collectionName": "Authors",
+    "fieldId": "873a7d25a754a891f829d37569f775a0",
+    "fieldName": "Titile",
+    "fieldGroup": null,
+    "fieldType": "plainText"
+   }
+  },
+  "752c2c7c-4edd-e160-ad96-32f1db7021c0 (RichText)": {
+   "richText": {
+    "sourceType": "cms",
+    "collectionId": "67ed19ac5d8a1253defd249c",
+    "collectionName": "Authors",
+    "fieldId": "4a636409d607a44572ec3392e1a1c006",
+    "fieldName": "Bio",
+    "fieldGroup": null,
+    "fieldType": "richText"
+   }
+  },
+  "f2a5e5a2-16b3-b928-92fb-93e4bf162342 (Link 'LinkedIn')": {
+   "link": {
+    "sourceType": "cms",
+    "collectionId": "67ed19ac5d8a1253defd249c",
+    "collectionName": "Authors",
+    "fieldId": "6cbce0107312e1d0d1efdd72a42dea25",
+    "fieldName": "Twitter-Profile-Link",
+    "fieldGroup": null,
+    "fieldType": "url"
+   },
+   "text": {
+    "innerText": "LinkedIn"
+   },
+   "attributes": [
+    {
+     "name": "target",
+     "value": "_blank"
+    },
+    {
+     "name": "rel",
+     "value": "noopener"
+    }
+   ]
+  }
+ },
+ "page_metadata": {
+  "title": "Authors Template",
+  "slug": "detail_author",
+  "archived": false,
+  "draft": false,
+  "shouldPublish": false,
+  "publishedPath": "/author",
+  "lastUpdated": "2026-11-24T13:30:31.402Z",
+  "seo": {
+   "title": "{{wf {&quot;path&quot;:&quot;name&quot;,&quot;type&quot;:&quot;PlainText&quot;\\} }} | AI Accountant",
+   "description": "Read articles by {{wf {&quot;path&quot;:&quot;name&quot;,&quot;type&quot;:&quot;PlainText&quot;\\} }} on accounting, GST compliance and finance automation for Indian businesses. {{wf {&quot;path&quot;:&quot;titile&quot;,&quot;type&quot;:&quot;PlainText&quot;\\} }} {{wf {&quot;path&quot;:&quot;name&quot;,&quot;type&quot;:&quot;PlainText&quot;\\} }} writes for the AI Accountant blog."
+  },
+  "openGraph": {
+   "titleCopied": true,
+   "descriptionCopied": true,
+   "imageUrl": null,
+   "imageAssetId": null
+  }
+ },
+ "head_custom_code": "<!-- Author Person Schema -->\n<script type=\"application/ld+json\">\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Person\",\n  \"name\": \"{{wf {&quot;path&quot;:&quot;name&quot;,&quot;type&quot;:&quot;PlainText&quot;\\} }}\",\n  \"url\": \"https://www.aiaccountant.com/author/{{wf {&quot;path&quot;:&quot;slug&quot;,&quot;type&quot;:&quot;PlainText&quot;\\} }}\",\n  \"image\": \"{{wf {&quot;path&quot;:&quot;picture&quot;,&quot;type&quot;:&quot;ImageRef&quot;\\} }}\",\n  \"jobTitle\": \"{{wf {&quot;path&quot;:&quot;titile&quot;,&quot;type&quot;:&quot;PlainText&quot;\\} }}\",\n  \"worksFor\": {\n    \"@type\": \"Organization\",\n    \"name\": \"AI Accountant\",\n    \"url\": \"https://www.aiaccountant.com\"\n  },\n  \"sameAs\": [\n    \"{{wf {&quot;path&quot;:&quot;twitter-profile-link&quot;,&quot;type&quot;:&quot;Link&quot;\\} }}\"\n  ]\n}\n</script>",
+ "footer_custom_code": "",
+ "classes_created": [
+  "author-profile-wrap",
+  "author-profile-photo",
+  "author-profile-role",
+  "author-profile-link",
+  "author-profile-post (unused, for list items)",
+  "author-profile-post-title (unused, for list item title links)"
+ ],
+ "not_built": "Articles-by collection list: connector rejects any current-item value for the 'author' reference filter ('does not support bound filter values in the Designer'; literal values 'must be a valid CMS item id'). Section left out."
+}

@@ -759,3 +759,16 @@ Designer, which the connector cannot do.
   (2026-11-24T11:25:49Z). The stored code is in `docs/webflow-template/head.after-schema-fix.html`.
 - Until the Authors template is switched on, the author address in the schema points to a page that does not exist yet.
 - The staging address is open without a password, and the staging publish carried other people's pending changes to it.
+
+## 24/11/2026: Live publish by the site owner, and the Authors template rebuilt
+
+- The site owner published the live site at 13:24:45 UTC. That put the staged fixes live: Article schema with author name,
+  author address and `dateModified`; Open Graph title and description; working LinkedIn icons. Checked on four posts, the
+  homepage and the blog index straight after: all healthy. The pilot rework of the Tally Prime post went live with it.
+- Authors template (`67ed19ac5d8a1253defd24d4`) rebuilt, staged: current navigation and footer, a profile block (photo,
+  name as the only H1, role, bio, LinkedIn link, all bound to the Authors collection), SEO title and description, Open Graph,
+  and Person schema in the head code. The old navigation, footer and six unfiltered post lists were removed.
+- Not possible through the connector, left for the Designer: the "Articles by" list filtered to the current author; hiding
+  empty fields; switching the template on (`shouldPublish` is still false, which is why author addresses return not found).
+- Not yet verified: how the page looks, and two token types in the Person schema (image and link). They can only be checked
+  once the template is switched on and published to staging.
