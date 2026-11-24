@@ -1,0 +1,12 @@
+{
+ "page": "67ed19ac5d8a1253defd24d6",
+ "parent": {"element": "83cbd71b-4964-f204-a7d1-5f60ab8584a1", "class": "Div Block 123", "position": "first child (before Text Block 95)"},
+ "byline_wrapper": {"element": "600da01f-441d-2705-049b-696d064d542f", "type": "Block (div)", "attributes": {"data-blog-byline": "1"}, "classes": []},
+ "children": [
+  {"element": "14059516-4f30-3092-2327-60579e3909a4", "type": "Image", "attributes": {"hidden": "hidden"}, "assetId_binding": {"sourceType": "cms", "collectionId": "67ed19ac5d8a1253defd24e1", "fieldId": "499d05d3ac469f152bae1c3a6111eb72:::a872c56311950fb5734a05c8fdceb74a", "field": "Author > Picture"}, "altText": "inherit"},
+  {"element": "4850274b-64b3-b19c-7360-d75343dceaa3", "type": "Block (div)", "text": "By"},
+  {"element": "f9c439aa-a0ad-0217-5365-976e24eb8dc2", "type": "Block (div)", "text_binding": {"sourceType": "cms", "collectionId": "67ed19ac5d8a1253defd24e1", "fieldId": "499d05d3ac469f152bae1c3a6111eb72:::f004d238d249016cd2ba63de560b7b18", "field": "Author > Name"}}
+ ],
+ "probe_elements_created_and_deleted_during_the_run": ["c40423a8-2e05-e364-dda1-f6be1a090164 (HtmlEmbed token probe)", "fd56e873-c54e-4615-ad3b-740a75cad796 (hidden div)", "0fc33198-1d0f-8dec-731b-dda5d83e0ab8 (text link inside it)"],
+ "rendered_html_example": "<div data-blog-byline=\"1\"><img src=\"...author picture...\" loading=\"lazy\" hidden=\"\" alt=\"\"/><div>By</div><div>Rohan Sinha</div></div>"
+}

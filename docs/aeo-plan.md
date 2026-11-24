@@ -797,3 +797,22 @@ Designer, which the connector cannot do.
   setup time, supported Tally versions and more). The agent is told not to state any of them until they are settled.
 - Every website task now carries a build brief (`body.build`): page type, who makes it, address, SEO title, meta description,
   format, word target, tools to compare, images, schema and the full prompt. The task panel shows it; the agent reads it.
+
+## 24/11/2026: Blog template redesign, on staging only
+
+Targeted redesign of the Blog Posts template (`67ed19ac5d8a1253defd24d6`), staged in Webflow and published to the webflow.io
+staging address only. The custom domains' last-published time is unchanged (2026-11-24T13:24:45Z).
+
+- Byline under the title: author photo, "By" and the name, the updated date and a reading time worked out from the post's
+  length (the old "3 min read" was fixed text).
+- Tables fit the column (16px cells) or scroll; before, the fourth column was clipped.
+- Phone: title at 32px, tidy date line, cover image kept inside the screen. Smaller gap between header and body.
+- New styles for what new posts carry: a quick-answer callout (`blockquote`), figures and captions, and a small source line
+  (paragraphs of emphasised text starting "Source").
+- Everything is one `<style data-blog-redesign>` block in the head code, one `<script data-blog-redesign>` in the footer
+  code and one new byline element. No existing element or class was edited. How to undo it:
+  `docs/webflow-template/redesign/REVERT.md`, with before and after code beside it.
+- Not possible through the connector: making the author name a link (tokens do not render inside embed code, and a link
+  cannot be bound to the author reference). One step in the Designer, or a script fallback.
+- Effect on old posts to review: 393 quote blocks in 199 posts become tinted boxes; table cell text is smaller; small
+  centred figures are centred.

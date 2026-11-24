@@ -1,0 +1,17 @@
+<!-- Blog redesign: reading time and source lines (delete this script to undo) -->
+<script data-blog-redesign>
+document.addEventListener('DOMContentLoaded', function () {
+  try {
+    var body = document.querySelector('.blog-text');
+    if (!body) return;
+    var count = function (el) { return el ? (el.innerText || '').trim().split(/\s+/).filter(Boolean).length : 0; };
+    var out = document.querySelector('.text-block-73');
+    var words = count(body) - count(body.querySelector('.ai-cta-block'));
+    if (out && words > 0) out.textContent = ' |  ' + Math.max(1, Math.round(words / 220)) + ' min read';
+    body.querySelectorAll('p').forEach(function (p) {
+      var em = p.firstElementChild;
+      if (em && p.children.length === 1 && em.tagName === 'EM' && p.textContent.trim() === em.textContent.trim() && /^sources?\b/i.test(em.textContent.trim())) p.classList.add('blog-source');
+    });
+  } catch (e) {}
+});
+</script>

@@ -1,0 +1,59 @@
+<!-- Dynamic Blog Article Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{wf {&quot;path&quot;:&quot;name&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}",
+  "description": "{{wf {&quot;path&quot;:&quot;post-summary&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}",
+  "image": "{{wf {&quot;path&quot;:&quot;main-image&quot;,&quot;type&quot;:&quot;ImageRef&quot;\} }}",
+  "datePublished": "{{wf {&quot;path&quot;:&quot;created-on&quot;,&quot;transformers&quot;:[{&quot;name&quot;:&quot;date&quot;,&quot;arguments&quot;:[&quot;YYYY-MM-DD&quot;]\}],&quot;type&quot;:&quot;Date&quot;\} }}",
+  "dateModified": "{{wf {&quot;path&quot;:&quot;updated-on&quot;,&quot;transformers&quot;:[{&quot;name&quot;:&quot;date&quot;,&quot;arguments&quot;:[&quot;YYYY-MM-DD&quot;]\}],&quot;type&quot;:&quot;Date&quot;\} }}",
+  "url": "https://www.aiaccountant.com/blog/{{wf {&quot;path&quot;:&quot;slug&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}",
+  "author": {
+    "@type": "Person",
+    "name": "{{wf {&quot;path&quot;:&quot;author:name&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}",
+    "url": "https://www.aiaccountant.com/author/{{wf {&quot;path&quot;:&quot;author:slug&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Accountant",
+    "url": "https://www.aiaccountant.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://cdn.prod.website-files.com/67ed19ac5d8a1253defd2450/690089a8f61795ffd3233552_67f8c9f1c2388ba1fc177bcb_LOGO%20(NO%20BG)-01%201.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://www.aiaccountant.com/blog/{{wf {&quot;path&quot;:&quot;slug&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}"
+  }
+}
+</script>
+
+<!-- Dynamic Breadcrumb Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://www.aiaccountant.com"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": "https://www.aiaccountant.com/blog"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "{{wf {&quot;path&quot;:&quot;name&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}",
+      "item": "https://www.aiaccountant.com/blog/{{wf {&quot;path&quot;:&quot;slug&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}"
+    }
+  ]
+}
+</script>
