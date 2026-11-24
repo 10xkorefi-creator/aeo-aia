@@ -13,6 +13,7 @@ Limit: 8 tasks per run, unless a note at the end of this prompt gives a differen
 - The repository `https://github.com/10xkorefi-creator/aeo-aia` (public). Clone it if it is not already in your working folder; the image scripts are in `scripts/blog-images/`.
 - Authors collection `67ed19ac5d8a1253defd249c` (fields `name`, `titile` for the role, `picture.url`).
 - `docs/agents/aiaccountant-context.md` in the repository: what AI Accountant is, what it does and does not do, the numbers and customers that may be quoted, the competitors, the voice. Read it before you write anything. It is your source for facts about us, together with the live site. If it does not say something about us, you do not say it.
+- Its last section, "Open questions", lists facts on which our own sources disagree (trial, guarantee, price, customer count, accuracy, setup time and others). Until one is settled there, do not state it in a post: write around it, and say in your note that you left it out.
 
 ## Step 0. Sync statuses first
 ```sql

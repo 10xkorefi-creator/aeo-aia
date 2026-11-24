@@ -786,3 +786,14 @@ Designer, which the connector cannot do.
 - Side finding, already the case before today: the same escaping puts `&amp;` and `&#39;` into the headline or description
   of the Article schema on 87 posts. The data stays valid; the text is slightly off.
 - `docs/agents/webflow-agent.md` now holds the FAQ field format and the writing rules from the audit ("How to write a post").
+
+## 24/11/2026: Company context for the Webflow agent, and the build brief
+
+- `docs/agents/aiaccountant-context.md`: what AI Accountant is, features marked live or roadmap, what it does not do, who it
+  is for, pricing and trial wording, numbers and customers that may be quoted (each with its source), competitors, trust
+  claims, pages to link, voice, and what never to say. Compiled from the old n8n workflow's prompts, the site's llms.txt and
+  the live product and case-study pages. Nothing in it is new: every line traces to one of those.
+- It ends with 22 open questions where our own sources disagree (trial, guarantee length, price, customer count, accuracy,
+  setup time, supported Tally versions and more). The agent is told not to state any of them until they are settled.
+- Every website task now carries a build brief (`body.build`): page type, who makes it, address, SEO title, meta description,
+  format, word target, tools to compare, images, schema and the full prompt. The task panel shows it; the agent reads it.
