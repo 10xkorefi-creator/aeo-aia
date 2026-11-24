@@ -37,7 +37,18 @@ body{font-family:"Helvetica Neue",Helvetica,Inter,Arial,sans-serif;color:var(--b
 .lockup svg{display:block}
 /* cover */
 .cover{width:1200px;height:630px;padding:56px 64px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
-.cover.dark{background:var(--black);color:var(--white)}
+.cover.dark{color:var(--white);background:
+  radial-gradient(760px 520px at 92% 4%,rgba(49,77,208,.62),transparent 64%),
+  radial-gradient(620px 460px at 108% 104%,rgba(49,77,208,.34),transparent 62%),
+  radial-gradient(900px 500px at -12% 112%,rgba(49,77,208,.16),transparent 60%),
+  var(--black)}
+.cover.dark .grid{position:absolute;inset:0;background-image:linear-gradient(to right,rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.07) 1px,transparent 1px);background-size:56px 56px;
+  -webkit-mask-image:radial-gradient(720px 520px at 94% 8%,#000 8%,transparent 72%);mask-image:radial-gradient(720px 520px at 94% 8%,#000 8%,transparent 72%)}
+.cover.dark .rules,.cover.dark .col,.cover.dark .cell{display:none}
+.cover.dark .edge{position:absolute;left:0;top:0;bottom:0;width:6px;background:linear-gradient(to bottom,var(--accent),rgba(49,77,208,0))}
+.cover.dark .kicker{background:rgba(49,77,208,.9);border-radius:2px}
+.cover.dark .by{padding-top:22px;border-top:1px solid rgba(255,255,255,.16)}
+.cover.dark .site{opacity:.82}
 .cover.light{background:var(--white);color:var(--black);border:1px solid var(--line)}
 .cover .rules{position:absolute;inset:0 0 0 52%;background-image:repeating-linear-gradient(to bottom,transparent 0 41px,currentColor 41px 42px);opacity:.07;-webkit-mask-image:linear-gradient(to right,transparent,#000 55%);mask-image:linear-gradient(to right,transparent,#000 55%)}
 .cover .col{position:absolute;top:0;bottom:0;right:168px;width:1px;background:currentColor;opacity:.09}
@@ -111,7 +122,7 @@ function cover(img, post) {
   const size = n <= 38 ? 78 : n <= 60 ? 66 : n <= 85 ? 56 : n <= 115 ? 48 : 42;
   const a = post.author || {};
   const photo = inline(a.photo);
-  return `<div class="cover ${dark ? 'dark' : 'light'}" id="shot"><div class="rules"></div><div class="col"></div><div class="cell"></div>
+  return `<div class="cover ${dark ? 'dark' : 'light'}" id="shot"><div class="grid"></div><div class="edge"></div><div class="rules"></div><div class="col"></div><div class="cell"></div>
     <div class="top">${lockup(dark, 40)}<div class="site">aiaccountant.com</div></div>
     <div class="mid">${post.kicker ? `<div class="kicker">${esc(post.kicker)}</div>` : ''}<h1 style="font-size:${size}px">${esc(title)}</h1></div>
     <div class="by">${photo ? `<img src="${photo}" alt="">` : ''}<div><b>${esc(a.name || 'AI Accountant')}</b><span>${esc([a.role, post.date].filter(Boolean).join(' · '))}</span></div></div></div>`;

@@ -10,6 +10,8 @@ Limit: 8 tasks per run, unless a note at the end of this prompt gives a differen
 - Webflow site `67ed19ac5d8a1253defd2450` (AI Accountant). Blog Posts collection `67ed19ac5d8a1253defd24e1`. Call the Webflow guide tool first, as that connector requires.
 - Webflow Designer address for links: `https://korefi-new-ad79e3da626e3af649279f0df167.design.webflow.com`
 - If the Webflow or Supabase connector is not available in this session, stop at once and say so in your report. Do not try another route.
+- The repository `https://github.com/10xkorefi-creator/aeo-aia` (public). Clone it if it is not already in your working folder; the image scripts are in `scripts/blog-images/`.
+- Authors collection `67ed19ac5d8a1253defd249c` (fields `name`, `titile` for the role, `picture.url`).
 
 ## Step 0. Sync statuses first
 ```sql
@@ -43,14 +45,39 @@ If `check` says another task updates the same page, find the other open tasks wi
    - **new / new_linked**: create a new post with `isDraft: true`. Copy the author, category and tags from the existing post closest in topic. Fill the summary and keywords yourself, set featured to false, and leave the cover image empty for the reviewer to add. Short lowercase slug with hyphens. If the brief names a page to link from, do not edit that page; say so in your note.
    For add and rework, update only the fields you changed, do not send `isDraft`, and do not publish. The changes wait in Webflow.
 4. Store tables as normal HTML tables in the body, and a questions section as an h2 with an h3 and a paragraph for each question.
-5. Check your own work before saving: every item in `ours.missing` and `task.points` is dealt with; nothing invented; our name is written "AI Accountant" everywhere; for **add**, every old paragraph is still there.
-6. Record the draft:
+5. Make the images (see "Images" below) and place them before you save.
+6. Check your own work before saving: every item in `ours.missing` and `task.points` is dealt with; nothing invented; our name is written "AI Accountant" everywhere; for **add**, every old paragraph is still there.
+7. Record the draft:
 ```sql
 select public.aeo_task_set_draft(jsonb_build_object('task_key', '<key>', 'collection_id', '67ed19ac5d8a1253defd24e1', 'item_id', '<webflow item id>',
   'url', 'https://korefi-new-ad79e3da626e3af649279f0df167.design.webflow.com', 'page_url', 'https://www.aiaccountant.com/blog/<slug>', 'assignee', 'Wasif Kareem',
   'before', $b$<the post body exactly as it was before your edit; leave this key out for a new post>$b$,
   'note', '<two sentences: what you changed or wrote, and anything you left out and why>'));
 ```
+
+## Images
+Every post you write or change gets images in the house style. They are drawn by a script from a short description; do not use an image generator and do not draw your own.
+
+1. **Cover.** A new post always gets one. An existing post gets one only if its `main-image` is empty; never replace a cover that is already there. Use the dark cover. Title = the post's name; kicker = its blog category; author name, role and photo from the post's author in the Authors collection; date = today, written like 24 Nov 2026.
+2. **Figures.** Two to four per post, each under the heading it illustrates. Choose from what the post actually contains:
+   - numbers by category: `range_bars` or `bars`
+   - two to four options side by side: `cards`
+   - a list the reader acts on: `checklist`
+   - a process: `steps`
+   - a comparison: `table`, only where the post has no HTML table for the same thing
+   Use only numbers and wording that are in the post. Give a `source` line for any number that comes from someone else. If the post has nothing worth a figure, add fewer; never invent data to fill one. Never remove an image that is already in a post.
+3. **Make and host them.** Write a `spec.json` as described in `scripts/blog-images/README.md`, then:
+```bash
+node scripts/blog-images/render.js spec.json out
+python3 scripts/blog-images/upload.py out <post-slug>
+```
+   Look at each picture before using it; if text overflows or is cut off, shorten the wording and render again.
+4. **Place them.** Set `main-image` and `thumbnail-image` to `{"url": "<address>", "alt": "<post title>"}`. Put each figure in `post-body` straight after its heading as:
+```html
+<figure class="w-richtext-figure-type-image w-richtext-align-fullwidth"><div><img src="<address>" alt="<what the figure shows>" loading="lazy"></div><figcaption><one line saying what it shows></figcaption></figure>
+```
+   Webflow copies the pictures to its own storage when the post is saved.
+5. Say in your note which images you added.
 
 ## Writing rules
 - Facts about AI Accountant come only from aiaccountant.com. Never state a price, number, customer name or feature that is not on our site. If the brief needs one that is missing, leave it out and say so in the note. Our site publishes no price list: for a pricing brief, describe how our pricing works in the site's own words and give no figure.

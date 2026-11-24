@@ -709,3 +709,9 @@ in one theme close to the brand.
   `thumbnail-image` as `{url, alt}`, and three `<figure>` blocks went into `post-body`. Webflow copied every image to its own
   CDN and rewrote the addresses, so posts do not depend on the Supabase bucket after saving. The post stayed an unpublished draft.
 - Not yet in the daily agent's instructions: waiting for the user's decision on the theme (dark or light cover).
+- **Theme approved by the user, 24/11:** dark cover only, with more character (accent glow and a faint grid on black, an
+  accent edge, a rule above the author). The image step is now in `docs/agents/webflow-agent.md`: a cover for every new
+  post (existing covers are never replaced) and two to four figures per post. No pilot run was made after this change, at
+  the user's request; more changes are coming before the agent is used.
+- The scheduled task's prompt is now a short pointer to the instructions file in the repository, so later edits to the
+  file take effect without touching the task.
