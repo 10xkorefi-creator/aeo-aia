@@ -1,0 +1,148 @@
+<!-- Dynamic Blog Article Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{wf {&quot;path&quot;:&quot;name&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}",
+  "description": "{{wf {&quot;path&quot;:&quot;post-summary&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}",
+  "image": "{{wf {&quot;path&quot;:&quot;main-image&quot;,&quot;type&quot;:&quot;ImageRef&quot;\} }}",
+  "datePublished": "{{wf {&quot;path&quot;:&quot;created-on&quot;,&quot;transformers&quot;:[{&quot;name&quot;:&quot;date&quot;,&quot;arguments&quot;:[&quot;YYYY-MM-DD&quot;]\}],&quot;type&quot;:&quot;Date&quot;\} }}",
+  "dateModified": "{{wf {&quot;path&quot;:&quot;updated-on&quot;,&quot;transformers&quot;:[{&quot;name&quot;:&quot;date&quot;,&quot;arguments&quot;:[&quot;YYYY-MM-DD&quot;]\}],&quot;type&quot;:&quot;Date&quot;\} }}",
+  "url": "https://www.aiaccountant.com/blog/{{wf {&quot;path&quot;:&quot;slug&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}",
+  "author": {
+    "@type": "Person",
+    "name": "{{wf {&quot;path&quot;:&quot;author:name&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}",
+    "url": "https://www.aiaccountant.com/author/{{wf {&quot;path&quot;:&quot;author:slug&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Accountant",
+    "url": "https://www.aiaccountant.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://cdn.prod.website-files.com/67ed19ac5d8a1253defd2450/690089a8f61795ffd3233552_67f8c9f1c2388ba1fc177bcb_LOGO%20(NO%20BG)-01%201.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://www.aiaccountant.com/blog/{{wf {&quot;path&quot;:&quot;slug&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}"
+  }
+}
+</script>
+
+<!-- Dynamic Breadcrumb Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://www.aiaccountant.com"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": "https://www.aiaccountant.com/blog"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "{{wf {&quot;path&quot;:&quot;name&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}",
+      "item": "https://www.aiaccountant.com/blog/{{wf {&quot;path&quot;:&quot;slug&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}"
+    }
+  ]
+}
+</script>
+
+<!-- Blog redesign styles (remove this style block to undo the visual changes) -->
+<style data-blog-redesign>
+/* ===== Blog post redesign, Nov 2026. Everything visual lives in this one block: delete it to undo. ===== */
+
+/* 1. Byline (photo, "By", author name) in the date line under the H1 */
+.div-block-123 { align-items: center; flex-wrap: wrap; row-gap: 6px; margin-top: 4px; }
+.div-block-123 .text-block-95 { padding-top: 0; white-space: nowrap; }
+.div-block-123 .text-block-72,
+.div-block-123 .text-block-73 { margin-top: 0; white-space: nowrap; }
+.div-block-123 [data-blog-byline] { display: flex; align-items: center; font-family: 'Poppins', sans-serif; font-size: 16px; line-height: 20px; color: #000; white-space: nowrap; }
+.div-block-123 [data-blog-byline]::after { content: "|"; margin: 0 10px; }
+.div-block-123 [data-blog-byline] img { display: block; flex: none; width: 36px; height: 36px; margin-right: 10px; border-radius: 50%; object-fit: cover; background: #efedf5; }
+.div-block-123 [data-blog-byline] > div:last-child { margin-left: 5px; font-weight: 600; }
+.div-block-123 [data-blog-byline]:has(.w-dyn-bind-empty) { display: none; }
+@media (max-width: 1279px) {
+  .div-block-123 > [data-blog-byline] { flex: 0 0 100%; }
+  .div-block-123 [data-blog-byline]::after { display: none; }
+}
+
+/* 2. Smaller gap between header and body (tablet and desktop) */
+@media (min-width: 480px) {
+  .blog-content .blog-text { padding-top: 16px; }
+}
+@media (min-width: 768px) {
+  .blog-container .blog-side-bar { padding-top: 16px; top: 84px; }
+}
+
+/* 3. Tables: fit the column, scroll sideways when they cannot */
+.blog-container .blog-content { min-width: 0; }
+.blog-content .blog-text table { display: block; width: fit-content; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 28px auto; font-size: 16px; line-height: 1.55; }
+.blog-content .blog-text table th,
+.blog-content .blog-text table td { min-width: 120px; padding: 10px 14px; font-size: 16px; line-height: 1.55; word-break: normal; overflow-wrap: break-word; }
+.blog-content .blog-text table th { font-size: 15px; line-height: 1.4; }
+.blog-content .blog-text table th:first-child,
+.blog-content .blog-text table td:first-child { min-width: 180px; }
+.blog-content .blog-text table p,
+.blog-content .blog-text table li,
+.blog-content .blog-text table ul,
+.blog-content .blog-text table ol { font-size: inherit !important; line-height: inherit !important; }
+.blog-content .blog-text table p,
+.blog-content .blog-text table ul,
+.blog-content .blog-text table ol { margin-top: 0 !important; margin-bottom: 6px !important; }
+.blog-content .blog-text table td > :last-child { margin-bottom: 0 !important; }
+
+/* 4. Blockquote as a callout box (new posts put their quick answer in one) */
+.blog-content .blog-text blockquote { margin: 28px 0 !important; padding: 18px 22px !important; border-left: 4px solid #7c5cff !important; border-radius: 0 10px 10px 0; background: #f5f3fc; font-size: 18px !important; font-style: normal !important; font-weight: 400; line-height: 1.65 !important; letter-spacing: 0; color: #1f2333 !important; }
+.blog-content .blog-text > blockquote:first-child { margin-top: 0 !important; }
+.blog-content .blog-text blockquote p { margin: 0 0 10px !important; font-size: inherit !important; line-height: inherit !important; color: inherit !important; }
+.blog-content .blog-text blockquote p:last-child { margin-bottom: 0 !important; }
+
+/* 5. Figures and captions (video and floated figures are left alone) */
+.blog-content .blog-text figure.w-richtext-align-fullwidth:not(.w-richtext-figure-type-video),
+.blog-content .blog-text figure.w-richtext-align-center:not(.w-richtext-figure-type-video),
+.blog-content .blog-text figure:not([class]) { display: block; width: auto; max-width: 100% !important; margin: 32px 0 !important; text-align: center; }
+.blog-content .blog-text figure > div { max-width: 100%; }
+.blog-content .blog-text figure img { display: block; max-width: 100%; height: auto; margin: 0 auto !important; border-radius: 10px; }
+.blog-content .blog-text figure figcaption { display: block; margin-top: 10px; font-size: 14px; line-height: 1.5; color: #6b7280; text-align: center; }
+
+/* 6. Source lines: a paragraph of only emphasised text that starts "Source" (class set by the footer script) */
+.blog-content .blog-text p.blog-source { font-size: 14px !important; line-height: 1.5 !important; color: #6b7280 !important; }
+.blog-content .blog-text table + p.blog-source,
+.blog-content .blog-text figure + p.blog-source { margin-top: -14px !important; }
+
+/* 7. Phones */
+@media (max-width: 767px) {
+  .hero-section-3:has(.blog-hero-img) .title-hero { font-size: clamp(28px, 8.2vw, 34px); line-height: 1.2; }
+  .div-block-123 [data-blog-byline],
+  .div-block-123 .text-block-95,
+  .div-block-123 .text-block-72,
+  .div-block-123 .text-block-73 { font-size: 14px; }
+  .blog-hero-img { width: 100%; max-width: 320px; height: auto; }
+  .blog-content .blog-text table,
+  .blog-content .blog-text table td { font-size: 14px; }
+  .blog-content .blog-text table th { font-size: 13.5px; }
+  .blog-content .blog-text table th,
+  .blog-content .blog-text table td { min-width: 140px; padding: 9px 12px; }
+  .blog-content .blog-text table th:first-child,
+  .blog-content .blog-text table td:first-child { min-width: 120px; }
+  .blog-content .blog-text blockquote { padding: 14px 16px !important; font-size: 16px !important; }
+  .blog-content .blog-text figure figcaption { font-size: 13px; }
+}
+@media (max-width: 359px) {
+  .div-block-123 [data-blog-byline],
+  .div-block-123 .text-block-95,
+  .div-block-123 .text-block-72,
+  .div-block-123 .text-block-73 { font-size: 13px; }
+}
+</style>

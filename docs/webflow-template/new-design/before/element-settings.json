@@ -1,0 +1,4 @@
+{"read_at":"2026-11-24, before any v2 write","page":"67ed19ac5d8a1253defd24d6",
+"byline_600da01f":{"element":"600da01f-441d-2705-049b-696d064d542f","raw_settings":[{"key":"domId","value":""},{"key":"tag","value":"div"},{"key":"text","value":{"innerText":"By"}},{"key":"visibility","value":true},{"key":"attributes","value":[{"name":"data-blog-byline","value":"1"}]}],
+ "visibility_bindable_sources_before_new_field":[{"sourceType":"cms","collectionId":"67ed19ac5d8a1253defd24e1","fieldId":"298b71a7adb179d91f68db5deb227fa7","fieldName":"Featured?","valueType":"boolean"}]},
+"note":"Every element in v2-before/element-tree.json had settings.visibility === true (static) at this point. The tree file is redesign-before/element-tree.json plus the byline subtree, checked id by id against the tree read from the API at this time (82 elements)."}

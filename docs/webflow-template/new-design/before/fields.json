@@ -1,0 +1,19 @@
+{"read_at":"2026-11-24, before any v2 write","collection":{"id":"67ed19ac5d8a1253defd24e1","displayName":"Blog Posts","singularName":"Blog Post","slug":"blog","createdOn":"2024-11-15T21:47:45.741Z","lastUpdated":"2026-11-24T13:33:09.073Z"},"fields":[
+{"id":"4d5887224d605c5659e32ff18394478e","isEditable":true,"isRequired":false,"type":"PlainText","slug":"keywords","displayName":"keywords","validations":{"singleLine":true}},
+{"id":"c3b1280722fd458c80925dae12d7996c","isEditable":true,"isRequired":false,"type":"RichText","slug":"post-body","displayName":"Post Body"},
+{"id":"3eb9491c5cf5c79e01e1590f6ee7f3d8","isEditable":true,"isRequired":false,"type":"PlainText","slug":"post-summary","displayName":"Post Summary","helpText":"A summary of the blog post that appears on blog post grid","validations":{"singleLine":false}},
+{"id":"0bc039c2bced4ab70c8c67df5c8d76d7","isEditable":true,"isRequired":false,"type":"Image","slug":"main-image","displayName":"Main Image"},
+{"id":"d7e003ae5b0d92c29dfc91011c71e3ce","isEditable":true,"isRequired":false,"type":"Image","slug":"thumbnail-image","displayName":"Thumbnail image","helpText":"Smaller version of main image that is used on blog post grid"},
+{"id":"298b71a7adb179d91f68db5deb227fa7","isEditable":true,"isRequired":false,"type":"Switch","slug":"featured","displayName":"Featured?"},
+{"id":"e3d25ae213c9a85184804ec51481568f","isEditable":true,"isRequired":false,"type":"Color","slug":"color","displayName":"Color"},
+{"id":"499d05d3ac469f152bae1c3a6111eb72","isEditable":true,"isRequired":false,"type":"Reference","slug":"author","displayName":"Author","validations":{"collectionId":"67ed19ac5d8a1253defd249c"}},
+{"id":"b0dd0c7b50818bccac5ba718dd2c876b","isEditable":true,"isRequired":false,"type":"Reference","slug":"tag-01","displayName":"Tags","validations":{"collectionId":"67ed19ac5d8a1253defd24b7"}},
+{"id":"c601c0a65d324fddd7f459eeed7acc0b","isEditable":true,"isRequired":false,"type":"PlainText","slug":"time-to-read","displayName":"Time to read","validations":{"singleLine":true}},
+{"id":"e6ede32fbc1e35a4702bba7494f9f60b","isEditable":true,"isRequired":false,"type":"Number","slug":"sort","displayName":"Sort"},
+{"id":"c20489d9d2d043b7513024ad9ef53b70","isEditable":true,"isRequired":false,"type":"Reference","slug":"blog-category","displayName":"Blog Category","validations":{"collectionId":"6964b6b2cac56ac501495fe7"}},
+{"id":"d7d9bdbbc2b9515be664e03cb952dfbc","isEditable":true,"isRequired":false,"type":"PlainText","slug":"side-cta-button-text","displayName":"Side CTA button text","validations":{"singleLine":true}},
+{"id":"bce3844d3b90b29eb2690b2afba71c9a","isEditable":true,"isRequired":false,"type":"DateTime","slug":"updated-date","displayName":"Updated Date"},
+{"id":"6dc4587e298efade7c439ed8e7c4d2f2","isEditable":true,"isRequired":false,"type":"RichText","slug":"faq-schema","displayName":"FAQ schema"},
+{"id":"4f4c7a961e64f048e43149c0eb672f58","isEditable":true,"isRequired":true,"type":"PlainText","slug":"name","displayName":"Name","validations":{"maxLength":256}},
+{"id":"c27ccbc662b3aff256fb1de254cbe11a","isEditable":true,"isRequired":true,"type":"PlainText","slug":"slug","displayName":"Slug","validations":{"maxLength":256}}
+],"fieldGroups":[]}

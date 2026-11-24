@@ -816,3 +816,23 @@ staging address only. The custom domains' last-published time is unchanged (2026
   cannot be bound to the author reference). One step in the Designer, or a script fallback.
 - Effect on old posts to review: 393 quote blocks in 199 posts become tinted boxes; table cell text is smaller; small
   centred figures are centred.
+
+## 24/11/2026: Two blog designs from one template, chosen per post
+
+Decision by the user: existing posts keep the current design; new posts get a new one in the style of the new cover images.
+
+- New Switch field on Blog Posts, "New design" (`new-design`), unset on every existing post.
+- The new look lives in one embed element on the template (`08fc191d-2a6c-72d6-93c1-6bf862f92b29`) that Webflow outputs only
+  when the switch is on, together with the byline element. The earlier all-posts redesign was taken out again: head and
+  footer code are back to what they were before it.
+- New look: black header band with the blue glow and faint grid, bold white title, byline with reading time, cover image
+  not repeated on the page; white body in a 744px column, Inter at 18px; quick-answer box, black-header tables that fit or
+  scroll, figures with captions, grey source lines; sidebar and author box with thin borders.
+- Checked on staging: four old posts match the live site (no style or layout difference on any element; the only HTML
+  differences are the hidden FAQ element and the FAQ guard line staged earlier). The accounts payable automation cost post
+  (`6b0566d499a121803e39d9c0`) has the switch on and shows the new look on staging.
+- Not published to the custom domains by us (last published 2026-11-24T13:24:45Z, the owner's publish).
+- How to undo, and how to switch a post: `docs/webflow-template/new-design/REVERT-v2.md`.
+- The Webflow agent sets the switch on for posts it creates, and never changes it on an existing post.
+- Also fixed: the dashboard decided "Live" from Webflow's item publish time, which a staging publish also moves. It now reads
+  the live page (address answers for a new post; "date modified" on or after the draft day for an edited one).
