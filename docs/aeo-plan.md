@@ -705,3 +705,7 @@ in one theme close to the brand.
   brand guide (white, black, grey, one accent `#314DD0`, the official A-Star files).
 - `scripts/blog-images/upload.py` hosts them in a new public Supabase storage bucket, `blog-images`.
 - Samples made for the pilot draft "accounts payable automation cost" and sent to the user for a decision on the theme.
+- Placement tested on the hidden pilot draft (item `6b0566d499a121803e39d9c0`): the cover went into `main-image` and
+  `thumbnail-image` as `{url, alt}`, and three `<figure>` blocks went into `post-body`. Webflow copied every image to its own
+  CDN and rewrote the addresses, so posts do not depend on the Supabase bucket after saving. The post stayed an unpublished draft.
+- Not yet in the daily agent's instructions: waiting for the user's decision on the theme (dark or light cover).
