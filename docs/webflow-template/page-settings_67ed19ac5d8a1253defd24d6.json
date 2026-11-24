@@ -1,0 +1,30 @@
+{
+ "label": "blog_meta_before",
+ "action": "get_page_metadata",
+ "result": {
+  "id": "67ed19ac5d8a1253defd24d6",
+  "siteId": "67ed19ac5d8a1253defd2450",
+  "collectionId": "67ed19ac5d8a1253defd24e1",
+  "title": "Blog Posts Template",
+  "slug": "detail_blog",
+  "createdOn": "2024-11-15T21:47:45.948Z",
+  "lastUpdated": "2026-11-18T04:31:06.987Z",
+  "archived": false,
+  "draft": false,
+  "shouldPublish": true,
+  "canBranch": true,
+  "isBranch": false,
+  "seo": {
+   "title": "{{wf {&quot;path&quot;:&quot;name&quot;,&quot;type&quot;:&quot;PlainText&quot;\\} }}",
+   "description": "{{wf {&quot;path&quot;:&quot;post-summary&quot;,&quot;type&quot;:&quot;PlainText&quot;\\} }}"
+  },
+  "openGraph": {
+   "titleCopied": false,
+   "descriptionCopied": false,
+   "imageUrl": null,
+   "imageAssetId": null
+  },
+  "publishedPath": "/blog",
+  "localeId": "67ed19ac5d8a1253defd2452"
+ }
+}

@@ -727,3 +727,24 @@ in one theme close to the brand.
   (it matches on 367 of 370 posts). Filling thumbnail or updated-date fields on all 227 posts would stamp today's date on
   every one of them when published, which would misstate freshness and touch the top pages. Fields are filled when a post
   is edited for a real reason.
+
+## 24/11/2026: Blog template fixes in Webflow, first step (staged, not published)
+
+Findings (read-only investigation): the Article schema is page-level head code on the Blog Posts template
+(`67ed19ac5d8a1253defd24d6`) and binds the author with a path that does not resolve, so the name is empty on every post.
+The Authors template (`67ed19ac5d8a1253defd24d4`) is switched off for publishing and holds a leftover design. FAQ schema is
+added by a browser script, so crawlers that do not run scripts never see it. The site has no branching: staged template
+changes go live with anyone's next full publish.
+
+Applied, staged only:
+- Open Graph title and description on the Blog Posts template now copy the SEO title and description. The image is not set
+  (the connector can only set a fixed image, not the post's own).
+- The LinkedIn icon in the author block is bound to the author's `twitter-profile-link` field, which is where LinkedIn
+  addresses are stored. "Open in new tab" may have been lost in the change.
+
+Prepared, not applied: `docs/webflow-template/head.proposed.html` (adds `dateModified`). The values before the changes are in
+the same folder, so each can be put back.
+
+Not done, and why: replacing the head code block through the connector is untested for field bindings and would affect every
+blog post, so it waits for a test on the webflow.io staging address. Author pages need the template switched on in the
+Designer, which the connector cannot do.

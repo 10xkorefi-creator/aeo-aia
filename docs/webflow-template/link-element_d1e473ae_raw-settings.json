@@ -1,0 +1,46 @@
+{
+ "label": "linkedin_link_before_raw",
+ "action": "get_settings",
+ "result": [
+  {
+   "status": "success",
+   "message": "Settings retrieved",
+   "data": {
+    "type": "all_raw_settings",
+    "total_matches": 5,
+    "matches": [
+     {
+      "key": "domId",
+      "value": ""
+     },
+     {
+      "key": "link",
+      "value": {
+       "mode": "url",
+       "openInNewTab": true
+      }
+     },
+     {
+      "key": "text",
+      "value": {
+       "innerText": ""
+      }
+     },
+     {
+      "key": "visibility",
+      "value": true
+     },
+     {
+      "key": "attributes",
+      "value": [
+       {
+        "name": "rel",
+        "value": "nofollow"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ]
+}
