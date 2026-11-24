@@ -667,3 +667,24 @@ Asked by the user, who accepted the effect on the numbers.
   collected. `scripts/recs/done.json` holds finished work so a rebuild keeps it; `extra_urls.txt` in the working folder
   lets `ours.py` read a page that is not in the sitemap yet.
 - Page: tasks have a Done state (shown in place of priority; filter "Done").
+
+## 24/11/2026: Webflow agent for the website tasks (drafts only)
+
+Asked by the user: an agent that takes the top 7 to 8 website tasks each day, writes the pages in Webflow as drafts, marks
+the task Draft on the dashboard with "done by the agent", and assigns it to Wasif Kareem.
+
+- **Instructions:** `docs/agents/webflow-agent.md`. Blog work only (new posts as Webflow drafts; updates edit the existing
+  post and wait unpublished). Never publishes, deletes or unpublishes. Facts about us only from aiaccountant.com.
+- **User decision:** updates edit the live post directly. If a site publish pushes them live, that is accepted; the task must
+  then show Live with the date and time.
+- **Statuses:** To do, Draft, Live, Done. New columns on `aeo_rec_tasks`: agent, drafted_at, live_at, webflow ids, draft_url,
+  agent_note. Functions `aeo_task_set_draft` (agent) and `aeo_task_set_live` (only Draft to Live; the dashboard role may call
+  it). A rebuild of the list no longer resets Draft or Live, and keeps such tasks even if it stops producing them.
+- **Dashboard:** Status column (Draft, Live, Done or the priority); the panel shows who drafted it and when, and when it went
+  live. A Publish button publishes that one post in Webflow; it asks for the upload password because the dashboard is public.
+  The button and the on-load "has it gone live" check need `WEBFLOW_TOKEN` in the Vercel project; without it the agent's next
+  run does the check.
+- **Schedule:** scheduled task "AEO Webflow agent", weekdays 08:14 IST, fresh session each time. Created switched off.
+  Scheduled tasks created from a session cannot carry connectors in this organisation, so it has no Webflow or Supabase
+  access until the connectors are attached in the claude.ai scheduled-tasks screen.
+- **Scope today:** 77 of the 106 open website tasks are blog work. Product pages and other designed pages stay manual.

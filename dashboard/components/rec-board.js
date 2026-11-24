@@ -26,6 +26,7 @@ function ChannelIcon({ channel, size = 15 }) {
 const Channel = ({ channel }) => <span className="rt-chan"><ChannelIcon channel={channel} />{channel}</span>;
 const Pill = ({ kind }) => { const [label, cls] = TYPE[kind] || ['Other', 'trk']; return <span className={`rt-pill ${cls}`}>{label}</span>; };
 const Done = () => <span className="rt-done"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" /></svg>Done</span>;
+const State = ({ t }) => (t.state === 'draft' ? <span className="rt-state draft">Draft</span> : t.state === 'live' ? <span className="rt-state live">Live</span> : t.done ? <Done /> : <Prio p={t.priority} />);
 const Prio = ({ p }) => <span className={`rt-prio ${String(p).toLowerCase()}`}>{p === 'Done' ? 'No gap' : p}</span>;
 const For = ({ list, names }) => (
   <span className="rt-for" title={list.map(engineName).join(', ')}>
@@ -56,7 +57,7 @@ const Bullets = ({ items }) => <ul className="rb-bullets">{(items || []).map((t,
 const Loading = ({ failed }) => <p className="rq-load">{failed ? 'Could not load the details. Close and open the row again.' : 'Loading…'}</p>;
 
 // ---- one task: the task itself first, then what is driving it, why it should work and how we will know
-function TaskDetail({ t, body, failed, questions, openQ, assign, saving }) {
+function TaskDetail({ t, body, failed, questions, openQ, assign, saving, canPublish, publish, publishing, pubError }) {
   const mine = t.targets.map((k) => questions.find((x) => x.key === k)).filter(Boolean);
   const cols = ENGINES.filter((e) => t.assistants.includes(e));
   const [all, setAll] = useState(false);
@@ -66,9 +67,20 @@ function TaskDetail({ t, body, failed, questions, openQ, assign, saving }) {
       <div className="rb-kicker"><span>Recommendation</span>{t.done ? <><span className="rb-dot">·</span><span>Done</span></> : null}{t.start ? <><span className="rb-dot">·</span><span>Start here</span></> : null}</div>
       <Dialog.Title className="rb-title">{t.title}</Dialog.Title>
       <div className="rt-meta">
-        <Channel channel={t.channel} /><Pill kind={t.kind} />{t.done ? <Done /> : <Prio p={t.priority} />}<For list={t.assistants} names />
-        <span className="rt-meta-assign"><i>{t.done ? 'Done by' : 'Assignee'}</i><Assignee value={t.assignee} onChange={(v) => assign(t.key, v)} saving={saving === t.key} /></span>
+        <Channel channel={t.channel} /><Pill kind={t.kind} /><State t={t} /><For list={t.assistants} names />
+        <span className="rt-meta-assign"><i>{t.done ? 'Done by' : t.state === 'draft' ? 'Reviewer' : 'Assignee'}</i><Assignee value={t.assignee} onChange={(v) => assign(t.key, v)} saving={saving === t.key} /></span>
       </div>
+      {t.state === 'draft' || t.state === 'live' ? (
+        <div className={`rd-agent ${t.state}`}>
+          <p>{t.state === 'live' ? <><b>Live since {t.liveAt}.</b> Drafted by the {t.agent || 'Webflow agent'} on {t.draftedAt}.</>
+            : <><b>Drafted by the {t.agent || 'Webflow agent'} on {t.draftedAt}.</b> Saved in Webflow as a draft{t.assignee ? `, with ${t.assignee} to review` : ''}.</>}</p>
+          <div className="rd-agent-act">
+            {t.draftUrl ? <a href={t.draftUrl} target="_blank" rel="noopener noreferrer">Open in Webflow ↗</a> : null}
+            {t.state === 'draft' && canPublish ? <button type="button" disabled={publishing === t.key} onClick={() => publish(t.key)}>{publishing === t.key ? 'Publishing…' : 'Publish'}</button> : null}
+          </div>
+          {pubError ? <p className="rd-agent-err" role="status">{pubError}</p> : null}
+        </div>
+      ) : null}
       {!body ? <Loading failed={failed} /> : (
         <>
           <section className="rb-sec rb-do"><h3>Task</h3>
@@ -192,7 +204,7 @@ function Score({ c }) {
   return <b className={`rq-cell ${c.gap ? 'miss' : 'hit'}`}>{c.rec}/{c.n}</b>;
 }
 
-export function RecBoard({ tasks: initialTasks, questions, baseline, leads, initial }) {
+export function RecBoard({ tasks: initialTasks, questions, baseline, leads, initial, canPublish }) {
   const [tasks, setTasks] = useState(initialTasks);
   const start = initial?.task && initialTasks.some((t) => t.key === initial.task) ? { type: 'task', key: initial.task }
     : initial?.q && questions.some((x) => x.key === initial.q) ? { type: 'q', key: initial.q } : null;
@@ -223,6 +235,25 @@ export function RecBoard({ tasks: initialTasks, questions, baseline, leads, init
       .catch(() => { asked.current.delete(id); setLoadFailed(true); });
   }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const [publishing, setPublishing] = useState(null);
+  const [pubError, setPubError] = useState(null);
+  async function publish(key) {
+    let pw = null;
+    try { pw = window.sessionStorage.getItem('aeo-pw'); } catch { /* no storage */ }
+    if (!pw) pw = window.prompt('Dashboard password, to publish this page in Webflow:');
+    if (!pw) return;
+    setPubError(null); setPublishing(key);
+    try {
+      const res = await fetch('/api/task-publish', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ task: key, password: pw }) });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) { if (res.status === 401) { try { window.sessionStorage.removeItem('aeo-pw'); } catch { /* ignore */ } } throw new Error(res.status === 401 ? 'Wrong password.' : 'Webflow did not publish it. Try again, or publish it in Webflow.'); }
+      try { window.sessionStorage.setItem('aeo-pw', pw); } catch { /* ignore */ }
+      const at = new Date(j.live_at).toLocaleString('en-GB', { timeZone: 'Asia/Kolkata', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+      setTasks((ts) => ts.map((t) => (t.key === key ? { ...t, state: 'live', liveAt: at } : t)));
+    } catch (e) { setPubError(e.message); }
+    setPublishing(null);
+  }
+
   async function assign(key, value) {
     const before = tasks.find((t) => t.key === key)?.assignee ?? null;
     setFailed(false); setSaving(key);
@@ -237,9 +268,9 @@ export function RecBoard({ tasks: initialTasks, questions, baseline, leads, init
     setSaving(null);
   }
 
-  const byPrio = (p, s, d) => !prio || (prio === 'done' ? !!d : prio === 'start' ? s && !d : p === prio && !d);
+  const byPrio = (p, s, d, st) => !prio || (prio === 'done' ? !!d : prio === 'draft' || prio === 'live' ? st === prio : prio === 'start' ? s && !d : p === prio && !d && (!st || st === 'todo'));
   const channels = CHANNEL_ORDER.filter((c) => tasks.some((t) => t.channel === c));
-  const rows = tasks.filter((t) => (!chan || t.channel === chan) && (!eng || t.assistants.includes(eng)) && byPrio(t.priority, t.start, t.done) && (!who || (who === 'none' ? !t.assignee : t.assignee === who)));
+  const rows = tasks.filter((t) => (!chan || t.channel === chan) && (!eng || t.assistants.includes(eng)) && byPrio(t.priority, t.start, t.done, t.state) && (!who || (who === 'none' ? !t.assignee : t.assignee === who)));
   const qrows = questions.filter((x) => (!qkind || x.kind === qkind) && byPrio(x.priority, x.start));
   const qEngines = ENGINES.filter((e) => qrows.some((x) => x.cells[e]));
   const openTask = (key) => setOpen({ type: 'task', key });
@@ -268,7 +299,7 @@ export function RecBoard({ tasks: initialTasks, questions, baseline, leads, init
           </label>
         )}
         <label>Priority
-          <select value={prio} onChange={(e) => setPrio(e.target.value)}><option value="">All</option><option value="start">Start here</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option>{view === 'tasks' ? <option value="done">Done</option> : null}</select>
+          <select value={prio} onChange={(e) => setPrio(e.target.value)}><option value="">All</option><option value="start">Start here</option><option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option>{view === 'tasks' ? <><option value="draft">Draft</option><option value="live">Live</option><option value="done">Done</option></> : null}</select>
         </label>
         {view === 'tasks' ? (
           <label>Assignee
@@ -281,7 +312,7 @@ export function RecBoard({ tasks: initialTasks, questions, baseline, leads, init
       {view === 'tasks' ? (
         <div className="rt-wrap">
           <table className="rt">
-            <thead><tr><th>Task</th><th>Type</th><th>Channel</th><th>For</th><th>Priority</th><th>Assignee</th></tr></thead>
+            <thead><tr><th>Task</th><th>Type</th><th>Channel</th><th>For</th><th>Status</th><th>Assignee</th></tr></thead>
             <tbody>
               {rows.map((t) => (
                 <tr key={t.key} className={t.done ? 'is-done' : undefined} onClick={() => openTask(t.key)}>
@@ -289,7 +320,7 @@ export function RecBoard({ tasks: initialTasks, questions, baseline, leads, init
                   <td><Pill kind={t.kind} /></td>
                   <td><Channel channel={t.channel} /></td>
                   <td><For list={t.assistants} /></td>
-                  <td>{t.done ? <Done /> : <Prio p={t.priority} />}</td>
+                  <td><State t={t} /></td>
                   <td onClick={(e) => e.stopPropagation()}><Assignee value={t.assignee} onChange={(v) => assign(t.key, v)} saving={saving === t.key} /></td>
                 </tr>
               ))}
@@ -340,7 +371,7 @@ export function RecBoard({ tasks: initialTasks, questions, baseline, leads, init
             <div className="dlg-head rb-close"><span />
               <Dialog.Close asChild><button type="button" className="dlg-x" aria-label="Close">×</button></Dialog.Close>
             </div>
-            {curTask ? <TaskDetail t={curTask} body={detail[id]} failed={loadFailed} questions={questions} openQ={openQ} assign={assign} saving={saving} />
+            {curTask ? <TaskDetail t={curTask} body={detail[id]} failed={loadFailed} questions={questions} openQ={openQ} assign={assign} saving={saving} canPublish={canPublish} publish={publish} publishing={publishing} pubError={pubError} />
               : curQ ? <QuestionDetail x={curQ} body={detail[id]} failed={loadFailed} tasks={tasks} openTask={openTask} />
                 : <Dialog.Title className="rb-title">Recommendation</Dialog.Title>}
           </Dialog.Content>

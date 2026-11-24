@@ -814,3 +814,16 @@ table.rt:not(.rq) .rt-title { display: block; max-width: 100%; overflow: hidden;
 
 .rt-done { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 9px; border-radius: 6px; font-size: 12px; font-weight: 600; background: var(--up-bg); color: var(--up-ink); }
 table.rt tr.is-done .rt-title { color: var(--muted-foreground); }
+
+.rt-state { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+.rt-state.draft { background: rgba(227, 179, 65, 0.18); color: #8a5a00; }
+:root[data-theme="dark"] .rt-state.draft { color: #e3b341; }
+.rt-state.live { background: var(--up-bg); color: var(--up-ink); }
+.rd-agent { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin: 14px 0 0; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 13.5px; }
+.rd-agent.draft { border-color: #e3b341; background: rgba(227, 179, 65, 0.08); }
+.rd-agent.live { border-color: var(--up-ink); background: var(--up-bg); }
+.rd-agent p { margin: 0; flex: 1 1 320px; line-height: 1.5; }
+.rd-agent-act { display: inline-flex; align-items: center; gap: 12px; }
+.rd-agent-act a { color: var(--accent); font-weight: 500; text-decoration: none; white-space: nowrap; }
+.rd-agent-act button { height: 30px; padding: 0 14px; font-size: 13px; font-weight: 600; }
+.rd-agent-err { flex-basis: 100%; color: var(--down-ink); font-weight: 500; }
