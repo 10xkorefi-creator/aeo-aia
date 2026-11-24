@@ -431,6 +431,74 @@ FORMAT = {'compare': ('Write a comparison page for %s and publish it on the aiac
           'explainer': ('Write a short guide that answers %s in its first paragraph and publish it on the aiaccountant.com blog.', 'After the answer, show how AI Accountant does this%s.'),
           'product': ('Create a product page for %s under Products on aiaccountant.com.', 'Say what AI Accountant does for this job, who it is for and what it costs%s.')}
 
+# ---------- the build brief: everything needed to make the page, shown on the task and read by the Webflow agent
+import datetime
+TODAY = datetime.date.today(); MONTH = TODAY.strftime('%B %Y')
+ACR = {'ai': 'AI', 'gst': 'GST', 'gstr': 'GSTR', 'tds': 'TDS', 'ca': 'CA', 'cas': 'CAs', 'ocr': 'OCR', 'ap': 'AP', 'erp': 'ERP', 'pdf': 'PDF', 'itc': 'ITC', '2b': '2B', '2a': '2A', 'whatsapp': 'WhatsApp', 'chatgpt': 'ChatGPT',
+       'taxone': 'TaxOne', 'vouchrit': 'VouchrIt', 'gstr-2b': 'GSTR-2B', 'gstr-2a': 'GSTR-2A', 'smb': 'SMB', 'smbs': 'SMBs', 'kpi': 'KPI', 'kpis': 'KPIs', 'cfo': 'CFO', 'mis': 'MIS'}
+PROPER = {'india', 'tally', 'prime', 'excel', 'suvit', 'vyapar', 'docs', 'ira', 'zoho', 'google', 'indian'}
+SMALLW = {'a', 'an', 'the', 'for', 'in', 'of', 'on', 'to', 'and', 'or', 'with', 'by', 'at', 'vs', 'is', 'it', 'my', 'from', 'into'}
+def title_case(t):
+    out = []
+    for i, w in enumerate(t.split()):
+        lw = w.lower()
+        out.append(ACR[lw] if lw in ACR else lw if i and lw in SMALLW else w[:1].upper() + w[1:].lower() if lw not in ACR else w)
+    return ' '.join(out)
+def slug_for(label, taken):
+    words = [w for w in re.sub(r'[^a-z0-9]+', ' ', label.lower()).split()]
+    sl = '-'.join(words)
+    while len(sl) > 58 and '-' in sl: sl = sl.rsplit('-', 1)[0]
+    base, n = sl, 2
+    while 'aiaccountant.com/blog/' + sl in taken: sl = '%s-%d' % (base, n); n += 1
+    return sl
+def clip(t, n):
+    t = re.sub(r'\s+', ' ', t).strip()
+    return t if len(t) <= n else t[:n].rsplit(' ', 1)[0].rstrip(',;:') + '.'
+FMT_NAME = {'compare': 'Comparison of tools', 'alternatives': 'Alternatives page', 'pricing': 'Pricing guide', 'howto': 'Step-by-step guide', 'explainer': 'Short guide', 'product': 'Product page'}
+SEO_TITLE = {'compare': '{t} ({y}): Tools Compared', 'alternatives': '{t} ({y}): Options Compared', 'pricing': '{t}: What It Costs in {y}', 'howto': '{t}: Step by Step', 'explainer': '{t}: A Straight Answer', 'product': '{t} | AI Accountant'}
+SEO_META = {'compare': 'Compare {tools} for {l}: what each does, what it costs and where it falls short. Checked {m}.',
+            'alternatives': '{l}: {tools} compared on what they do, price and limits. Checked {m}.',
+            'pricing': '{l}: the prices, how they are charged and what to check before you pay. Checked {m}.',
+            'howto': '{l}: the steps, what you need first, and how to do the same job automatically. Updated {m}.',
+            'explainer': '{l}: a direct answer, what it means in practice and what to do next. Updated {m}.',
+            'product': '{l}: what AI Accountant does for this job, who it is for and how it works with Tally.'}
+def build_brief(best, kind, fmt, mode, own, names, models, body, engines):
+    label = best['label']; t = title_case(label); blog = fmt != 'product' or (own and '/blog/' in own['url'])
+    new = mode in ('new', 'new_linked', 'done')
+    tools = [n for n, _ in names.most_common(3)]
+    tools_txt = andj(tools + ['AI Accountant']) if tools else 'the main tools and AI Accountant'
+    ms = [m['s'] for m in models if m['s'].get('words')]
+    words = max(int(statistics.median(m['words'] for m in ms[:6]) // 50 * 50), 300) if ms else None
+    if mode == 'done': url = DONE[best['key']]['url']
+    elif new: url = ('https://www.aiaccountant.com/blog/' + slug_for(label, OURDATA['pages'])) if fmt != 'product' else 'https://www.aiaccountant.com/products/' + slug_for(label, {})
+    else: url = own['url']
+    tpl = '{t} in {y}: A Plain Breakdown' if fmt == 'pricing' and re.search(r'cost|pric', label, re.I) else SEO_TITLE[fmt]
+    seo_title = clip(tpl.format(t=t, y=TODAY.year), 62)
+    lp = ' '.join(ACR.get(w.lower(), w.capitalize() if w.lower() in PROPER else w) for w in label.split())
+    meta = clip(SEO_META[fmt].format(l=lp[:1].upper() + lp[1:], tools=tools_txt, m=MONTH), 158)
+    b = {'page_type': ('Blog post' if fmt != 'product' else 'Product page') if new else ('Existing blog post' if '/blog/' in own['url'] else 'Existing page'),
+         'made_by': 'Webflow agent, saved as a draft for review' if (fmt != 'product' if new else '/blog/' in own['url']) and not (own and own.get('clicks', 0) >= 300 and not new) else 'A person: designed pages and our best pages on Google are not edited by the agent',
+         'action': {'new': 'Create a new page', 'new_linked': 'Create a new page', 'done': 'Created', 'add': 'Add to the existing page; do not rewrite it', 'rework': 'Rework the existing page'}[mode],
+         'url': url, 'format': FMT_NAME[fmt], 'words': words if mode != 'add' else None, 'prompt_text': best['text'], 'compare_with': tools,
+         'seo_title': seo_title if new or mode == 'rework' else 'Keep the current title', 'meta_description': meta if new or mode == 'rework' else 'Keep the current description',
+         'seo_note': 'Suggested; the wording may be improved, within 60 and 155 characters.' if new else ('Suggested; change the title only if the current one does not match the prompt.' if mode == 'rework' else 'This page does well on Google, so its title, description and address stay as they are.'),
+         'images': 'Dark cover with the title, logo and author; two to four figures under the headings they illustrate.' if new else 'Keep the existing cover. Add one or two figures where the new material has numbers, steps or a comparison.',
+         'schema': 'Article and breadcrumb data come from the template. Fill the FAQ schema field from the questions section.',
+         'read_first': [m['s']['url'] for m in models[:4]]}
+    lines = ['TASK: ' + body['task']['lead'], 'PAGE: %s. %s.' % (b['page_type'], b['action']), 'ADDRESS: ' + url, 'SEO TITLE: ' + b['seo_title'], 'META DESCRIPTION: ' + b['meta_description'],
+             'ANSWERS THE PROMPT: "%s"' % best['text'], 'FORMAT: %s%s' % (b['format'], ', about {:,} words'.format(words) if b['words'] else '')]
+    lines += ['MUST DO:'] + ['- ' + p for p in body['task']['points']]
+    if tools: lines.append('COMPARE WITH: ' + ', '.join(tools) + ' (the tools the assistants name for this prompt)')
+    lines += ['WHAT THE ASSISTANTS DO TODAY:'] + ['- ' + x for x in body['today'][:4]]
+    o = body.get('ours') or {}
+    if o.get('missing'): lines += ['OUR PAGE LACKS:'] + ['- ' + x for x in o['missing']]
+    if o.get('has'): lines += ['OUR PAGE ALREADY HAS:'] + ['- ' + x for x in o['has']]
+    if b['read_first']: lines += ['READ FIRST (pages the assistants cite):'] + ['- ' + u for u in b['read_first']]
+    lines += ['IMAGES: ' + b['images'], 'SCHEMA: ' + b['schema'],
+              'RULES: Follow docs/agents/webflow-agent.md and docs/agents/aiaccountant-context.md. Save as a draft. Never publish. Never touch the homepage.']
+    b['prompt'] = '\n'.join(lines)
+    return b
+
 rows = []; skipped = []; OWN_OK = {}
 # work already finished: the task stays on the list, first, marked done (scripts/recs/done.json)
 DONE = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'done.json')))
@@ -551,6 +619,7 @@ for key, t in tasks.items():
             body['works'].append('%s of the sources cited for this %s %s ours. The assistants can only recommend us with a link when a page of ours answers it.' % ('None' if not cited_ours else 'Only %d' % len(set(cited_ours)), what, 'is' if len(set(cited_ours)) <= 1 else 'are'))
         body['done'] = ['%s %s AI Accountant with a link in at least half the answers to this question, two runs in a row.' % (who, 'recommends' if one else 'recommend')]
         if engines == ['google']: body['done'] = ['Google\'s AI Overview links to our site on at least half the searches for this keyword, two runs in a row.']
+        body['build'] = build_brief(best, kind, fmt, mode, own, names, models, body, engines)
     elif t['channel'] == 'Outreach':
         s = models[0]['s']; kind = 'Outreach'
         nm = re.split(r' [|\-–—:] (?=[^|\-–—:]*$)', s['title'])[0] if s['title'] else ''

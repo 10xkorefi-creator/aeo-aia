@@ -56,6 +56,25 @@ function Assignee({ value, onChange, saving }) {
 const Bullets = ({ items }) => <ul className="rb-bullets">{(items || []).map((t, i) => <li key={i}>{t}</li>)}</ul>;
 const Loading = ({ failed }) => <p className="rq-load">{failed ? 'Could not load the details. Close and open the row again.' : 'Loading…'}</p>;
 
+// ---- the build brief: what kind of page, where it lives, its search tags, and the full prompt the Webflow agent works from
+function BuildBrief({ b }) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => { try { await navigator.clipboard.writeText(b.prompt); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch { /* clipboard not available */ } };
+  const rows = [['Page type', b.page_type], ['Made by', b.made_by], ['What to do', b.action], ['Address', b.url], ['SEO title', b.seo_title], ['Meta description', b.meta_description],
+    ['Format', b.words ? `${b.format}, about ${b.words.toLocaleString('en-IN')} words` : b.format], ['Compare with', (b.compare_with || []).join(', ')], ['Images', b.images], ['Schema', b.schema]].filter(([, v]) => v);
+  return (
+    <section className="rb-sec"><h3>Build brief</h3>
+      <dl className="rd-build">{rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{k === 'Address' ? <a href={v} target="_blank" rel="noopener noreferrer">{v.replace(/^https?:\/\/(www\.)?/, '')}</a> : v}</dd></div>)}</dl>
+      {b.seo_note ? <p className="rb-foot">{b.seo_note}</p> : null}
+      <details className="rd-prompt">
+        <summary>Full prompt for the Webflow agent</summary>
+        <button type="button" className="rd-copy" onClick={copy}>{copied ? 'Copied' : 'Copy'}</button>
+        <pre>{b.prompt}</pre>
+      </details>
+    </section>
+  );
+}
+
 // ---- one task: the task itself first, then what is driving it, why it should work and how we will know
 function TaskDetail({ t, body, failed, questions, openQ, assign, saving, canPublish, publish, publishing, pubError }) {
   const mine = t.targets.map((k) => questions.find((x) => x.key === k)).filter(Boolean);
@@ -89,6 +108,8 @@ function TaskDetail({ t, body, failed, questions, openQ, assign, saving, canPubl
             <p className="rd-lead">{body.task?.lead}</p>
             {body.task?.points?.length ? <Bullets items={body.task.points} /> : null}
           </section>
+
+          {body.build ? <BuildBrief b={body.build} /> : null}
 
           <section className="rb-sec"><h3>What’s driving this recommendation</h3>
             <h4>{mine.length > 1 ? `The ${mine.length} prompts this covers` : mine[0]?.kind === 'keyword' ? 'The Google search this covers' : 'The prompt this covers'}</h4>

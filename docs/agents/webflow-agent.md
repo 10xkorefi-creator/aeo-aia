@@ -12,6 +12,7 @@ Limit: 8 tasks per run, unless a note at the end of this prompt gives a differen
 - If the Webflow or Supabase connector is not available in this session, stop at once and say so in your report. Do not try another route.
 - The repository `https://github.com/10xkorefi-creator/aeo-aia` (public). Clone it if it is not already in your working folder; the image scripts are in `scripts/blog-images/`.
 - Authors collection `67ed19ac5d8a1253defd249c` (fields `name`, `titile` for the role, `picture.url`).
+- `docs/agents/aiaccountant-context.md` in the repository: what AI Accountant is, what it does and does not do, the numbers and customers that may be quoted, the competitors, the voice. Read it before you write anything. It is your source for facts about us, together with the live site. If it does not say something about us, you do not say it.
 
 ## Step 0. Sync statuses first
 ```sql
@@ -36,7 +37,9 @@ Only blog work is in scope. Product pages and other designed pages are left for 
 Pages that do well on Google are protected. A page with 300 or more clicks in 90 days (`ours.clicks`) is never edited by you; its task stays To do for a person. A page with 100 to 299 clicks gets small additions only (mode **add**): one or two new sections, nothing removed, nothing reworded.
 
 ## Step 2. For each task
-The brief is in `body`: `task.lead` and `task.points` say what to make; `today` says what the assistants do now; `ours` is our own page (`url`, `mode`, `has`, `missing`); `model` lists the competitor pages being cited; `check` holds warnings.
+The brief is in `body`. `body.build` is the specification of the page, the same one the dashboard shows: the page type, who makes it, the address, the SEO title, the meta description, the format, the word target and the tools to compare. Use the address's last part as the slug of a new post, put the SEO title in the post's `name`, and put the meta description in `post-summary` (the template uses it as the page description). You may improve the wording of a suggested title or description, keeping the prompt's own words, within 60 and 155 characters; where the brief says to keep the current title or description, do not change them. If `build.made_by` says a person makes the page, skip the task.
+
+`task.lead` and `task.points` say what to make; `today` says what the assistants do now; `ours` is our own page (`url`, `mode`, `has`, `missing`); `model` lists the competitor pages being cited; `check` holds warnings.
 
 If `check` says another task updates the same page, find the other open tasks with the same `body->'ours'->>'url'`, make all their changes in this one edit, and record each of them as a draft with the same item id. They count as one towards the limit. If a task's page already has a Draft task (same `ours.url`, status Draft), read the post as it now stands in Webflow and add to that, rather than starting from the live version.
 
