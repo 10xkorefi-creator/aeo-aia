@@ -688,3 +688,9 @@ the task Draft on the dashboard with "done by the agent", and assigns it to Wasi
   Scheduled tasks created from a session cannot carry connectors in this organisation, so it has no Webflow or Supabase
   access until the connectors are attached in the claude.ai scheduled-tasks screen.
 - **Scope today:** 77 of the 106 open website tasks are blog work. Product pages and other designed pages stay manual.
+- **Pilot, 24/11:** two tasks run through the instructions. W-P044 saved as a new draft post (2,434 words, slug
+  `accounts-payable-automation-cost`); W-P001 saved as an unpublished edit to the live Tally Prime post (1,758 to 2,672
+  words, comparison table added, all original headings and paragraphs kept). Nothing was published. Lessons folded into the
+  instructions: tasks on the same page are done in one edit; the body before the edit is stored on the task
+  (`agent_before`) so it can be put back; our site has no price list, so pricing briefs describe terms without a figure;
+  cover images are left for the reviewer.

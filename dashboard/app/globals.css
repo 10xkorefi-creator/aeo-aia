@@ -827,3 +827,5 @@ table.rt tr.is-done .rt-title { color: var(--muted-foreground); }
 .rd-agent-act a { color: var(--accent); font-weight: 500; text-decoration: none; white-space: nowrap; }
 .rd-agent-act button { height: 30px; padding: 0 14px; font-size: 13px; font-weight: 600; }
 .rd-agent-err { flex-basis: 100%; color: var(--down-ink); font-weight: 500; }
+.rd-agent-note { flex-basis: 100% !important; font-size: 13px; color: var(--muted-foreground); }
+.rd-agent-note b { color: var(--foreground); font-weight: 600; }

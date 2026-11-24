@@ -76,9 +76,11 @@ function TaskDetail({ t, body, failed, questions, openQ, assign, saving, canPubl
             : <><b>Drafted by the {t.agent || 'Webflow agent'} on {t.draftedAt}.</b> Saved in Webflow as a draft{t.assignee ? `, with ${t.assignee} to review` : ''}.</>}</p>
           <div className="rd-agent-act">
             {t.draftUrl ? <a href={t.draftUrl} target="_blank" rel="noopener noreferrer">Open in Webflow ↗</a> : null}
+            {t.state === 'live' && t.pageUrl ? <a href={t.pageUrl} target="_blank" rel="noopener noreferrer">Open the page ↗</a> : null}
             {t.state === 'draft' && canPublish ? <button type="button" disabled={publishing === t.key} onClick={() => publish(t.key)}>{publishing === t.key ? 'Publishing…' : 'Publish'}</button> : null}
           </div>
           {pubError ? <p className="rd-agent-err" role="status">{pubError}</p> : null}
+          {t.agentNote ? <p className="rd-agent-note"><b>What the agent did:</b> {t.agentNote}</p> : null}
         </div>
       ) : null}
       {!body ? <Loading failed={failed} /> : (
