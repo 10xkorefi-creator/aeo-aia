@@ -748,3 +748,14 @@ the same folder, so each can be put back.
 Not done, and why: replacing the head code block through the connector is untested for field bindings and would affect every
 blog post, so it waits for a test on the webflow.io staging address. Author pages need the template switched on in the
 Designer, which the connector cannot do.
+
+## 24/11/2026: Article schema fixed on the blog template (staged; tested on staging)
+
+- Head code of the Blog Posts template now carries `dateModified` (the item's last-updated date) and an author object with
+  the real name and `https://www.aiaccountant.com/author/<slug>`. The broken path was `author.name`; the working form is
+  `author:name` and `author:slug`. Field tokens written through the connector behave as real bindings.
+- Tested by publishing to the webflow.io staging address only. Three posts checked: JSON parses, every existing field equals
+  the live site, new fields hold real values. The custom domains' last-published time was unchanged before and after
+  (2026-11-24T11:25:49Z). The stored code is in `docs/webflow-template/head.after-schema-fix.html`.
+- Until the Authors template is switched on, the author address in the schema points to a page that does not exist yet.
+- The staging address is open without a password, and the staging publish carried other people's pending changes to it.
