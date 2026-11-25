@@ -13,8 +13,11 @@ def get(table, params, out):
         if len(page) < 1000: break
     json.dump(rows, open('data/' + out + '.json', 'w'))
     print(out, len(rows))
-RUNS = 'in.(R20261117-M1,R20261118-M1,R20261119-M1,R20261121-S1)'
 get('aeo_runs', {'select': 'run_id,run_date,run_type,status,prompt_list_version,keyword_list_version,created_at', 'order': 'created_at'}, 'runs')
+# the last five finished real runs (no tests), newest last; nothing is hardcoded so a new run is picked up by itself
+_runs = [r['run_id'] for r in json.load(open('data/runs.json')) if r['status'] == 'complete' and r['run_type'] in ('scheduled', 'manual')][-5:]
+RUNS = 'in.(' + ','.join(_runs) + ')'
+print('runs used', _runs)
 get('aeo_prompts', {'select': 'list_version,prompt_key,prompt_text,topic,stage,persona,segment,theme,prompt_group,evidence_score', 'order': 'prompt_key'}, 'prompts')
 get('aeo_keywords', {'select': 'list_version,keyword_id,keyword,topic,segment,ahrefs_volume_in', 'order': 'keyword_id'}, 'keywords')
 get('aeo_competitors', {'select': '*'}, 'competitors')

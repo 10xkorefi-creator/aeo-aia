@@ -9,6 +9,8 @@ def call(payload):
     print(r.stdout[:200] or r.stderr[:200])
     if '"tasks"' not in r.stdout: sys.exit(1)
 T = json.load(open(W + '/tasks.json')); Q = json.load(open(W + '/questions.json')); run = json.load(open(W + '/meta.json'))['run']
+if len(T) < 20:
+    sys.exit(f'Refusing to load: only {len(T)} tasks were built for {run}. The run data is probably not refreshed (run select public.aeo_refresh_dashboard()).')
 for i in range(0, len(Q), 40): call({'run': run, 'tasks': [], 'questions': Q[i:i + 40]})
 for i in range(0, len(T), 80): call({'run': run, 'tasks': T[i:i + 80]})
 call({'run': run, 'tasks': [], 'keys': [t['task_key'] for t in T]})   # switches off tasks this build no longer produces

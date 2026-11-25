@@ -1,7 +1,7 @@
 # which cited pages to read: sources an assistant used consistently for a question in the latest run
 import json, collections as C
 L = lambda f: json.load(open('data/%s.json' % f))
-RUN = 'R20261121-S1'
+RUN = [r['run_id'] for r in json.load(open('data/runs.json')) if r['status'] == 'complete' and r['run_type'] in ('scheduled', 'manual')][-1]
 runs = {r['run_id']: r for r in L('runs')}
 prompts = {p['prompt_key']: p for p in L('prompts') if p['list_version'] == runs[RUN]['prompt_list_version']}
 kws = {k['keyword_id']: k for k in L('keywords') if k['list_version'] == runs[RUN]['keyword_list_version']}
