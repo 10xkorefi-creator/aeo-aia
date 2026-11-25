@@ -836,3 +836,18 @@ Decision by the user: existing posts keep the current design; new posts get a ne
 - The Webflow agent sets the switch on for posts it creates, and never changes it on an existing post.
 - Also fixed: the dashboard decided "Live" from Webflow's item publish time, which a staging publish also moves. It now reads
   the live page (address answers for a new post; "date modified" on or after the draft day for an edited one).
+
+## 25/11/2026: WhatsApp banner and exit popup switched off on blog pages
+
+Request by the user: remove the WhatsApp bot top banner and the exit popup from blog pages.
+
+- Both come from one block of site-wide footer code, each with its own list of excluded paths. `/blog` was added to both
+  lists (`excludedPrefix`), which covers the blog index and every post. Nothing else in the block changed.
+- Checked on staging: the footer code on the homepage, blog index and a post is identical to the old code apart from those
+  two lines; the homepage still shows the banner and popup; blog index and posts show neither, desktop and mobile.
+- Published to staging only. Goes live with the next site publish.
+- Left as is: on phones the banner's style sheet keeps 62px of empty space at the bottom of every page without the banner
+  (already the case on the demo pages).
+- Code before the change: `docs/webflow-template/site-footer.before-blog-exclusion.html`.
+- A fact sheet for team review (facts blogs state, 16 open questions with pricing first) was written as a Claude doc from
+  `docs/agents/aiaccountant-context.md`.
