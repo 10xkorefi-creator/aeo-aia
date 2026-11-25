@@ -1,6 +1,6 @@
 import json,re
 res=json.load(open('enrich1.json')); p2=json.load(open('pass2.json'))
-JUNK=re.compile(r'company\.com|^you@|@\d|^privacy@|pgsupport|rbi\.org|chupurnov|@xglobalgroup\.com$|^support@dev\.to|^partners@dev\.to|founder\.in|startup\.com|firm\.com|yourbusiness|ahmedabad@|bangalore@|chennai@',re.I)
+JUNK=re.compile(r'company\.com|^you@|@\d+\.\d|^privacy@|pgsupport|rbi\.org|chupurnov|@xglobalgroup\.com$|^support@dev\.to|^partners@dev\.to|founder\.in|startup\.com|firm\.com|yourbusiness|ahmedabad@|bangalore@|chennai@',re.I)
 GENERIC=['partnerships','partners','editor','editorial','corrections','hello','contact','info','queries','support','sales']
 NOTPERSON=re.compile(r'team|editorial|admin|see more|view full|^mcp$|pvt|ltd|classes|rankings|advisor|systems$|^rebota$|^lekhakar$|trulyinvoice|startupstash|toolstackscout|app advisor|aidukan',re.I)
 out={}

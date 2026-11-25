@@ -892,3 +892,14 @@ Request by the user: make the banner height change site-wide (this includes the 
   pages (`/author/<slug>`) are now live. The post rewrite and the author link were staged after that publish.
 - Author name in blog posts now links to the author page: a small script in the blog template head code wraps the name in
   the byline (new design) and in the "Written By" box (all posts). Checked on staging for three posts and two authors.
+
+## 25/11/2026: Outreach contacts on every outreach task
+
+- New column `aeo_rec_tasks.contact` (kept apart from `body`, so regenerating tasks does not wipe it) and an "Outreach contact"
+  section in the task sidebar: status, name, role, email, confidence, where found, other addresses, LinkedIn, form, date.
+- Method, in order: the cited page and the site's contact, about, author, policy and submit pages (free); Apollo for named
+  people (7 credits, 7 emails); Hunter domain lookup through treg for sites with nothing (17 lookups).
+- Result for 68 tasks: 55 with an email, 5 with a contact form only, 8 not found (incbusiness.in x4, totumai.in, agentcfo.org,
+  5minsystems.com, mileseducation.com).
+- By the user's decision the section shows the full contact details on the public dashboard.
+- Scripts: `scripts/outreach/`.
