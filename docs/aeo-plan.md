@@ -860,3 +860,14 @@ Change of mind by the user: bring the top banner back on blog pages, shorter tha
 - On blog pages the banner gets the class `wa-slim`: 34px high on desktop instead of 54px (smaller padding, text and button).
   Other pages keep 54px. The phone version (bar at the bottom, 50px) is unchanged.
 - Checked on staging; published to staging only.
+
+## 25/11/2026: Navbar and dark header moved up under the slim banner
+
+Request by the user: no gap between the banner and the navbar; the blog header image touches the banner; navbar sits over it.
+
+- Cause: the navbar has a fixed 55px offset in the site style (made for the 54px banner), and the new-design header left
+  76px of white space above itself for the navbar.
+- Fix, in the blog post template head code only (`<style data-blog-top>`): navbar offset 34px when the slim banner is
+  present (desktop); on new-design posts the dark header starts directly under the banner with the navbar over it.
+- Old-design posts: only the navbar moves up. Blog index page not changed (its navbar still has the 21px gap).
+- Checked on staging, desktop and phone. Published to staging only.
