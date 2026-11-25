@@ -903,3 +903,14 @@ Request by the user: make the banner height change site-wide (this includes the 
   5minsystems.com, mileseducation.com).
 - By the user's decision the section shows the full contact details on the public dashboard.
 - Scripts: `scripts/outreach/`.
+
+## 25/11/2026: Recommendations rebuilt from run R20261125-S1, and made automatic
+
+- Cause of the delay: the rebuild only ever ran by hand, and `export.py` / `urls.py` had the run ids written in. Both now
+  take the last five finished runs from `aeo_runs`. `load.py` refuses to save fewer than 20 tasks (a first attempt built
+  an empty list from stale run ids and overwrote the "By prompt" rows for a few minutes; tasks were not affected).
+- Rebuilt list: 260 tasks (120 High, 56 Medium, 84 Low; 73 outreach, 57 update page, 50 new page, 44 video, 21 post,
+  9 listing, 6 thread answer). 68 old tasks switched off. Draft, Live and Done statuses, assignees and contacts kept.
+- 36 new outreach tasks: 7 reuse a known contact for the same site, 17 found on the site, 7 form only, 5 not found.
+- Scheduled task "AEO recommendations refresh", daily 07:53 IST: rebuilds when a newer finished run exists, then looks up
+  contacts for new outreach tasks from free sources. Instructions: `docs/agents/recs-refresh.md`.
