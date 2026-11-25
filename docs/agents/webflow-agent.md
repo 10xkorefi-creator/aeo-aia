@@ -108,7 +108,12 @@ These rules come from the blog audit (`docs/blog-audit.md`). They replace the ol
 10. **Length follows the cited pages**, as the brief says; usually 1,200 to 2,000 words. Cut anything that does not help answer the prompt.
 11. **One questions section, at the end**: four to eight questions people really ask about this topic, each answered in two or three sentences that make sense alone. Do not end answers with our name.
 12. **No fixed skeleton.** A list post, a comparison, a how-to, a pricing guide and an explainer are built differently. Let the prompt decide the sections.
-13. **Our own facts.** Take them from aiaccountant.com pages and from https://www.aiaccountant.com/llms.txt . Where the two disagree (for example whether there is a free trial), state neither and say so in your note.
+13. **India only.** We sell only in India, to Indian businesses. Every post is written for an Indian reader:
+    - Prices in ₹ only, never $ or USD. Use a price only where the source states it in ₹ for India. If a cited page gives only dollar figures, do not convert and do not quote them; say in one line that published figures are for the US market and leave them out.
+    - Compare only tools sold and used in India (see the competitor list in the context file). No US-only tools such as BILL, Tipalti, Melio, Ramp, Coupa, QuickBooks or Xero, even when the cited pages list them.
+    - Rules, taxes, banks and examples are Indian (GST, TDS, Tally, Indian banks). No US or UK regulation.
+    - If the cited pages have no Indian figures at all, build the post on how pricing works and what drives cost, plus our own case-study numbers, and say in your note that no Indian price source was found.
+14. **Our own facts.** Take them from aiaccountant.com pages and from https://www.aiaccountant.com/llms.txt . Where the two disagree (for example whether there is a free trial), state neither and say so in your note.
 
 ## Writing rules
 - Facts about AI Accountant come only from aiaccountant.com. Never state a price, number, customer name or feature that is not on our site. If the brief needs one that is missing, leave it out and say so in the note. Our site publishes no price list: for a pricing brief, describe how our pricing works in the site's own words and give no figure.
