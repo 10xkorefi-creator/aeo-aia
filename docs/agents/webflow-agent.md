@@ -110,7 +110,7 @@ These rules come from the blog audit (`docs/blog-audit.md`). They replace the ol
 12. **No fixed skeleton.** A list post, a comparison, a how-to, a pricing guide and an explainer are built differently. Let the prompt decide the sections.
 13. **India only.** We sell only in India, to Indian businesses. Every post is written for an Indian reader:
     - Prices in ₹ only, never $ or USD. Use a price only where the source states it in ₹ for India. If a cited page gives only dollar figures, do not convert and do not quote them; say in one line that published figures are for the US market and leave them out.
-    - Compare only tools sold and used in India (see the competitor list in the context file). No US-only tools such as BILL, Tipalti, Melio, Ramp, Coupa, QuickBooks or Xero, even when the cited pages list them.
+    - Comparisons are led by tools sold and used in India (see the competitor list in the context file) and they make up most of any list or table. A US or global tool (BILL, Tipalti, Coupa and the like) may appear where it helps the reader, at most one or two per post, marked as priced in dollars for overseas buyers. Never QuickBooks as an option in India.
     - Rules, taxes, banks and examples are Indian (GST, TDS, Tally, Indian banks). No US or UK regulation.
     - If the cited pages have no Indian figures at all, build the post on how pricing works and what drives cost, plus our own case-study numbers, and say in your note that no Indian price source was found.
 14. **Our own facts.** Take them from aiaccountant.com pages and from https://www.aiaccountant.com/llms.txt . Where the two disagree (for example whether there is a free trial), state neither and say so in your note.
