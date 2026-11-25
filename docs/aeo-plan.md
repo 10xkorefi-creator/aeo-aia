@@ -851,3 +851,12 @@ Request by the user: remove the WhatsApp bot top banner and the exit popup from 
 - Code before the change: `docs/webflow-template/site-footer.before-blog-exclusion.html`.
 - A fact sheet for team review (facts blogs state, 16 open questions with pricing first) was written as a Claude doc from
   `docs/agents/aiaccountant-context.md`.
+
+## 25/11/2026: WhatsApp banner back on blog pages, slimmer
+
+Change of mind by the user: bring the top banner back on blog pages, shorter than before. The exit popup stays off there.
+
+- `/blog` removed from the banner's excluded list; it stays in the exit popup's list.
+- On blog pages the banner gets the class `wa-slim`: 34px high on desktop instead of 54px (smaller padding, text and button).
+  Other pages keep 54px. The phone version (bar at the bottom, 50px) is unchanged.
+- Checked on staging; published to staging only.
