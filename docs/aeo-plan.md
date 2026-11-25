@@ -871,3 +871,13 @@ Request by the user: no gap between the banner and the navbar; the blog header i
   present (desktop); on new-design posts the dark header starts directly under the banner with the navbar over it.
 - Old-design posts: only the navbar moves up. Blog index page not changed (its navbar still has the 21px gap).
 - Checked on staging, desktop and phone. Published to staging only.
+
+## 25/11/2026: Slim WhatsApp banner on every page
+
+Request by the user: make the banner height change site-wide (this includes the homepage, at the user's request).
+
+- Site footer code: the banner always gets the `wa-slim` class (34px on desktop instead of 54px), and the navbar offset is
+  34px wherever the slim banner shows (desktop). Phone bar at the bottom unchanged. Exit popup still off on `/blog` only.
+- Checked on staging: homepage, blog index, two product pages, about, customer stories, hire-accountant: banner 34px,
+  navbar directly under it. Footer code matches the intended text exactly.
+- Published to staging only.
