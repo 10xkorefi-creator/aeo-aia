@@ -7,7 +7,7 @@ Limit: 8 tasks per run, unless a note at the end of this prompt gives a differen
 
 ## Where things are
 - Supabase project `qmaphtslnvvifkzmbrvh` (Supabase connector, run SQL). Tasks are in `public.aeo_rec_tasks`.
-- Webflow site `67ed19ac5d8a1253defd2450` (AI Accountant). Blog Posts collection `67ed19ac5d8a1253defd24e1`. Call the Webflow guide tool first, as that connector requires.
+- Webflow site `67ed19ac5d8a1253defd2450` (AI Accountant). Blog Posts collection `67ed19ac5d8a1253defd24e1`. Call the Webflow guide tool first, as that connector requires; its reply is very long and you need only the session id from it.
 - Webflow Designer address for links: `https://korefi-new-ad79e3da626e3af649279f0df167.design.webflow.com`
 - If the Webflow or Supabase connector is not available in this session, stop at once and say so in your report. Do not try another route.
 - The repository `https://github.com/10xkorefi-creator/aeo-aia` (public). Clone it if it is not already in your working folder; the image scripts are in `scripts/blog-images/`.
@@ -45,11 +45,11 @@ The brief is in `body`. `body.build` is the specification of the page, the same 
 If `check` says another task updates the same page, find the other open tasks with the same `body->'ours'->>'url'`, make all their changes in this one edit, and record each of them as a draft with the same item id. They count as one towards the limit. If a task's page already has a Draft task (same `ours.url`, status Draft), read the post as it now stands in Webflow and add to that, rather than starting from the live version.
 
 1. Read the cited pages in `model` to see how they are organised. Never copy their sentences.
-2. Read our own material on aiaccountant.com: the homepage, the product page nearest the topic, the post you are editing, and any case study or comparison page of ours on the topic. Our own site is your only source for facts about AI Accountant.
+2. Read our own material on aiaccountant.com: the homepage, the product page nearest the topic, the help pages on the topic (`/help/...`), the post you are editing, and any case study or comparison page of ours on the topic. Our own site is your only source for facts about AI Accountant.
 3. Write, by mode:
    - **add** (page with real traffic or a product page): find the post by its slug (last part of `ours.url`). Change only what `task.points` lists. Keep the name, slug, every existing heading and every existing paragraph. Insert new sections; do not rewrite old ones.
    - **rework**: find the post by its slug. You may restructure the body, but keep the slug, and keep the existing headings and paragraphs unless one is wrong or repeats another. If something existing looks wrong, leave it and say so in your note.
-   - **new / new_linked**: create a new post with `isDraft: true`. Set its `new-design` switch to true: new posts use the new page design, which shows the title in a dark header band and does not repeat the cover image on the page. Never change this switch on a post that already exists. Copy the author, category and tags from the existing post closest in topic. Fill the summary and keywords yourself, set featured to false, and leave the cover image empty for the reviewer to add. Short lowercase slug with hyphens. If the brief names a page to link from, do not edit that page; say so in your note.
+   - **new / new_linked**: create a new post with `isDraft: true`. Set its `new-design` switch to true: new posts use the new page design, which shows the title in a dark header band and does not repeat the cover image on the page. Never change this switch on a post that already exists. Copy the author, category and tags from the existing post closest in topic. Fill the summary and keywords yourself, set featured to false, and make the cover as the Images section says. Leave `time-to-read`, `updated-date`, tags and the other optional fields as the nearest post has them. Short lowercase slug with hyphens. If the brief names a page to link from, do not edit that page; say so in your note.
    For add and rework, update only the fields you changed, do not send `isDraft`, and do not publish. The changes wait in Webflow.
 4. Store tables as normal HTML tables in the body, and a questions section as an h2 with an h3 and a paragraph for each question.
 5. Make the images (see "Images" below) and place them before you save.
@@ -65,14 +65,14 @@ select public.aeo_task_set_draft(jsonb_build_object('task_key', '<key>', 'collec
 ## Images
 Every post you write or change gets images in the house style. They are drawn by a script from a short description; do not use an image generator and do not draw your own.
 
-1. **Cover.** A new post always gets one. An existing post gets one only if its `main-image` is empty; never replace a cover that is already there. Use the dark cover. Title = the post's name; kicker = its blog category; author name, role and photo from the post's author in the Authors collection; date = today, written like 24 Nov 2026.
+1. **Cover.** A new post always gets one. An existing post gets one only if its `main-image` is empty; never replace a cover that is already there. Use the dark cover. Title = the post's name; kicker = its blog category, with our name written "AI Accountant" whatever the category's own spelling; author name, role and photo from the post's author in the Authors collection; date = today, written like 24 Nov 2026.
 2. **Figures.** Two to four per post, each under the heading it illustrates. Choose from what the post actually contains:
    - numbers by category: `range_bars` or `bars`
    - two to four options side by side: `cards`
    - a list the reader acts on: `checklist`
    - a process: `steps`
    - a comparison: `table`, only where the post has no HTML table for the same thing
-   Use only numbers and wording that are in the post. Give a `source` line for any number that comes from someone else. If the post has nothing worth a figure, add fewer; never invent data to fill one. Never remove an image that is already in a post.
+   Use only numbers and wording that are in the post. Give a `source` line for any number that comes from someone else. If the post has nothing worth a figure, add fewer; never invent data to fill one. Never remove an image that is already in a post, except a figure you made yourself whose numbers the rewrite has dropped.
 3. **Make and host them.** Write a `spec.json` as described in `scripts/blog-images/README.md`, then:
 ```bash
 node scripts/blog-images/render.js spec.json out
@@ -116,6 +116,13 @@ These rules come from the blog audit (`docs/blog-audit.md`). They replace the ol
 14. **Our own facts.** Take them from aiaccountant.com pages and from https://www.aiaccountant.com/llms.txt . Where the two disagree (for example whether there is a free trial), state neither and say so in your note.
 
 ## Writing rules
+- Where this file and the context file disagree, this file wins. In particular: read competitor sites and cite them with a date; the old ban on them as sources no longer holds.
+- A price written by an Indian vendor as "Rs.", "INR" or "14500/-" counts as a rupee price; write it with ₹.
+- Use each vendor's own spelling of its product name, even where the brief spells it differently. Fix a malformed title or description in the brief rather than copying it.
+- Word count covers the body, table and questions, not captions; stay within 10% of the brief.
+- When a rival named in the prompt does the same job as we do, state its capability plainly from its own site and set us apart on who it is for and how much of the work we cover. Never invent a weakness.
+- A draft does not show on the staging site. Reviewers read it in the Webflow Editor; say so in your note. Do not publish to staging.
+- Editing a post that is already Live (a later task on the same page): update the item, do not call `aeo_task_set_draft` for the task that is already Live, and record the new task as usual.
 - Facts about AI Accountant come only from aiaccountant.com. Never state a price, number, customer name or feature that is not on our site. If the brief needs one that is missing, leave it out and say so in the note. Our site publishes no price list: for a pricing brief, describe how our pricing works in the site's own words and give no figure.
 - Facts about other tools come only from the cited pages or the tool's own site. Be accurate and fair about them: no invented weaknesses, no put-downs, no unsourced claims. Advocacy comes from what we show about ourselves and from honest differences, never from running a rival down.
 - Answer the prompt in the first paragraph. Where the brief asks, use the prompt's wording in a heading.
