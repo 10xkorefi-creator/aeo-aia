@@ -881,3 +881,14 @@ Request by the user: make the banner height change site-wide (this includes the 
 - Checked on staging: homepage, blog index, two product pages, about, customer stories, hire-accountant: banner 34px,
   navbar directly under it. Footer code matches the intended text exactly.
 - Published to staging only.
+
+## 25/11/2026: India-only rule, post rewrite, author link
+
+- Webflow agent rule 13 "India only": prices in ₹ only and only from Indian sources, comparisons led by tools sold in India
+  (one or two global tools allowed per post, marked as dollar-priced, by the user's decision), Indian rules and examples.
+- `/blog/accounts-payable-automation-cost` rewritten under that rule (no dollar figures, ten Indian tools with sourced ₹
+  prices, three new figures, FAQ schema filled). Before-state: `docs/webflow-template/ap-cost-post.before-india-rewrite.json`.
+- The site was published live by the owner at 2026-11-25T07:00:41Z: slim banner, new design switch, FAQ field and author
+  pages (`/author/<slug>`) are now live. The post rewrite and the author link were staged after that publish.
+- Author name in blog posts now links to the author page: a small script in the blog template head code wraps the name in
+  the byline (new design) and in the "Written By" box (all posts). Checked on staging for three posts and two authors.
