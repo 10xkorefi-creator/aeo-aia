@@ -75,6 +75,20 @@ function BuildBrief({ b }) {
   );
 }
 
+// ---- who to write to for an outreach task, and how that contact was found
+function OutreachContact({ c }) {
+  const link = (u, label) => <a href={u} target="_blank" rel="noopener noreferrer">{label || u.replace(/^https?:\/\/(www\.)?/, '')}</a>;
+  const rows = [['Status', c.status], ['Name', c.name], ['Role', c.role], ['Email', c.email ? <a href={`mailto:${c.email}`}>{c.email}</a> : null], ['Confidence', c.confidence],
+    ['Found on', c.source], ['Other addresses', (c.other_emails || []).join(', ')], ['LinkedIn', (c.linkedin || []).length ? <>{c.linkedin.map((u, i) => <span key={u}>{i ? ', ' : ''}{link(u)}</span>)}</> : null],
+    ['Author page', c.author_page ? link(c.author_page) : null], ['Contact form', c.form ? link(c.form) : null], ['Site', c.site], ['How found', c.method], ['Checked', c.checked]].filter(([, v]) => v);
+  return (
+    <section className="rb-sec"><h3>Outreach contact</h3>
+      <dl className="rd-build">{rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+      {c.note ? <p className="rb-foot">{c.note}</p> : null}
+    </section>
+  );
+}
+
 // ---- one task: the task itself first, then what is driving it, why it should work and how we will know
 function TaskDetail({ t, body, failed, questions, openQ, assign, saving, canPublish, publish, publishing, pubError }) {
   const mine = t.targets.map((k) => questions.find((x) => x.key === k)).filter(Boolean);
@@ -110,6 +124,7 @@ function TaskDetail({ t, body, failed, questions, openQ, assign, saving, canPubl
           </section>
 
           {body.build ? <BuildBrief b={body.build} /> : null}
+          {body.contact ? <OutreachContact c={body.contact} /> : null}
 
           <section className="rb-sec"><h3>What’s driving this recommendation</h3>
             <h4>{mine.length > 1 ? `The ${mine.length} prompts this covers` : mine[0]?.kind === 'keyword' ? 'The Google search this covers' : 'The prompt this covers'}</h4>
