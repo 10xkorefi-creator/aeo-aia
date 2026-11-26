@@ -79,7 +79,7 @@ function BuildBrief({ b }) {
 function OutreachContact({ c }) {
   const link = (u, label) => <a href={u} target="_blank" rel="noopener noreferrer">{label || u.replace(/^https?:\/\/(www\.)?/, '')}</a>;
   const li = c.linkedin_url ? <>{link(c.linkedin_url)}{c.linkedin_name ? ` (${c.linkedin_name}${c.linkedin_role ? ', ' + c.linkedin_role : ''})` : ''}</> : null;
-  const rows = [['LinkedIn', li || c.linkedin_status], ['LinkedIn match', c.linkedin_url ? c.linkedin_confidence : null], ['LinkedIn note', c.linkedin_url ? null : c.linkedin_note], ['Company page', c.linkedin_company ? link(c.linkedin_company) : null],
+  const rows = [['Kind of site', c.site_type ? `${c.site_type}. ${c.site_type_note || ''}` : null], ['LinkedIn', li || c.linkedin_status], ['LinkedIn match', c.linkedin_url ? c.linkedin_confidence : null], ['LinkedIn note', c.linkedin_url ? null : c.linkedin_note], ['Company page', c.linkedin_company ? link(c.linkedin_company) : null],
     ['Other profiles', (c.linkedin || []).length ? <>{c.linkedin.map((u, i) => <span key={u}>{i ? ', ' : ''}{link(u)}</span>)}</> : null],
     ['Email status', c.status], ['Name', c.name], ['Role', c.role], ['Email', c.email ? <a href={`mailto:${c.email}`}>{c.email}</a> : null], ['Email confidence', c.confidence],
     ['Found on', c.source], ['Other addresses', (c.other_emails || []).join(', ')],

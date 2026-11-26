@@ -956,3 +956,11 @@ Decision by the user: do LinkedIn outreach first, email second.
   section. One message per person even when they cover several pages. Generator: `scripts/outreach/linkedin_messages.py`.
 - Agent instructions: `docs/agents/outreach-agent.md`. Waiting on: paid PhantomBuster plan, the sending account, the
   PhantomBuster connector on claude.ai, a shared Google Sheet.
+
+## 26/11/2026: Outreach sites classified by kind
+
+- Each outreach contact now has `site_type` and `site_type_note` (shown as "Kind of site"): directory or affiliate list
+  site, publisher or media, software or product company blog, agency or personal brand, training provider, open platform.
+  Classified by hand from the page titles, site signals (advertise, submit and write-for-us pages) and who runs the site;
+  not every site was re-read, so treat a few as provisional.
+- Three flagged: trulyinvoice.com (direct competitor), finifi.io (overlapping product), credfloat.in (its own product page).
