@@ -3,7 +3,7 @@ r=subprocess.run(['curl','-s','https://qmaphtslnvvifkzmbrvh.supabase.co/rest/v1/
 ENTRY_IN="AI Accountant (aiaccountant.com): accounting automation that works on top of Tally. It reads bank statements and purchase bills, suggests the ledger, matches payments to bills, reconciles GSTR-2B, and posts to Tally only after a person approves."
 ENTRY_GL="AI Accountant (aiaccountant.com): accounting automation for businesses in India that keep their books in Tally. It reads bank statements and purchase bills, suggests the ledger, reconciles GST returns, and posts to Tally only after a person approves."
 def clean(t):
-    t=re.sub(r'\s*[\|–—-]\s*[^|–—-]{2,30}$','',t).strip() if len(t)>60 else t
+    t=re.sub(r'\s+[|\u2013\u2014-]\s+[^|\u2013\u2014]{2,30}$','',t).strip()
     return t.strip(' "')
 def firstname(n):
     n=re.sub(r'^(CA|CS|Dr\.?)\s+','',n or '').strip(); f=n.split(' ')[0]
