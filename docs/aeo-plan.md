@@ -933,3 +933,11 @@ Decision by the user: do LinkedIn outreach first, email second.
   people search on 22 sites ($0.49 in total). Added dclouds.in (Biplob Dev, founder), geekchamp.com (Yordan Pavlov, CTO),
   nytech.in (Naveen Raj, marketing) and agentcfo.org (likely). The routed search mostly returned look-alike companies
   (Curation Suite for curatesuite.com, Descript for descriptra.com), which were rejected. 49 of 73 now have a profile.
+
+## 26/11/2026: Outreach note on every outreach contact
+
+- By the user's decision, any of author, owner, founder, marketing person or editor counts as a valid LinkedIn contact.
+- Each contact now has `relationship` (author, owner or founder, marketing or content, editor, site's own profile) and
+  `outreach_note`: who the person is to the page, what to ask, the page and the tools it lists, which assistants cite it,
+  whether one message should cover several pages, the audience angle, and a warning where the match is only likely.
+  Shown at the top of the "Outreach contact" section. Generator: `scripts/outreach/outreach_notes.py`.

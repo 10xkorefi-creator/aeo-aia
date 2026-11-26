@@ -86,6 +86,7 @@ function OutreachContact({ c }) {
     ['Author page', c.author_page ? link(c.author_page) : null], ['Contact form', c.form ? link(c.form) : null], ['Site', c.site], ['How found', c.method], ['Checked', c.linkedin_checked || c.checked]].filter(([, v]) => v);
   return (
     <section className="rb-sec"><h3>Outreach contact</h3>
+      {c.outreach_note ? <p className="rd-agent-note"><b>Note for outreach{c.relationship ? ` (${c.relationship.toLowerCase()})` : ''}:</b> {c.outreach_note}</p> : null}
       <dl className="rd-build">{rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
       {c.note ? <p className="rb-foot">{c.note}</p> : null}
     </section>
