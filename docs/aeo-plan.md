@@ -929,3 +929,7 @@ Decision by the user: do LinkedIn outreach first, email second.
 - Second and third rounds (company-name searches, names from an Apollo domain search): 44 of 73 tasks now have a profile.
   Apollo enrichment could not be used: the team's credits ran out (they reset on 13/12/2026). 29 tasks across 25 sites have
   no profile that can be tied to the site; each carries a note saying so.
+- Round four, through treg: Apollo enrichment on treg's key ($0.026 each) for four people Apollo lists, and treg's routed
+  people search on 22 sites ($0.49 in total). Added dclouds.in (Biplob Dev, founder), geekchamp.com (Yordan Pavlov, CTO),
+  nytech.in (Naveen Raj, marketing) and agentcfo.org (likely). The routed search mostly returned look-alike companies
+  (Curation Suite for curatesuite.com, Descript for descriptra.com), which were rejected. 49 of 73 now have a profile.
