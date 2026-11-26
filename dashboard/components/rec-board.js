@@ -78,9 +78,12 @@ function BuildBrief({ b }) {
 // ---- who to write to for an outreach task, and how that contact was found
 function OutreachContact({ c }) {
   const link = (u, label) => <a href={u} target="_blank" rel="noopener noreferrer">{label || u.replace(/^https?:\/\/(www\.)?/, '')}</a>;
-  const rows = [['Status', c.status], ['Name', c.name], ['Role', c.role], ['Email', c.email ? <a href={`mailto:${c.email}`}>{c.email}</a> : null], ['Confidence', c.confidence],
-    ['Found on', c.source], ['Other addresses', (c.other_emails || []).join(', ')], ['LinkedIn', (c.linkedin || []).length ? <>{c.linkedin.map((u, i) => <span key={u}>{i ? ', ' : ''}{link(u)}</span>)}</> : null],
-    ['Author page', c.author_page ? link(c.author_page) : null], ['Contact form', c.form ? link(c.form) : null], ['Site', c.site], ['How found', c.method], ['Checked', c.checked]].filter(([, v]) => v);
+  const li = c.linkedin_url ? <>{link(c.linkedin_url)}{c.linkedin_name ? ` (${c.linkedin_name}${c.linkedin_role ? ', ' + c.linkedin_role : ''})` : ''}</> : null;
+  const rows = [['LinkedIn', li || c.linkedin_status], ['LinkedIn match', c.linkedin_url ? c.linkedin_confidence : null], ['Company page', c.linkedin_company ? link(c.linkedin_company) : null],
+    ['Other profiles', (c.linkedin || []).length ? <>{c.linkedin.map((u, i) => <span key={u}>{i ? ', ' : ''}{link(u)}</span>)}</> : null],
+    ['Email status', c.status], ['Name', c.name], ['Role', c.role], ['Email', c.email ? <a href={`mailto:${c.email}`}>{c.email}</a> : null], ['Email confidence', c.confidence],
+    ['Found on', c.source], ['Other addresses', (c.other_emails || []).join(', ')],
+    ['Author page', c.author_page ? link(c.author_page) : null], ['Contact form', c.form ? link(c.form) : null], ['Site', c.site], ['How found', c.method], ['Checked', c.linkedin_checked || c.checked]].filter(([, v]) => v);
   return (
     <section className="rb-sec"><h3>Outreach contact</h3>
       <dl className="rd-build">{rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>

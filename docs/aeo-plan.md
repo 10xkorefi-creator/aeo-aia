@@ -914,3 +914,15 @@ Request by the user: make the banner height change site-wide (this includes the 
 - 36 new outreach tasks: 7 reuse a known contact for the same site, 17 found on the site, 7 form only, 5 not found.
 - Scheduled task "AEO recommendations refresh", daily 07:53 IST: rebuilds when a newer finished run exists, then looks up
   contacts for new outreach tasks from free sources. Instructions: `docs/agents/recs-refresh.md`.
+
+## 26/11/2026: LinkedIn profiles on outreach tasks (LinkedIn outreach comes before email)
+
+Decision by the user: do LinkedIn outreach first, email second.
+
+- Each outreach task's contact now carries `linkedin_url`, `linkedin_name`, `linkedin_role`, `linkedin_confidence`,
+  `linkedin_company` and `linkedin_status`. The "Outreach contact" section lists LinkedIn first, email after.
+- Method: profile links on the site itself, Apollo results, then Google searches through treg (about 190 searches, $0.35),
+  each match checked by hand against the name and the site. No profile was saved on a name match alone.
+- Result for 73 tasks: 39 with a person's profile (14 confirmed by name and site, 11 linked from the site itself, 10 a
+  founder or senior person rather than the page author, 4 likely), 11 with a company page only, 23 with nothing.
+- Search script: `scripts/outreach/linkedin_find.py` (matching is manual).
