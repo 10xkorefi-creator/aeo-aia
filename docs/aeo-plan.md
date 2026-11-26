@@ -941,3 +941,7 @@ Decision by the user: do LinkedIn outreach first, email second.
   `outreach_note`: who the person is to the page, what to ask, the page and the tools it lists, which assistants cite it,
   whether one message should cover several pages, the audience angle, and a warning where the match is only likely.
   Shown at the top of the "Outreach contact" section. Generator: `scripts/outreach/outreach_notes.py`.
+- Round five on the 24 tasks (21 sites) with no profile, by the routes the user suggested: company LinkedIn page then its
+  founder or marketing lead (no company page exists for 15 sites; the 4 that have one list no employees), employee lookup
+  by domain (none), and person-behind-the-email through Apollo on treg (none; only the company name for two). No new
+  profiles. Each task's note now lists what was tried. Cost about $0.10.
