@@ -926,3 +926,6 @@ Decision by the user: do LinkedIn outreach first, email second.
 - Result for 73 tasks: 39 with a person's profile (14 confirmed by name and site, 11 linked from the site itself, 10 a
   founder or senior person rather than the page author, 4 likely), 11 with a company page only, 23 with nothing.
 - Search script: `scripts/outreach/linkedin_find.py` (matching is manual).
+- Second and third rounds (company-name searches, names from an Apollo domain search): 45 of 73 tasks now have a profile.
+  Apollo enrichment could not be used: the team's credits ran out (they reset on 13/12/2026). 28 tasks across 23 sites have
+  no profile that can be tied to the site; each carries a note saying so.
