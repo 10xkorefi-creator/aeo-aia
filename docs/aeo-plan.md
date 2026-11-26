@@ -945,3 +945,14 @@ Decision by the user: do LinkedIn outreach first, email second.
   founder or marketing lead (no company page exists for 15 sites; the 4 that have one list no employees), employee lookup
   by domain (none), and person-behind-the-email through Apollo on treg (none; only the company name for two). No new
   profiles. Each task's note now lists what was tried. Cost about $0.10.
+
+## 26/11/2026: LinkedIn outreach: plan, drafts and agent instructions (not switched on)
+
+- Tool chosen by the user: PhantomBuster (Auto Connect, Message Sender, Inbox Scraper), driven by a Claude agent through
+  PhantomBuster's connector. Flow chosen by the user: connection request with no note, personal message after acceptance
+  (avoids the LinkedIn Premium need: free accounts get 3 personalised notes a month per LinkedIn's help page).
+- Known risk, stated to the user: LinkedIn's terms do not permit third-party automation; accounts can be restricted.
+- Drafted for 41 people covering 49 tasks: `li_message` and `li_followup` on each contact, shown in the "Outreach contact"
+  section. One message per person even when they cover several pages. Generator: `scripts/outreach/linkedin_messages.py`.
+- Agent instructions: `docs/agents/outreach-agent.md`. Waiting on: paid PhantomBuster plan, the sending account, the
+  PhantomBuster connector on claude.ai, a shared Google Sheet.

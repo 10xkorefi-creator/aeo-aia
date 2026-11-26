@@ -89,6 +89,15 @@ function OutreachContact({ c }) {
       {c.outreach_note ? <p className="rd-agent-note"><b>Note for outreach{c.relationship ? ` (${c.relationship.toLowerCase()})` : ''}:</b> {c.outreach_note}</p> : null}
       <dl className="rd-build">{rows.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
       {c.note ? <p className="rb-foot">{c.note}</p> : null}
+      {c.li_message ? (
+        <details className="rd-prompt" open>
+          <summary>LinkedIn message, sent after they accept{c.li_stage ? ` (${c.li_stage.toLowerCase()})` : ''}</summary>
+          {c.li_group > 1 ? <p className="rb-foot">One message covers {c.li_group} tasks for this person.</p> : null}
+          <pre>{c.li_message}</pre>
+          <p className="rb-foot">Follow-up after 5 working days with no reply:</p>
+          <pre>{c.li_followup}</pre>
+        </details>
+      ) : null}
     </section>
   );
 }
