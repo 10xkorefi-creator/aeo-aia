@@ -1,0 +1,25 @@
+{
+ "items": [
+  {
+   "id": "6a8417e9ac152ba54ad8c909",
+   "fieldData": {
+    "name": "AiA Bot",
+    "slug": "aia-bot"
+   }
+  },
+  {
+   "id": "6964b6fe22e8b41761e803c5",
+   "fieldData": {
+    "name": "Ai Accountant",
+    "slug": "ai-accountant"
+   }
+  },
+  {
+   "id": "6964b6dc3e6914e3826cf8c9",
+   "fieldData": {
+    "name": "Virtual Accounting",
+    "slug": "virtual-accounting"
+   }
+  }
+ ]
+}

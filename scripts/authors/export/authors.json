@@ -1,0 +1,74 @@
+{
+ "items": [
+  {
+   "id": "6964cab16aba8d1ab35a55d9",
+   "fieldData": {
+    "name": "Hanumesh N",
+    "slug": "hanumesh-n"
+   }
+  },
+  {
+   "id": "6964c5f52692f98399fd50df",
+   "fieldData": {
+    "name": "Harshit Jain",
+    "slug": "harshit-jain"
+   }
+  },
+  {
+   "id": "680206db84172732839b0f01",
+   "fieldData": {
+    "name": "Pei-fu Hsieh",
+    "slug": "pei-fu-hsieh"
+   }
+  },
+  {
+   "id": "67f7b2b6cdac720418af3a07",
+   "fieldData": {
+    "name": "Harsh Khatri",
+    "slug": "harsh-khatri"
+   }
+  },
+  {
+   "id": "67ed19ac5d8a1253defd2517",
+   "fieldData": {
+    "name": "Rohan Sinha",
+    "slug": "rohan-sinha"
+   }
+  },
+  {
+   "id": "67ed19ac5d8a1253defd2516",
+   "fieldData": {
+    "name": "Shyamkrishnan Nair",
+    "slug": "shyamkrishnan-nair"
+   }
+  },
+  {
+   "id": "67ed19ac5d8a1253defd24bd",
+   "fieldData": {
+    "name": "Mahmud Niloy",
+    "slug": "mahmud-niloy"
+   }
+  },
+  {
+   "id": "67ed19ac5d8a1253defd24ba",
+   "fieldData": {
+    "name": "David Henricks",
+    "slug": "david-henricks"
+   }
+  },
+  {
+   "id": "67ed19ac5d8a1253defd24bc",
+   "fieldData": {
+    "name": "Rudra Gosh",
+    "slug": "rudra-gosh"
+   }
+  },
+  {
+   "id": "67ed19ac5d8a1253defd24bb",
+   "fieldData": {
+    "name": "Veronika Belova",
+    "slug": "veronika-belova"
+   }
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+<!-- Author Person Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "{{wf {&quot;path&quot;:&quot;name&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}",
+  "url": "https://www.aiaccountant.com/author/{{wf {&quot;path&quot;:&quot;slug&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}",
+  "image": "{{wf {&quot;path&quot;:&quot;picture&quot;,&quot;type&quot;:&quot;ImageRef&quot;\} }}",
+  "jobTitle": "{{wf {&quot;path&quot;:&quot;titile&quot;,&quot;type&quot;:&quot;PlainText&quot;\} }}",
+  "worksFor": {
+    "@type": "Organization",
+    "name": "AI Accountant",
+    "url": "https://www.aiaccountant.com"
+  },
+  "sameAs": [
+    "{{wf {&quot;path&quot;:&quot;twitter-profile-link&quot;,&quot;type&quot;:&quot;Link&quot;\} }}"
+  ]
+}
+</script>
