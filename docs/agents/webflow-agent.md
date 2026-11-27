@@ -59,8 +59,36 @@ If `check` says another task updates the same page, find the other open tasks wi
 select public.aeo_task_set_draft(jsonb_build_object('task_key', '<key>', 'collection_id', '67ed19ac5d8a1253defd24e1', 'item_id', '<webflow item id>',
   'url', 'https://korefi-new-ad79e3da626e3af649279f0df167.design.webflow.com', 'page_url', 'https://www.aiaccountant.com/blog/<slug>', 'assignee', 'Wasif Kareem',
   'before', $b$<the post body exactly as it was before your edit; leave this key out for a new post>$b$,
-  'note', '<two sentences: what you changed or wrote, and anything you left out and why>'));
+  'note', $n$<the note, in the format below>$n$));
 ```
+
+**The note** is what a reviewer reads on the dashboard under "What the agent did". Write it as short bullets, never a paragraph. Plain text, section labels ending in a colon, bullets starting with "- ", at most 10 bullets, each at most 16 words. List the exact changes; no filler.
+
+For an edited page, use the sections that apply:
+```
+Added:
+- Quick answer section at the top
+- Comparison table of AI Accountant, Docs by Ira and Vyapar TaxOne
+Changed:
+- Title and meta description, to match the prompt
+Removed:
+- Key Takeaways block (repeated the introduction)
+- Per-invoice cost figure (no source)
+Left for a person:
+- E-invoicing threshold paragraph looks wrong; not changed
+```
+For a new page:
+```
+New page:
+- Comparison post answering "best excel to tally software"
+- Quick answer, table of 6 tools, section per tool, 6 FAQs; about 2,000 words
+- Dark cover and 3 figures
+Left out:
+- AI Accountant price and trial (not settled)
+Left for a person:
+- Add a link to it from /blog/best-tally-automation-tools-for-cas
+```
+
 
 ## Images
 Every post you write or change gets images in the house style. They are drawn by a script from a short description; do not use an image generator and do not draw your own.

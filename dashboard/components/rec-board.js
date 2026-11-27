@@ -102,6 +102,22 @@ function OutreachContact({ c }) {
   );
 }
 
+// ---- what the agent did: section labels and bullets when the note is written that way, a plain paragraph otherwise
+function AgentNote({ text }) {
+  const lines = String(text).split('\n').map((l) => l.trim()).filter(Boolean);
+  if (!lines.some((l) => l.startsWith('- '))) return <p className="rd-agent-note"><b>What the agent did:</b> {text}</p>;
+  const groups = [];
+  for (const l of lines) {
+    if (l.startsWith('- ')) { if (!groups.length) groups.push({ label: null, items: [] }); groups[groups.length - 1].items.push(l.slice(2)); }
+    else groups.push({ label: l.replace(/:$/, ''), items: [] });
+  }
+  return (
+    <div className="rd-agent-note rd-agent-list"><b>What the agent did</b>
+      {groups.map((g, i) => <div key={i}>{g.label ? <h5>{g.label}</h5> : null}<ul>{g.items.map((it, j) => <li key={j}>{it}</li>)}</ul></div>)}
+    </div>
+  );
+}
+
 // ---- one task: the task itself first, then what is driving it, why it should work and how we will know
 function TaskDetail({ t, body, failed, questions, openQ, assign, saving, canPublish, publish, publishing, pubError }) {
   const mine = t.targets.map((k) => questions.find((x) => x.key === k)).filter(Boolean);
@@ -126,7 +142,7 @@ function TaskDetail({ t, body, failed, questions, openQ, assign, saving, canPubl
             {t.state === 'draft' && canPublish ? <button type="button" disabled={publishing === t.key} onClick={() => publish(t.key)}>{publishing === t.key ? 'Publishing…' : 'Publish'}</button> : null}
           </div>
           {pubError ? <p className="rd-agent-err" role="status">{pubError}</p> : null}
-          {t.agentNote ? <p className="rd-agent-note"><b>What the agent did:</b> {t.agentNote}</p> : null}
+          {t.agentNote ? <AgentNote text={t.agentNote} /> : null}
         </div>
       ) : null}
       {!body ? <Loading failed={failed} /> : (

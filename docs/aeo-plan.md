@@ -964,3 +964,10 @@ Decision by the user: do LinkedIn outreach first, email second.
   Classified by hand from the page titles, site signals (advertise, submit and write-for-us pages) and who runs the site;
   not every site was re-read, so treat a few as provisional.
 - Three flagged: trulyinvoice.com (direct competitor), finifi.io (overlapping product), credfloat.in (its own product page).
+
+## 27/11/2026: "What the agent did" as bullets
+
+- By the user's request the agent's note on a task is now a short bullet list of the exact changes (Added, Changed, Removed,
+  Left for a person) or, for a new page, a few bullets on what it is, what was left out and what is left for a person.
+- Dashboard: notes written with "- " bullets render as labelled lists; older paragraph notes still render as text.
+- `docs/agents/webflow-agent.md` now gives the note format with examples. The 34 existing notes were rewritten to it.
