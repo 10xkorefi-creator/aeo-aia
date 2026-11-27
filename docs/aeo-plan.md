@@ -1036,3 +1036,4 @@ published live. Nothing else was staged on it. Older posts keep their authors. B
 - Applied to all 49 outreach tasks with a LinkedIn profile (41 people). Wording is in `docs/agents/outreach-agent.md`; `scripts/outreach/linkedin_messages.py` fills name and article title. `[sender]` stays open until the sending account is chosen.
 - Agent still not switched on: waiting for the PhantomBuster plan, the sending account and connector access.
 - PhantomBuster connector reachable; Start plan active. Sender chosen by the user: Shyam. Configured the LinkedIn Outreach Phantom (agent 8719648108517312) with 34 people, 10 requests a day, locked messages; not launched. 7 people left out (5 "Likely" matches, finifi.io, credfloat.in).
+- Sender changed by the user to Wasif Kareem (identity 6133597674009155); Phantom and task messages updated. Still not launched.
