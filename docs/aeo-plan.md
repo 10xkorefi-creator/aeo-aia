@@ -977,3 +977,13 @@ Decision by the user: do LinkedIn outreach first, email second.
 Explicit decision by the user, after being told the risk. Anyone with the dashboard link can now publish a Draft task's
 page to the live site. The button asks "Publish this page on the live site now?" to prevent a mis-click, and the route
 still only publishes a task that is in Draft with a recorded Webflow item. The Search Console upload keeps its password.
+
+## 27/11/2026: Quick answer is a normal heading, not a box
+
+- Feedback from the user: the quick answer looked different from the rest of the post. Cause: on five posts it was a
+  custom-code box with its own styles (`qa2-box`).
+- Agent rule changed: `<h2>Quick answer</h2>` plus plain paragraphs, never a box, embed or bold run-in label.
+- Fixed (staged in Webflow, not published): accounting-automation-software, manufacturing-accounting-software,
+  reconcile-tally-gst-reports-ai, best-ocr-for-handwritten-invoices, best-software-for-invoice-data-entry. Wording kept;
+  everything else in each body verified identical. 9 other agent posts were already in heading form; 3 have no quick answer.
+- Before and after bodies: `docs/webflow-template/quick-answer-fix/`.
