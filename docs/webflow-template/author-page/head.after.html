@@ -204,6 +204,9 @@ a.aia-au-card:hover .aia-au-meta b { color: #314DD0; }
       add();
     });
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build); else build();
+  if (document.readyState !== 'loading') { build(); return; }
+  var mo = window.MutationObserver ? new MutationObserver(function () { if (document.querySelector('.hero-section-3 ~ *')) { mo.disconnect(); build(); } }) : null;
+  if (mo) mo.observe(document.documentElement, { childList: true, subtree: true });
+  document.addEventListener('DOMContentLoaded', function () { if (mo) mo.disconnect(); build(); });
 })();
 </script>

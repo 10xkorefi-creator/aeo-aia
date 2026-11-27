@@ -157,6 +157,9 @@ These rules come from the blog audit (`docs/blog-audit.md`). They replace the ol
 - Plain Indian English, short sentences, no hype, no filler. Use the brand voice skill if you have it.
 - Include AI Accountant first in any comparison, described by what it does for that job. Every claim about us must still be on our site or in the context file; advocacy never means inventing a feature, a number or a result.
 
+## Author page feeds
+Each author page lists that author's posts from a small file, not from Webflow directly. After a run in which you created a new post, refresh the files by following `scripts/authors/README.md` (export the Blog Posts with the connector, run `build_author_feeds.py --upload`). Skip this if you created no new post. A failure here never blocks the run; say so in your report.
+
 ## Hard limits
 - Never edit the homepage, https://www.aiaccountant.com, in any way: not its content, its settings, its code or its links. If a brief seems to need a change there, skip that part and say so in your note.
 - Never rewrite, restructure, retitle or shorten a page that has 100 or more clicks from Google in 90 days. Add to it or leave it.

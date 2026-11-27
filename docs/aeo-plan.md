@@ -997,3 +997,14 @@ still only publishes a task that is in Draft with a recorded Webflow item. The S
 Decision by the user. Agent rule added. `/blog/best-ocr-for-handwritten-invoices` was the only agent-created post under
 another author (Hanumesh N): author changed to Rohan Sinha, cover re-made with his name and photo, and that one item
 published live. Nothing else was staged on it. Older posts keep their authors. Before values: `docs/webflow-template/author-fix/`.
+
+## 27/11/2026: Author page redesigned (staging)
+
+- Request by the user: a more interesting author page in the AI Accountant theme.
+- Built in the Authors template head code only: black hero band with the blue glow and grid (photo, "Author" chip, name,
+  role, LinkedIn button), an About section, "Articles by this author" as a card grid with a count and Show more, and a
+  closing strip to the blog. Navigation, footer and Person schema unchanged.
+- The article grid reads one file per author from the public storage bucket (`blog-images/authors/<slug>.json`), because a
+  list filtered by author cannot be built through the connector. 369 published posts: Rohan Sinha 169, Harshit Jain 96,
+  Harsh Khatri 52, Hanumesh N 50. Refresh: `scripts/authors/README.md`; the Webflow agent does it after creating a post.
+- Staging only. Goes live with the next site publish. Revert: `docs/webflow-template/author-page/REVERT.md`.
