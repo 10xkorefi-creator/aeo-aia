@@ -1,12 +1,12 @@
 """Fill the locked LinkedIn sequence (locked by the user, 27 Nov 2026) into every outreach task that has a LinkedIn profile.
-The wording lives in docs/agents/outreach-agent.md; keep the two in step. [sender] is filled by the agent at send time."""
+The wording lives in docs/agents/outreach-agent.md; keep the two in step. The sender is Shyam (Shyamkrishnan Nair)."""
 import json,subprocess,re,collections
 BASE='https://qmaphtslnvvifkzmbrvh.supabase.co/rest/v1/aeo_rec_tasks'
 H=['-H','apikey: dummy','-H','Authorization: Bearer dummy']
 FIRST='''Hi {name},
 
 I came across your "{title}" list while researching our space, and it's one of the more useful roundups out there.
-I'm [sender] from AI Accountant. We automate bookkeeping for businesses on Tally, and we'd love a spot on your list.
+I'm Shyam from AI Accountant. We automate bookkeeping for businesses on Tally, and we'd love a spot on your list.
 
 I think it works well for both of us: your readers get one of the best AI tools in Indian accounting, already used by 500+ businesses, and you get a link to your site from one of our articles on aiaccountant.com (DR 53). I'll write the entry for you too, so it's a two-minute job.
 

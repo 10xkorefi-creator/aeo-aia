@@ -1035,3 +1035,4 @@ published live. Nothing else was staged on it. Older posts keep their authors. B
 - The user supplied and locked a new two-message sequence (first message offering a link from one of our articles, DR 53, and "500+ businesses"; one soft follow-up). It replaces the earlier locked pair; payment is no longer offered.
 - Applied to all 49 outreach tasks with a LinkedIn profile (41 people). Wording is in `docs/agents/outreach-agent.md`; `scripts/outreach/linkedin_messages.py` fills name and article title. `[sender]` stays open until the sending account is chosen.
 - Agent still not switched on: waiting for the PhantomBuster plan, the sending account and connector access.
+- PhantomBuster connector reachable; Start plan active. Sender chosen by the user: Shyam. Configured the LinkedIn Outreach Phantom (agent 8719648108517312) with 34 people, 10 requests a day, locked messages; not launched. 7 people left out (5 "Likely" matches, finifi.io, credfloat.in).
