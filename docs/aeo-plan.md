@@ -1008,3 +1008,12 @@ published live. Nothing else was staged on it. Older posts keep their authors. B
   list filtered by author cannot be built through the connector. 369 published posts: Rohan Sinha 169, Harshit Jain 96,
   Harsh Khatri 52, Hanumesh N 50. Refresh: `scripts/authors/README.md`; the Webflow agent does it after creating a post.
 - Staging only. Goes live with the next site publish. Revert: `docs/webflow-template/author-page/REVERT.md`.
+
+## 27/11/2026: Blog index restyled (staging)
+
+- Request by the user: cards on /blog in the style of the author-page cards, and a better-looking page overall.
+- Blog index page (`67ed19ac5d8a1253defd24d9`) head code only: black hero band with the existing title and intro, search as
+  a pill, cards in the author-page style (cover, date as the blue label, title, author and "Read article"), 3 / 2 / 1 grid,
+  pill pagination. No text, heading, link or post order changed; verified identical to live.
+- The cards show no category, summary or reading time because the page's list does not carry those fields; adding them
+  needs the Designer. Staging only. Revert: `docs/webflow-template/blog-index/REVERT.md`.
