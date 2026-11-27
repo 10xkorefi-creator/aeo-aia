@@ -1037,3 +1037,5 @@ published live. Nothing else was staged on it. Older posts keep their authors. B
 - Agent still not switched on: waiting for the PhantomBuster plan, the sending account and connector access.
 - PhantomBuster connector reachable; Start plan active. Sender chosen by the user: Shyam. Configured the LinkedIn Outreach Phantom (agent 8719648108517312) with 34 people, 10 requests a day, locked messages; not launched. 7 people left out (5 "Likely" matches, finifi.io, credfloat.in).
 - Sender changed by the user to Wasif Kareem (identity 6133597674009155); Phantom and task messages updated. Still not launched.
+- 27 Nov 2026, user go-ahead: outreach is live. Phantom set to run every weekday hour 10:18 to 18:18 IST, 10 requests a day, first message on acceptance, one follow-up after 5 days. First run read the 34 leads cleanly.
+- Dashboard: each outreach task shows "LinkedIn outreach progress" (steps with dates, reply text). A task whose person replied is pinned to the top of Recommendations and flagged Important. Progress is written by `scripts/outreach/set_stage.py`, called by the outreach agent (scheduled twice a day).

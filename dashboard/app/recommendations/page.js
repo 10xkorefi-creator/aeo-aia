@@ -16,8 +16,8 @@ export default async function Recommendations({ searchParams }) {
   const runs = await listRuns();
   const latest = await pickRun(runs, null);
   const [tasks, questions, leadRows] = await Promise.all([
-    q`select task_key, title, channel, kind, priority, assistants, assignee, start_here, prompt_keys, keyword_ids, based_on_run, status, agent, drafted_at, live_at, draft_url, webflow_collection_id, webflow_item_id, agent_note, page_url, body->'build'->>'url' as build_url
-      from public.aeo_rec_tasks where is_active order by sort`,
+    q`select task_key, title, channel, kind, priority, assistants, assignee, start_here, prompt_keys, keyword_ids, based_on_run, status, agent, drafted_at, live_at, draft_url, webflow_collection_id, webflow_item_id, agent_note, page_url, body->'build'->>'url' as build_url, contact->>'li_stage' as li_stage
+      from public.aeo_rec_tasks where is_active order by (contact->>'li_stage' = 'Replied') desc nulls last, sort`,
     q`select q_key, kind, label, text, stage, priority, start_here, volume, organic_rank, based_on_run, jsonb_array_length(body->'tasks') as tasks,
         (select jsonb_object_agg(c.k, jsonb_build_object('rec', c.v->'rec', 'n', c.v->'n', 'gap', c.v->'gap')) from jsonb_each(body->'cells') as c(k, v)) as cells
       from public.aeo_rec_questions where is_active order by pos`,
@@ -50,6 +50,7 @@ export default async function Recommendations({ searchParams }) {
         tasks={tasks.map((t) => ({ key: t.task_key, title: t.title, channel: t.channel, kind: t.kind, priority: t.priority || 'Low', assistants: t.assistants || [], assignee: t.assignee || null, done: t.status === 'Done',
           state: t.status === 'Draft' ? 'draft' : t.status === 'Live' ? 'live' : t.status === 'Done' ? 'done' : 'todo', agent: t.agent || null,
           draftedAt: when(t.drafted_at), liveAt: when(t.live_at), draftUrl: t.draft_url || null, agentNote: t.agent_note || null, pageUrl: t.page_url || null,
+          outreach: t.li_stage && t.li_stage !== 'Message drafted' ? t.li_stage : null, important: t.li_stage === 'Replied',
           start: t.start_here, targets: [...(t.prompt_keys || []), ...(t.keyword_ids || [])] }))}
         questions={questions.map((x) => ({ key: x.q_key, kind: x.kind, label: x.label, text: x.text, stage: x.stage, priority: x.priority, start: x.start_here,
           volume: x.volume === null ? null : Number(x.volume), rank: x.organic_rank === null ? null : Number(x.organic_rank), tasks: Number(x.tasks), cells: x.cells || {} }))}

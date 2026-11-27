@@ -26,7 +26,7 @@ function ChannelIcon({ channel, size = 15 }) {
 const Channel = ({ channel }) => <span className="rt-chan"><ChannelIcon channel={channel} />{channel}</span>;
 const Pill = ({ kind }) => { const [label, cls] = TYPE[kind] || ['Other', 'trk']; return <span className={`rt-pill ${cls}`}>{label}</span>; };
 const Done = () => <span className="rt-done"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" /></svg>Done</span>;
-const State = ({ t }) => (t.state === 'draft' ? <span className="rt-state draft">Draft</span> : t.state === 'live' ? <span className="rt-state live">Live</span> : t.done ? <Done /> : <Prio p={t.priority} />);
+const State = ({ t }) => (t.outreach && !t.done ? <span className={`rt-state li ${t.important ? 'replied' : ''}`}>{t.outreach}</span> : t.state === 'draft' ? <span className="rt-state draft">Draft</span> : t.state === 'live' ? <span className="rt-state live">Live</span> : t.done ? <Done /> : <Prio p={t.priority} />);
 const Prio = ({ p }) => <span className={`rt-prio ${String(p).toLowerCase()}`}>{p === 'Done' ? 'No gap' : p}</span>;
 const For = ({ list, names }) => (
   <span className="rt-for" title={list.map(engineName).join(', ')}>
@@ -71,6 +71,24 @@ function BuildBrief({ b }) {
         <button type="button" className="rd-copy" onClick={copy}>{copied ? 'Copied' : 'Copy'}</button>
         <pre>{b.prompt}</pre>
       </details>
+    </section>
+  );
+}
+
+// ---- where the LinkedIn outreach stands for this person: each step with its date, and the reply when there is one
+const LI_STEPS = [['requested_at', 'Connection request sent'], ['connected_at', 'Request accepted'], ['messaged_at', 'First message sent'], ['followed_up_at', 'Follow-up sent'], ['replied_at', 'They replied']];
+function OutreachProgress({ c }) {
+  const log = c.li_log || {};
+  const day = (v) => (v ? new Date(v).toLocaleDateString('en-GB', { timeZone: 'Asia/Kolkata', day: '2-digit', month: '2-digit', year: 'numeric' }) : null);
+  const ended = ['Declined', 'No response', 'Listed', 'Left out'].includes(c.li_stage) ? c.li_stage : null;
+  return (
+    <section className="rb-sec"><h3>LinkedIn outreach progress</h3>
+      {c.li_stage === 'Replied' ? <p className="rd-li-flag"><b>Important: they replied.</b> A person should answer on LinkedIn{c.li_sender ? `, from ${c.li_sender}'s account` : ''}.</p> : null}
+      {c.li_reply ? <blockquote className="rd-li-reply">{c.li_reply}</blockquote> : null}
+      <ol className="rd-li-steps">
+        {LI_STEPS.map(([k, label]) => <li key={k} className={log[k] ? 'done' : undefined}><span>{label}</span><i>{day(log[k]) || 'Not yet'}</i></li>)}
+      </ol>
+      <p className="rb-foot">{ended ? `Ended: ${ended.toLowerCase()}. ` : ''}{c.li_stage === 'Message drafted' ? 'Waiting in the queue. Ten connection requests go out each working day. ' : ''}{c.li_sender ? `Sent from ${c.li_sender}'s LinkedIn account. ` : ''}{c.li_synced ? `Last checked ${day(c.li_synced)}.` : ''}</p>
     </section>
   );
 }
@@ -129,7 +147,7 @@ function TaskDetail({ t, body, failed, questions, openQ, assign, saving, canPubl
       <div className="rb-kicker"><span>Recommendation</span>{t.done ? <><span className="rb-dot">·</span><span>Done</span></> : null}{t.start ? <><span className="rb-dot">·</span><span>Start here</span></> : null}</div>
       <Dialog.Title className="rb-title">{t.title}</Dialog.Title>
       <div className="rt-meta">
-        <Channel channel={t.channel} /><Pill kind={t.kind} /><State t={t} /><For list={t.assistants} names />
+        {t.important ? <span className="rt-imp">Important</span> : null}<Channel channel={t.channel} /><Pill kind={t.kind} /><State t={t} /><For list={t.assistants} names />
         <span className="rt-meta-assign"><i>{t.done ? 'Done by' : t.state === 'draft' ? 'Reviewer' : 'Assignee'}</i><Assignee value={t.assignee} onChange={(v) => assign(t.key, v)} saving={saving === t.key} /></span>
       </div>
       {t.state === 'draft' || t.state === 'live' ? (
@@ -153,6 +171,7 @@ function TaskDetail({ t, body, failed, questions, openQ, assign, saving, canPubl
           </section>
 
           {body.build ? <BuildBrief b={body.build} /> : null}
+          {body.contact?.li_stage ? <OutreachProgress c={body.contact} /> : null}
           {body.contact ? <OutreachContact c={body.contact} /> : null}
 
           <section className="rb-sec"><h3>What’s driving this recommendation</h3>
@@ -378,8 +397,8 @@ export function RecBoard({ tasks: initialTasks, questions, baseline, leads, init
             <thead><tr><th>Task</th><th>Type</th><th>Channel</th><th>For</th><th>Status</th><th>Assignee</th></tr></thead>
             <tbody>
               {rows.map((t) => (
-                <tr key={t.key} className={t.done ? 'is-done' : undefined} onClick={() => openTask(t.key)}>
-                  <td><button type="button" className="rt-title" title={t.title} onClick={(e) => { e.stopPropagation(); openTask(t.key); }} aria-haspopup="dialog">{t.title}</button></td>
+                <tr key={t.key} className={t.done ? 'is-done' : t.important ? 'is-imp' : undefined} onClick={() => openTask(t.key)}>
+                  <td><button type="button" className="rt-title" title={t.title} onClick={(e) => { e.stopPropagation(); openTask(t.key); }} aria-haspopup="dialog">{t.title}</button>{t.important ? <span className="rt-imp">Important: replied</span> : null}</td>
                   <td><Pill kind={t.kind} /></td>
                   <td><Channel channel={t.channel} /></td>
                   <td><For list={t.assistants} /></td>

@@ -11,7 +11,7 @@ for x in d:
 rows=[];skipped=[]
 for url,ts in by.items():
     c=ts[0]['contact']
-    if (c.get('linkedin_confidence') or '').startswith('Likely') or c.get('site') in SKIP_SITES or c.get('li_stage') not in (None,'Message drafted'):
+    if (c.get('linkedin_confidence') or '').startswith('Likely') or c.get('site') in SKIP_SITES or c.get('li_stage')=='Left out':
         skipped.append((c.get('site'),c.get('linkedin_confidence'))); continue
     lines=c['li_message'].split('\n'); intro=lines[2]
     rows.append(dict(profileUrl=url,greetName=re.match(r'Hi (.+),$',lines[0]).group(1),introLine=intro,

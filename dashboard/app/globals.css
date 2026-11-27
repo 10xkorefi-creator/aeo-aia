@@ -847,3 +847,18 @@ table.rt tr.is-done .rt-title { color: var(--muted-foreground); }
 .rd-agent-list h5 { margin: 10px 0 2px; font-size: 12px; font-weight: 600; color: var(--muted-foreground); text-transform: none; }
 .rd-agent-list ul { margin: 0; padding-left: 18px; }
 .rd-agent-list li { margin: 2px 0; line-height: 1.45; }
+
+/* LinkedIn outreach: progress in the task panel, and replies pinned and flagged in the list */
+.rt-state.li { background: var(--accent-soft); color: var(--accent); white-space: nowrap; }
+.rt-state.li.replied { background: var(--up-bg); color: var(--up-ink); }
+.rt-imp { display: inline-block; margin-left: 8px; padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 700; background: #d1242f; color: #fff; white-space: nowrap; vertical-align: 1px; }
+.rt-meta .rt-imp { margin-left: 0; }
+tr.is-imp td { background: rgba(209, 36, 47, 0.06); }
+.rd-li-flag { margin: 0 0 10px; padding: 10px 12px; border-radius: 8px; background: rgba(209, 36, 47, 0.08); font-size: 13.5px; }
+.rd-li-reply { margin: 0 0 12px; padding: 10px 12px; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 8px 8px 0; font-size: 13.5px; white-space: pre-wrap; }
+.rd-li-steps { list-style: none; margin: 0 0 8px; padding: 0; }
+.rd-li-steps li { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0 7px 22px; border-bottom: 1px solid var(--border); font-size: 13.5px; color: var(--muted-foreground); position: relative; }
+.rd-li-steps li::before { content: ''; position: absolute; left: 2px; top: 12px; width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--border); }
+.rd-li-steps li.done { color: var(--foreground); }
+.rd-li-steps li.done::before { background: var(--up-ink); border-color: var(--up-ink); }
+.rd-li-steps li i { font-style: normal; font-variant-numeric: tabular-nums; }
