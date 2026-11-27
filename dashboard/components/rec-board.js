@@ -305,16 +305,12 @@ export function RecBoard({ tasks: initialTasks, questions, baseline, leads, init
   const [publishing, setPublishing] = useState(null);
   const [pubError, setPubError] = useState(null);
   async function publish(key) {
-    let pw = null;
-    try { pw = window.sessionStorage.getItem('aeo-pw'); } catch { /* no storage */ }
-    if (!pw) pw = window.prompt('Dashboard password, to publish this page in Webflow:');
-    if (!pw) return;
+    if (!window.confirm('Publish this page on the live site now?')) return;
     setPubError(null); setPublishing(key);
     try {
-      const res = await fetch('/api/task-publish', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ task: key, password: pw }) });
+      const res = await fetch('/api/task-publish', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ task: key }) });
       const j = await res.json().catch(() => ({}));
-      if (!res.ok) { if (res.status === 401) { try { window.sessionStorage.removeItem('aeo-pw'); } catch { /* ignore */ } } throw new Error(res.status === 401 ? 'Wrong password.' : 'Webflow did not publish it. Try again, or publish it in Webflow.'); }
-      try { window.sessionStorage.setItem('aeo-pw', pw); } catch { /* ignore */ }
+      if (!res.ok) throw new Error('Webflow did not publish it. Try again, or publish it in Webflow.');
       const at = new Date(j.live_at).toLocaleString('en-GB', { timeZone: 'Asia/Kolkata', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
       setTasks((ts) => ts.map((t) => (t.key === key ? { ...t, state: 'live', liveAt: at } : t)));
     } catch (e) { setPubError(e.message); }

@@ -971,3 +971,9 @@ Decision by the user: do LinkedIn outreach first, email second.
   Left for a person) or, for a new page, a few bullets on what it is, what was left out and what is left for a person.
 - Dashboard: notes written with "- " bullets render as labelled lists; older paragraph notes still render as text.
 - `docs/agents/webflow-agent.md` now gives the note format with examples. The 34 existing notes were rewritten to it.
+
+## 27/11/2026: Publish button no longer asks for a password
+
+Explicit decision by the user, after being told the risk. Anyone with the dashboard link can now publish a Draft task's
+page to the live site. The button asks "Publish this page on the live site now?" to prevent a mis-click, and the route
+still only publishes a task that is in Draft with a recorded Webflow item. The Search Console upload keeps its password.

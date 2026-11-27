@@ -4,14 +4,12 @@ import { hasWebflow, publishItem } from '@/lib/webflow';
 
 export const dynamic = 'force-dynamic';
 
-// Publishes one drafted post in Webflow and marks its task Live. The dashboard link is public, so this asks for the
-// same password as the Search Console upload.
+// Publishes one drafted post in Webflow and marks its task Live. No password, by the owner's explicit decision
+// (27/11/2026): anyone with the dashboard link can publish. It only publishes a task in Draft with a recorded Webflow item.
 export async function POST(request) {
   let body;
   try { body = await request.json(); } catch { return NextResponse.json({ error: 'bad request' }, { status: 400 }); }
   const task = String(body?.task || '');
-  const expected = process.env.UPLOAD_PASSWORD || process.env.DASHBOARD_PASSWORD;
-  if (!expected || String(body?.password || '') !== expected) return NextResponse.json({ error: 'wrong password' }, { status: 401 });
   if (!hasWebflow()) return NextResponse.json({ error: 'not connected' }, { status: 503 });
   if (!/^[A-Z]-[A-Za-z0-9.-]{1,60}$/.test(task)) return NextResponse.json({ error: 'bad request' }, { status: 400 });
   try {
