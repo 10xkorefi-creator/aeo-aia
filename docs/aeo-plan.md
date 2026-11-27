@@ -991,3 +991,9 @@ still only publishes a task that is in Draft with a recorded Webflow item. The S
   code inside the post. The post body stays a normal heading plus paragraphs; a style and a few lines of script in the blog
   template head wrap the "Quick answer" heading and up to two paragraphs after it in a light box with a blue left edge.
   The heading keeps the same size as the post's other headings. Checked on staging, desktop and phone; staging only.
+
+## 27/11/2026: New posts only under Rohan Sinha or Harsh Khatri
+
+Decision by the user. Agent rule added. `/blog/best-ocr-for-handwritten-invoices` was the only agent-created post under
+another author (Hanumesh N): author changed to Rohan Sinha, cover re-made with his name and photo, and that one item
+published live. Nothing else was staged on it. Older posts keep their authors. Before values: `docs/webflow-template/author-fix/`.
