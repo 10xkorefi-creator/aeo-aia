@@ -987,3 +987,7 @@ still only publishes a task that is in Draft with a recorded Webflow item. The S
   reconcile-tally-gst-reports-ai, best-ocr-for-handwritten-invoices, best-software-for-invoice-data-entry. Wording kept;
   everything else in each body verified identical. 9 other agent posts were already in heading form; 3 have no quick answer.
 - Before and after bodies: `docs/webflow-template/quick-answer-fix/`.
+- Later the same day, by the user's choice: the quick answer is shown in a box again, but drawn by the page template, not by
+  code inside the post. The post body stays a normal heading plus paragraphs; a style and a few lines of script in the blog
+  template head wrap the "Quick answer" heading and up to two paragraphs after it in a light box with a blue left edge.
+  The heading keeps the same size as the post's other headings. Checked on staging, desktop and phone; staging only.
