@@ -1,0 +1,95 @@
+# AI Accountant
+
+> AI Accountant (aiaccountant.com) is an AI-powered accounting automation tool for Tally, built for Indian businesses by Karbon Business (YC-backed). It reads bank statements, purchase bills, and invoices (PDF, Excel, image, including handwritten), extracts the line items, predicts the ledger, matches payments to open bills, and posts entries to Tally through a two-way sync. It works on top of a company's existing Tally and chart of accounts, and the company's own team approves every entry.
+
+Last updated: November 2026
+
+## Company facts
+
+- Product: AI Accountant, an automation layer for Tally (TallyPrime, cloud-hosted or offline). It is not accounting software and does not replace Tally; the books stay in Tally.
+- Company: Karbon Business, a Y Combinator-backed company. Korefi (korefi.ai) is a separate US restaurant accounting product from the same parent company and is not AI Accountant.
+- Integrations: Tally only. AI Accountant does not integrate with Zoho Books, QuickBooks, or other accounting software.
+- Who it is for: founders, CFOs, and finance heads of Indian SMBs with roughly INR 1 crore to 100 crore in revenue that run an in-house Tally team. Strongest fit: manufacturing, trading and distribution, and hospitality businesses with high purchase-bill volume.
+- What it automates: purchase-bill entry, bank and credit-card statement entries, ledger mapping, bill-to-payment matching, GSTR-2B and purchase-register reconciliation, accounts payable, accounts receivable, and an MIS dashboard. Bills can also be sent to Tally from WhatsApp.
+- Scale and accuracy: 300M+ transactions analyzed, 500+ paying customers, about 95% accuracy on handwritten and scanned bills, bulk processing of up to 100 bills at a time, and up to 75% of routine accounting tasks removed.
+- Security: ISO 27001:2022 and SOC 2 Type II certified.
+- Pricing: free trial available. A customer can book a slot for guided Tally setup, or sign up and connect Tally in about 15 minutes. Paid plans scale with company size and are priced per workspace, not per user.
+- Related service: Virtual Accounting (VA), a separate managed service where a dedicated CA team handles bookkeeping, GST, TDS, income tax, payroll, and ROC compliance. VA pricing is customised to the services chosen.
+- Alternatives buyers usually compare: Docs by Ira (TallyIra) from Tally Solutions, Vyapar TaxOne (formerly Suvit), and VoucherIT.
+
+## Product
+
+- [AI Accountant home](https://www.aiaccountant.com/): Product overview, supported documents, accuracy figures, and customer results.
+- [Bookkeeping automation](https://www.aiaccountant.com/products/bookkeeping-automation): How bank and card statements are read, categorised, and mapped to Tally ledgers.
+- [Vendor bill matching](https://www.aiaccountant.com/products/vendor-bill-matching): How purchase bills are extracted and matched to payments to reconcile payables.
+- [GST reconciliation](https://www.aiaccountant.com/products/gst-reconciliation): How GSTR-2B is reconciled against the purchase register in Tally.
+- [Dashboard & MIS reporting](https://www.aiaccountant.com/products/mis-reporting): Financial dashboards and management reports built from Tally data.
+- [Interactive product tour](https://www.aiaccountant.com/interactive-tour): Click-through walkthrough of the product without signing up.
+- [Security & compliance](https://www.aiaccountant.com/resources/security-compliance): ISO 27001 and SOC 2 Type II certification, data handling, and access controls.
+
+## Getting started
+
+- [Start a free trial](https://www.aiaccountant.com/free-trial): Sign-up form to start a trial with Tally connected.
+- [Help docs](https://www.aiaccountant.com/help): Connecting Tally, how entries sync as vouchers, and guides for the AP, AR, banking, GST reconciliation, and dashboard modules.
+- [Tally integration guide](https://www.aiaccountant.com/guides-page/ai-accountant-tally-integration-guide): End-to-end setup of AI Accountant with Tally.
+- [How the Tally integration works](https://www.aiaccountant.com/blog/tally-integration-with-ai-accountant): Cost centres, GSTR-2B import, bank mapping, and bulk exception handling.
+
+## Industries
+
+- [Manufacturing](https://www.aiaccountant.com/products/manufacturing-accounting-software): Purchase-bill and Tally automation for Indian manufacturers.
+- [Hospitality](https://www.aiaccountant.com/products/hospitality): Purchase bills, settlements, and outlet-level accounting for hotels and restaurants.
+
+## Customer stories
+
+- [All customer stories](https://www.aiaccountant.com/customer-stories): Index of published customer stories.
+- [Sinnova Tech Engineering](https://www.aiaccountant.com/sinnova-tech-engineering-tally-purchase-bill-automation): One accountant processes purchase bills in Tally in under 30 seconds each at 95% accuracy.
+- [Laundry Labs](https://www.aiaccountant.com/ai-accountant-helps-laundry-labs-turn-pdf-bills-into-tally-entries-in-under-1-5-minutes-at-98-accuracy): PDF bills to Tally entries in 1 to 1.5 minutes at 98% accuracy across three TallyPrime companies.
+- [Harin Biotech](https://www.aiaccountant.com/ai-accountant-helps-harin-biotech-run-tally-from-whatsapp): Sending purchase bills to Tally and asking questions about the books from WhatsApp.
+- [Vigor Solar Energy](https://www.aiaccountant.com/vigor-solar-energy-tally-purchase-bill-and-bank-entry-automation): Tally entry time cut by up to 80% across bank and purchase entries with a three-person team.
+- [3-city retailer](https://www.aiaccountant.com/case-studies/how-a-3-city-retailer-cut-1-200-hours-of-ap-work-every-month): 1,200 hours of accounts-payable work removed per month.
+- [Multi-branch pharmacy](https://www.aiaccountant.com/case-studies/medicals-multi-branch-tally-automation): Tally automation across pharmacy branches.
+- [Testimonials](https://www.aiaccountant.com/testimonials): Customer quotes and video testimonials.
+
+## Research
+
+- [Indian manufacturers are rethinking accounting on Tally (2026)](https://www.aiaccountant.com/indian-manufacturers-tally-accounting-research): Findings from calls with 686 Indian manufacturers on Tally bookkeeping problems and AI adoption.
+- [AI in accounting for manufacturing founders](https://www.aiaccountant.com/manufacturing-ai-accounting-growth-report): Based on 727 demos with 686 Indian manufacturers (January to September 2026), on why manual bookkeeping caps growth and where AI pays off first.
+
+## Comparisons
+
+- [AI Accountant vs TallyIra](https://www.aiaccountant.com/vs/tally-ira): Comparison with Docs by Ira, Tally Solutions' document-to-voucher tool.
+- [AI Accountant vs Suvit (Vyapar TaxOne)](https://www.aiaccountant.com/blog/suvit-alternative): How the two Tally automation tools differ.
+- [AI Accountant vs VoucherIT](https://www.aiaccountant.com/blog/voucherit): How the two Tally automation tools differ.
+- [AI Accountant vs a human accountant](https://www.aiaccountant.com/blog/ai-accountant-vs-human-accountant): Which accounting work AI handles and which still needs a person.
+- [Hiring an accountant in India](https://www.aiaccountant.com/hire-accountant): Costs of in-house, freelance, and CA-firm options compared with a 24/7 AI Accountant.
+
+## Free tools
+
+- [All free tools](https://www.aiaccountant.com/free-tools): Hub of free accounting and GST tools.
+- [Bulk GST return status checker](https://www.aiaccountant.com/resources/gst-return-status): Checks up to 10 vendor GSTINs for registration status and GSTR-1 filing timeliness, with a risk flag for each.
+- [Bank statement converter](https://www.aiaccountant.com/resources/bank-statement-converter): Converts bank statement PDFs to Excel or CSV.
+- [Handwritten bill to Excel converter](https://www.aiaccountant.com/resources/image-to-excel-converter): Turns a photo of a handwritten, kacha, or GST bill into Excel or CSV with GSTINs, HSN codes, and amounts.
+- [AI invoice PDF splitter](https://www.aiaccountant.com/resources/invoice-pdf-splitter): Splits a multi-invoice PDF into separate bills.
+- [GST late fee calculator](https://www.aiaccountant.com/resources/gst-late-fee-calculator): Late fees for delayed GST returns.
+- [e-Invoice applicability checker](https://www.aiaccountant.com/resources/e-invoice-applicability-checker): Whether e-invoicing applies to a business based on turnover.
+- [MCA fees calculator](https://www.aiaccountant.com/resources/mca-fees-calculator): ROC/MCA filing fees.
+- [GST invoice generator](https://www.aiaccountant.com/resources/invoice-generator): Creates GST invoices online.
+
+## Virtual Accounting
+
+- [Virtual Accounting](https://www.aiaccountant.com/accounting-bookkeeping-services): CA-led managed bookkeeping and compliance for Indian SMBs, with services and plan scope.
+- [Book a Virtual Accounting consultation](https://www.aiaccountant.com/book-a-demo-va): Talk to the VA team about scope and pricing.
+
+## Company
+
+- [About us](https://www.aiaccountant.com/about-us): Karbon Business and the team behind AI Accountant.
+- [Partnerships](https://www.aiaccountant.com/partnerships): Partner and referral programs.
+
+## Optional
+
+- [Bulk bill upload to Tally](https://www.aiaccountant.com/blog/bulk-bill-upload-to-tally): Uploading many vendor bills to Tally at once.
+- [Handwritten bills in Tally](https://www.aiaccountant.com/blog/handwritten-bills-in-tally): Getting handwritten purchase bills into Tally.
+- [Tally on WhatsApp](https://www.aiaccountant.com/blog/tally-whatsapp): Using Tally from WhatsApp.
+- [Purchase bill entry in Tally](https://www.aiaccountant.com/blog/purchase-bill-entry-in-tally): Step-by-step manual purchase entry in TallyPrime.
+- [TallyPrime shortcut keys](https://www.aiaccountant.com/blog/all-tally-prime-shortcut-keys-list): Full list of TallyPrime keyboard shortcuts.
+- [Blog](https://www.aiaccountant.com/blog): Full library of Tally, GST, TDS, and accounting automation articles.

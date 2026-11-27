@@ -1017,3 +1017,16 @@ published live. Nothing else was staged on it. Older posts keep their authors. B
   pill pagination. No text, heading, link or post order changed; verified identical to live.
 - The cards show no category, summary or reading time because the page's list does not carry those fields; adding them
   needs the Designer. Staging only. Revert: `docs/webflow-template/blog-index/REVERT.md`.
+
+## 27/11/2026: Company context updated from the rewritten llms.txt
+
+- The owner updated https://www.aiaccountant.com/llms.txt ("Last updated: November 2026"). It is now the deciding source
+  where older site pages disagree. Snapshot: `docs/agents/llms-snapshot-2026-11-27.txt`.
+- Settled and written into `docs/agents/aiaccountant-context.md`: free trial (yes), pricing model (per workspace, scales with
+  company size; still no rupee figure), 500+ paying customers, about 95% accuracy on handwritten and scanned bills, up to 100
+  bills at a time, up to 75% of routine tasks removed, setup in about 15 minutes, TallyPrime cloud-hosted or offline, Tally
+  only (no Zoho Books or QuickBooks integration), Karbon Business (YC-backed) as parent and Korefi as a separate product,
+  ISO 27001:2022 and SOC 2 Type II certified, alternatives named (Docs by Ira, Vyapar TaxOne, VoucherIT), GST scope
+  (GSTR-2B and purchase register), dashboards built from Tally data, the retailer case study unnamed.
+- Still open (6): guarantee, day-one automation percentages, Overview tab, Tally ERP 9, WhatsApp assistant users and name,
+  bill languages. Webflow agent wording on price and trial aligned.
