@@ -1,39 +1,41 @@
+"""Fill the locked LinkedIn sequence (locked by the user, 27 Nov 2026) into every outreach task that has a LinkedIn profile.
+The wording lives in docs/agents/outreach-agent.md; keep the two in step. [sender] is filled by the agent at send time."""
 import json,subprocess,re,collections
-r=subprocess.run(['curl','-s','https://qmaphtslnvvifkzmbrvh.supabase.co/rest/v1/aeo_rec_tasks?select=task_key,priority,sort,body,contact&is_active=eq.true&kind=eq.Outreach&order=sort','-H','apikey: dummy','-H','Authorization: Bearer dummy'],capture_output=True); d=json.loads(r.stdout)
-ENTRY_IN="AI Accountant (aiaccountant.com): accounting automation that works on top of Tally. It reads bank statements and purchase bills, suggests the ledger, matches payments to bills, reconciles GSTR-2B, and posts to Tally only after a person approves."
-ENTRY_GL="AI Accountant (aiaccountant.com): accounting automation for businesses in India that keep their books in Tally. It reads bank statements and purchase bills, suggests the ledger, reconciles GST returns, and posts to Tally only after a person approves."
+BASE='https://qmaphtslnvvifkzmbrvh.supabase.co/rest/v1/aeo_rec_tasks'
+H=['-H','apikey: dummy','-H','Authorization: Bearer dummy']
+FIRST='''Hi {name},
+
+I came across your "{title}" list while researching our space, and it's one of the more useful roundups out there.
+I'm [sender] from AI Accountant. We automate bookkeeping for businesses on Tally, and we'd love a spot on your list.
+
+I think it works well for both of us: your readers get one of the best AI tools in Indian accounting, already used by 500+ businesses, and you get a link to your site from one of our articles on aiaccountant.com (DR 53). I'll write the entry for you too, so it's a two-minute job.
+
+If someone else handles the blog, I'm happy to reach out to them instead.
+Would you be up for it?'''
+FOLLOW='''Hey {name},
+I'd dropped you a note a few days back about "{title}", in case it got lost in the inbox.
+We'd love for AI Accountant to be part of it someday, and we'd be glad to link back to you from our blog in return.
+No pressure at all. Happy to share more if it sounds interesting.'''
 def clean(t):
-    t=re.sub(r'\s+[|\u2013\u2014-]\s+[^|\u2013\u2014]{2,30}$','',t).strip()
-    return t.strip(' "')
+    t=re.sub(r'\s+[|–—-]\s+[^|–—]{2,30}$','',t or '').strip()
+    t=re.sub(r'\s+[\u00b7:]\s+[^\u00b7:]{2,30}$','',t).strip()
+    return t.strip(' "?')
 def firstname(n):
     n=re.sub(r'^(CA|CS|Dr\.?)\s+','',n or '').strip(); f=n.split(' ')[0]
-    return f if f and f[0].isalpha() and '(' not in n and len(f)>1 else None
+    return f if f and f.isalpha() and f.lower() not in ('director','team','admin','editor') and '(' not in n and len(f)>1 else None
+d=json.loads(subprocess.run(['curl','-s',BASE+'?select=task_key,sort,body,contact&kind=eq.Outreach&order=sort']+H,capture_output=True).stdout)
 by=collections.defaultdict(list)
 for x in d:
-    if x['contact'].get('linkedin_url'): by[x['contact']['linkedin_url']].append(x)
-n=0; samples=[]
+    if (x.get('contact') or {}).get('linkedin_url'): by[x['contact']['linkedin_url']].append(x)
+n=0; out=[]
 for url,ts in by.items():
-    c=ts[0]['contact']; rel=c.get('relationship') or 'Author'; fn=firstname(c.get('linkedin_name')); site=c.get('site')
-    titles=[clean(t['body']['model'][0].get('title') or 'your article') for t in ts]
-    note=ts[0]['body']['model'][0].get('note',''); m=re.search(r'Names ([^.]+)\.',note); tools=m.group(1) if m else None
-    indian = site.endswith('.in') or any(re.search(r'india|tally|\bCAs?\b|gst',t,re.I) for t in titles)
-    hi=f"Hi {fn}," if fn else "Hello,"
-    if len(titles)==1: ref=f"\"{titles[0]}\""
-    else: ref="these pages on "+site+": "+"; ".join(f"\"{t}\"" for t in titles)
-    if rel in('Author','Owner and author','Marketing or content, and author'): open_=f"thanks for connecting. I read your piece {ref}." if len(titles)==1 else f"thanks for connecting. I read {ref}."
-    elif rel=='Owner or founder': open_=f"thanks for connecting. I'm writing to you because you run {site}, and I've been reading {ref}." if len(titles)==1 else f"thanks for connecting. I'm writing to you because you run {site}, and I've been reading {ref}."
-    elif rel in('Marketing or content','Editor'): open_=f"thanks for connecting. I'm getting in touch about {ref} on {site}."
-    else: open_=f"thanks for connecting. I'm getting in touch about {ref}."
-    covers=f" It covers {tools}." if tools and len(titles)==1 else ""
-    gap=("I work on AI Accountant, which automates bookkeeping on top of Tally for Indian businesses and CA firms. It isn't on the list, and I think your readers who run Tally would want to know about it." if indian
-         else "I work on AI Accountant, which automates bookkeeping for businesses in India that run on Tally. The list has no option for that group yet.")
-    ask={'Author':"Would you be open to adding it? Here is an entry you could paste in:",'Owner and author':"Would you be open to adding it? Here is an entry you could paste in:",'Marketing or content, and author':"Would you be open to adding it? Here is an entry you could paste in:",
-         'Owner or founder':"Could you add it, or point me to whoever edits the page? Here is an entry that could go straight in:",'Marketing or content':"Could it be added in the next update, or could you point me to the right person? Here is a ready entry:",'Editor':"Could it be added as an update to the article? Here is a ready entry:"}.get(rel,"Would you consider adding it? Here is a ready entry:")
-    msg=f"{hi} {open_}{covers}\n\n{gap}\n\n{ask}\n\n{ENTRY_IN if indian else ENTRY_GL}\n\nI can send screenshots, customer stories or set up a demo if that helps. Thanks either way for the work on the page.\n\n[sender's first name]"
-    fu=f"{hi} just checking you saw my note about adding AI Accountant to {('the page' if len(titles)==1 else 'those pages')}. If it isn't a fit, no problem at all; a one-word reply is enough and I won't follow up again.\n\n[sender's first name]"
+    c=ts[0]['contact']; name=firstname(c.get('linkedin_name')) or 'there'
+    title=clean(ts[0]['body']['model'][0].get('title')) or 'best tools'
+    msg=FIRST.format(name=name,title=title); fu=FOLLOW.format(name=name,title=title)
     for t in ts:
-        cc=t['contact']; cc.update(li_message=msg,li_followup=fu,li_stage='Message drafted',li_group=len(ts))
-        subprocess.run(['curl','-s','-o','/dev/null','-X','PATCH',f"https://qmaphtslnvvifkzmbrvh.supabase.co/rest/v1/aeo_rec_tasks?task_key=eq.{t['task_key']}",'-H','apikey: dummy','-H','Authorization: Bearer dummy','-H','Content-Type: application/json','-d',json.dumps({'contact':cc})]); n+=1
-    samples.append((rel,site,len(msg),msg))
-print('people',len(by),'tasks',n,'max len',max(s[2] for s in samples))
-for s in samples[:1]+[x for x in samples if x[0]=='Owner or founder'][:1]: print('-----',s[0],s[1]); print(s[3])
+        cc=t['contact']; cc.update(li_message=msg,li_followup=fu,li_group=len(ts)); cc.setdefault('li_stage','Message drafted')
+        r=subprocess.run(['curl','-s','-o','/dev/null','-w','%{http_code}','-X','PATCH',f"{BASE}?task_key=eq.{t['task_key']}"]+H+['-H','Content-Type: application/json','-d',json.dumps({'contact':cc})],capture_output=True,text=True)
+        assert r.stdout.startswith('2'),(t['task_key'],r.stdout); n+=1
+    out.append((name,title,c.get('site')))
+print('people',len(by),'tasks',n)
+for o in out: print(o)

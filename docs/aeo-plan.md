@@ -1030,3 +1030,8 @@ published live. Nothing else was staged on it. Older posts keep their authors. B
   (GSTR-2B and purchase register), dashboards built from Tally data, the retailer case study unnamed.
 - Still open (6): guarantee, day-one automation percentages, Overview tab, Tally ERP 9, WhatsApp assistant users and name,
   bill languages. Webflow agent wording on price and trial aligned.
+
+### 27 Nov 2026: LinkedIn outreach sequence locked
+- The user supplied and locked a new two-message sequence (first message offering a link from one of our articles, DR 53, and "500+ businesses"; one soft follow-up). It replaces the earlier locked pair; payment is no longer offered.
+- Applied to all 49 outreach tasks with a LinkedIn profile (41 people). Wording is in `docs/agents/outreach-agent.md`; `scripts/outreach/linkedin_messages.py` fills name and article title. `[sender]` stays open until the sending account is chosen.
+- Agent still not switched on: waiting for the PhantomBuster plan, the sending account and connector access.
