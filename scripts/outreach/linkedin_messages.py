@@ -12,6 +12,10 @@ I think it works well for both of us: your readers get one of the best AI tools 
 
 If someone else handles the blog, I'm happy to reach out to them instead.
 Would you be up for it?'''
+FIRST_ART=FIRST.replace('your "{title}" list while','your article "{title}" while').replace('useful roundups','useful pieces').replace("we'd love a spot on your list","we'd love a mention in it").replace("write the entry","write the paragraph")
+def is_list(title,site):
+    if ' vs ' in title.lower() or site=='credfloat.in': return False
+    return bool(re.search(r'\b(best|top|compared?|picks|alternatives?|must have|tools)\b|\d+\s',title,re.I))
 FOLLOW='''Hey {name},
 I'd dropped you a note a few days back about "{title}", in case it got lost in the inbox.
 We'd love for AI Accountant to be part of it someday, and we'd be glad to link back to you from our blog in return.
@@ -31,11 +35,11 @@ n=0; out=[]
 for url,ts in by.items():
     c=ts[0]['contact']; name=firstname(c.get('linkedin_name')) or 'there'
     title=clean(ts[0]['body']['model'][0].get('title')) or 'best tools'
-    msg=FIRST.format(name=name,title=title); fu=FOLLOW.format(name=name,title=title)
+    msg=(FIRST if is_list(title,c.get('site') or '') else FIRST_ART).format(name=name,title=title); fu=FOLLOW.format(name=name,title=title)
     for t in ts:
         cc=t['contact']; cc.update(li_message=msg,li_followup=fu,li_group=len(ts)); cc.setdefault('li_stage','Message drafted')
         r=subprocess.run(['curl','-s','-o','/dev/null','-w','%{http_code}','-X','PATCH',f"{BASE}?task_key=eq.{t['task_key']}"]+H+['-H','Content-Type: application/json','-d',json.dumps({'contact':cc})],capture_output=True,text=True)
         assert r.stdout.startswith('2'),(t['task_key'],r.stdout); n+=1
-    out.append((name,title,c.get('site')))
+    out.append(('LIST' if is_list(title,c.get('site') or '') else 'ARTICLE',name,title,c.get('site')))
 print('people',len(by),'tasks',n)
 for o in out: print(o)
